@@ -13,7 +13,7 @@
 #### 启动教程
 - 查看 jeecg-boot 官网的文档说明：根据步骤安装所需的环境依赖，然后启动项目即可。
 - 启动项目分为前端和后端
-- JeecgBoot官方文档：[JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
+- [JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
 
 #### 项目截图
 1. 登录界面
