@@ -13,4 +13,7 @@
 JeecgBoot官方文档：http://jeecg-boot.mydoc.io/
 
 #### 项目截图
+1. 登录界面
 ![登录截图](https://images.gitee.com/uploads/images/2020/0628/192351_69d1a279_5459645.jpeg "1.jpg")
+2. 首页
+![首页](https://images.gitee.com/uploads/images/2020/0628/192911_b2a0b33a_5459645.jpeg "2.jpg")
