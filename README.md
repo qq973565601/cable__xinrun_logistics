@@ -4,14 +4,16 @@
 基于Jeecg-boot开发的物流仓储系统，涵盖模块：用户管理、车辆管理、计划管理、仓库管理、库存管理、财务管理、统计报表、系统管理等模块组成
 
 #### 软件架构
-软件所用技术：Springboot + Vue 构建的前后端分离开发项目</br>
-logistics：微信小程序</br>
-wxImg: 微信小程序图片</br>
+
+- 软件所用技术：Springboot + Vue 构建的前后端分离开发项目
+- logistics：微信小程序
+- wxImg: 微信小程序图片
+
 
 #### 启动教程
-查看 jeecg-boot 官网的文档说明：根据步骤安装所需的环境依赖，然后启动项目即可。 </br>
-启动项目分为前端和后端	</br>
-JeecgBoot官方文档：http://jeecg-boot.mydoc.io/ </br>
+- 查看 jeecg-boot 官网的文档说明：根据步骤安装所需的环境依赖，然后启动项目即可。
+- 启动项目分为前端和后端
+- JeecgBoot官方文档：[JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
 
 #### 项目截图
 1. 登录界面
