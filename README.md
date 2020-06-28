@@ -6,6 +6,7 @@
 #### 软件架构
 
 - 软件所用技术：Springboot + Vue 构建的前后端分离开发项目
+- jeecg-boot-master 后台项目
 - logistics：微信小程序
 - wxImg: 微信小程序图片
 
