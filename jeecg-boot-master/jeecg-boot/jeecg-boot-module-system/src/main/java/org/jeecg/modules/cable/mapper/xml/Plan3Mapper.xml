@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.cable.mapper.Plan3Mapper">
+    <select id="pageList" resultType="org.jeecg.modules.cable.entity.Plan3">
+        SELECT * FROM plan3
+        <where>
+            <if test="null != plan3.planType">
+                AND plan3.plan_type = #{plan3.planType}
+            </if>
+            <if test="null != plan3.projectNo and '' != plan3.projectNo">
+                AND plan3.project_no LIKE CONCAT('%',#{plan3.projectNo},'%')
+            </if>
+            <if test="null != plan3.engName and '' != plan3.engName">
+                AND plan3.eng_name LIKE CONCAT('%',#{plan3.engName},'%')
+            </if>
+            <if test="null != plan3.companyName and '' != plan3.companyName">
+                AND plan3.company_name LIKE CONCAT('%',#{plan3.companyName},'%')
+            </if>
+            <if test="null != plan3.completeState">
+                AND plan3.complete_state = #{plan3.completeState}
+            </if>
+        </where>
+      ORDER BY complete_state ASC,update_time DESC,send_orders_state ASC
+    </select>
+    <select id="exportPlan3" resultType="org.jeecg.modules.cable.importPackage.Plan3Im">
+      SELECT
+      plan3.id,
+      CASE
+      plan3.plan_type
+      WHEN 1 THEN
+      '正常'
+      WHEN 2 THEN
+      '抢修'
+      WHEN 3 THEN
+      '临措' ELSE '未知'
+      END AS plan_type,
+      plan3.project_no,
+      plan3.eng_name,
+      plan3.pro_apply_no,
+      plan3.pro_theorder_no,
+      plan3.lineitem_no,
+      plan3.material_code,
+      plan3.material_describe,
+      plan3.measuring_unit,
+      plan3.supplier,
+      plan3.num,
+      plan3.project_manager,
+      plan3.m_phone,
+      plan3.company_name,
+      plan3.field_consignee,
+      plan3.date_of_arrival,
+      plan3.construction_organization,
+      plan3.main_contractor,
+      plan3.c_phone,
+      plan3.address,
+      plan3.feedback,
+      plan3.construction_time,
+      plan3.start_time,
+      plan3.stop_time,
+      plan3.note,
+      plan3.instructions,
+      max( IF ( send_orders.operator_schema = 0, storages.accomplish_time, NULL ) ) AS receiving_time,
+      max( IF ( send_orders.operator_schema = 1, storages.accomplish_time, NULL ) ) AS stock_time,
+      sum( IF ( send_orders.operator_schema = 0, storages.accomplish_num, NULL ) ) AS receiving_num,
+      sum( IF ( send_orders.operator_schema = 1, storages.accomplish_num, NULL ) ) AS stock_num,
+      max( IF ( send_orders.operator_schema = 0, CONCAT( storages.accomplish_time, '_', warehouse.`name` ), NULL ) ) AS warehouse0Name,
+      max( IF ( send_orders.operator_schema = 1, CONCAT( storages.accomplish_time, '_', warehouse.`name` ), NULL ) ) AS warehouse1Name,
+      now( ) AS feedbackTime
+
+      FROM
+      plan3
+      LEFT JOIN send_orders ON send_orders.plan_id = plan3.id
+      AND send_orders.plan_type = 3
+      LEFT JOIN (
+      SELECT
+      receiving_storage.id,
+      receiving_storage.send_orders_id,
+      receiving_storage.material_id,
+      receiving_storage.warehouse_id,
+      receiving_storage.storage_location_id,
+      receiving_storage.accomplish_num,
+      receiving_storage.accomplish_num_unit,
+      receiving_storage.accomplish_weight,
+      receiving_storage.accomplish_weight_unit,
+      receiving_storage.recycling_specifications,
+      receiving_storage.texture,
+      receiving_storage.recycling_situation,
+      receiving_storage.whether_complete,
+      receiving_storage.receipt_no,
+      receiving_storage.incomplete_description,
+      receiving_storage.state,
+      receiving_time AS accomplish_time
+      FROM
+      receiving_storage
+      WHERE
+      state = 1 UNION ALL
+      SELECT
+      deliver_storage.id,
+      deliver_storage.send_orders_id,
+      deliver_storage.material_id,
+      deliver_storage.warehouse_id,
+      deliver_storage.storage_location_id,
+      deliver_storage.accomplish_num,
+      deliver_storage.accomplish_num_unit,
+      deliver_storage.accomplish_weight,
+      deliver_storage.accomplish_weight_unit,
+      deliver_storage.recycling_specifications,
+      deliver_storage.texture,
+      deliver_storage.recycling_situation,
+      deliver_storage.whether_complete,
+      deliver_storage.receipt_no,
+      deliver_storage.incomplete_description,
+      deliver_storage.state,
+      deliver_time AS accomplish_time
+      FROM
+      deliver_storage
+      WHERE
+      state = 1
+      ) storages ON send_orders.id = storages.send_orders_id
+      LEFT JOIN warehouse ON warehouse.id = send_orders.warehouse_id
+      <where>
+        <if test="null != plan3.planType and '' != plan3.planType">
+          AND plan3.plan_type = #{plan3.planType}
+        </if>
+        <if test="null != plan3.projectNo and '' != plan3.projectNo">
+          AND plan3.project_no LIKE CONCAT('%',#{plan3.projectNo},'%')
+        </if>
+        <if test="null != plan3.engName and '' != plan3.engName">
+          AND plan3.eng_name LIKE CONCAT('%',#{plan3.engName},'%')
+        </if>
+        <if test="null != plan3.companyName and '' != plan3.companyName">
+          AND plan3.company_name LIKE CONCAT('%',#{plan3.companyName},'%')
+        </if>
+        <if test="null != plan3.completeState and '' != plan3.completeState">
+          AND plan3.complete_state = #{plan3.completeState}
+        </if>
+      </where>
+      GROUP BY plan3.id
+      ORDER BY plan3.create_time DESC
+    </select>
+</mapper>

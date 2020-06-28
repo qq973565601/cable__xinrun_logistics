@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.cable.mapper.InventoryMapper">
+    <select id="InsurancePageList" resultType="org.jeecg.modules.cable.vo.InventoryListsVo">
+        <!--      SELECT-->
+        <!--      concat( plan.id, '_', plan.type ) AS pid,-->
+        <!--      plan.*,-->
+        <!--			plan_type,-->
+        <!--      m.serial,-->
+        <!--      m.id AS m_id,-->
+        <!--      m.name AS material_name,-->
+        <!--      sum(-->
+        <!--      IF-->
+        <!--      (-->
+        <!--      storages.type = 1,-->
+        <!--      IFNULL( accomplish_num, 0 ),-->
+        <!--      - IFNULL( accomplish_num, 0 )-->
+        <!--      )-->
+        <!--      ) AS quantity_in_stock-->
+        <!--      FROM-->
+        <!--      (-->
+        <!--      SELECT-->
+        <!--      id,-->
+        <!--      project_no,-->
+        <!--      project_name,-->
+        <!--      1 AS type-->
+        <!--      FROM-->
+        <!--      plan1 UNION ALL-->
+        <!--      SELECT-->
+        <!--      id,-->
+        <!--      project_no,-->
+        <!--      NULL AS project_name,-->
+        <!--      2 AS type-->
+        <!--      FROM-->
+        <!--      plan2 UNION ALL-->
+        <!--      SELECT-->
+        <!--      id,-->
+        <!--      project_no,-->
+        <!--      eng_name AS project_name,-->
+        <!--      3 AS type-->
+        <!--      FROM-->
+        <!--      plan3 UNION ALL-->
+        <!--      SELECT-->
+        <!--      id,-->
+        <!--      project_no,-->
+        <!--      eng_name project_name,-->
+        <!--      4 AS type-->
+        <!--      FROM-->
+        <!--      plan4-->
+        <!--      ) plan-->
+        <!--      LEFT JOIN send_orders s ON s.plan_id = plan.id-->
+        <!--      LEFT JOIN (-->
+        <!--      SELECT-->
+        <!--      deliver_storage.id,-->
+        <!--      deliver_storage.send_orders_id,-->
+        <!--      deliver_storage.material_id,-->
+        <!--      deliver_storage.warehouse_id,-->
+        <!--      deliver_storage.storage_location_id,-->
+        <!--      deliver_storage.accomplish_num,-->
+        <!--      deliver_storage.accomplish_num_unit,-->
+        <!--      deliver_storage.accomplish_weight,-->
+        <!--      deliver_storage.accomplish_weight_unit,-->
+        <!--      deliver_storage.recycling_specifications,-->
+        <!--      deliver_storage.texture,-->
+        <!--      deliver_storage.recycling_situation,-->
+        <!--      deliver_storage.whether_complete,-->
+        <!--      deliver_storage.receipt_no,-->
+        <!--      deliver_storage.incomplete_description,-->
+        <!--      deliver_storage.state,-->
+        <!--      1 AS type-->
+        <!--      FROM-->
+        <!--      deliver_storage-->
+        <!--      WHERE-->
+        <!--      state = 1 UNION ALL-->
+        <!--      SELECT-->
+        <!--      receiving_storage.id,-->
+        <!--      receiving_storage.send_orders_id,-->
+        <!--      receiving_storage.material_id,-->
+        <!--      receiving_storage.warehouse_id,-->
+        <!--      receiving_storage.storage_location_id,-->
+        <!--      receiving_storage.accomplish_num,-->
+        <!--      receiving_storage.accomplish_num_unit,-->
+        <!--      receiving_storage.accomplish_weight,-->
+        <!--      receiving_storage.accomplish_weight_unit,-->
+        <!--      receiving_storage.recycling_specifications,-->
+        <!--      receiving_storage.texture,-->
+        <!--      receiving_storage.recycling_situation,-->
+        <!--      receiving_storage.whether_complete,-->
+        <!--      receiving_storage.receipt_no,-->
+        <!--      receiving_storage.incomplete_description,-->
+        <!--      receiving_storage.state,-->
+        <!--      0 AS type-->
+        <!--      FROM-->
+        <!--      receiving_storage-->
+        <!--      WHERE-->
+        <!--      state = 1-->
+        <!--      ) storages ON storages.send_orders_id = s.id-->
+        <!--      AND s.operator_schema = storages.type-->
+        <!--      LEFT JOIN material m ON m.id = storages.material_id-->
+        <!--      WHERE-->
+        <!--      storages.storage_location_id = #{storageLocationId}-->
+        <!--      GROUP BY-->
+        <!--      concat( plan.id, '_', plan.type )-->
+        <!--      HAVING quantity_in_stock &lt;&gt; 0-->
+        SELECT GROUP_CONCAT(inventory.id) as id, inventory.project_no, p.project_name, material.serial, material.`name`
+        AS material_name, sum(inventory.inventory_quantity) as quantityInStock, inventory.backup3 AS unit FROM inventory
+        LEFT JOIN ( SELECT id, project_no, project_name, 1 AS type, CASE plan_type WHEN '配变电' THEN '配变电' WHEN '线路' THEN
+        '线路' WHEN '电缆' THEN '电缆' WHEN '其它' THEN '其它' ELSE '未知' END AS planType FROM plan1 UNION ALL SELECT id,
+        project_no, NULL AS project_name, 2 AS type, '备品' AS planType FROM plan2 UNION ALL SELECT id, project_no,
+        eng_name AS project_name, 3 AS type, CASE plan_type WHEN '正常' THEN '正常' WHEN '抢修' THEN '抢修' WHEN '临措' THEN '临措'
+        ELSE '未知' END AS planType FROM plan3 UNION ALL SELECT id, project_no, eng_name project_name, 4 AS type, '电缆' AS
+        planType FROM plan4 ) p ON p.id = inventory.backup1 AND p.type = inventory.backup2 LEFT JOIN material ON
+        material.id = inventory.material_id where storage_location_id=#{storageLocationId} group by
+        inventory.backup1,inventory.backup2,inventory.backup3,material_id
+    </select>
+    <select id="yikuVoPage" resultType="org.jeecg.modules.cable.vo.YikuVo">
+        SELECT
+        zhuanyi.id,
+        CONCAT( warehouse1.NAME, '-', storage_location1.storage_location_name ) AS name1,
+        CONCAT( warehouse2.NAME, '-', storage_location2.storage_location_name ) AS name2,
+        wcode,
+        wuliao_name,
+        zhuanyi_shuliang AS yksum,
+        raw_material_unit AS unit,
+        zhuanyi.create_time
+        FROM
+        zhuanyi
+        LEFT JOIN storage_location AS storage_location1 ON zhuanyi.storage_location_id1 = storage_location1.id
+        LEFT JOIN storage_location AS storage_location2 ON zhuanyi.storage_location_id2 = storage_location2.id
+        LEFT JOIN warehouse AS warehouse1 ON warehouse1.id = storage_location1.warehouse_id
+        LEFT JOIN warehouse AS warehouse2 ON warehouse2.id = storage_location2.warehouse_id
+        <where>
+            <if test="yikuVo.name1!=null and yikuVo.name1!=''">
+                warehouse1.id = #{yikuVo.name1}
+            </if>
+            <if test="yikuVo.name2!=null and yikuVo.name2!=''">
+                AND zhuanyi.storage_location_id1 = #{yikuVo.name2}
+            </if>
+            <if test="yikuVo.wuliaoName!=null and yikuVo.wuliaoName!=''">
+                and wuliao_name like CONCAT('%',#{yikuVo.wuliaoName},'%')
+            </if>
+        </where>
+        ORDER BY
+        zhuanyi.create_time DESC
+    </select>
+    <delete id="yikuDel">
+        delete from zhuanyi where id = #{id}
+    </delete>
+    <insert id="yikuAdd">
+        insert into zhuanyi(storage_location_id1,storage_location_id2,zhuanyi_shuliang,wuliao_name,wcode,raw_material_unit,create_time)
+        values(#{val.name1},#{val.name2},#{val.yksum},#{val.wuliaoName},#{val.wcode},#{val.unit},#{val.createTime})
+    </insert>
+</mapper>

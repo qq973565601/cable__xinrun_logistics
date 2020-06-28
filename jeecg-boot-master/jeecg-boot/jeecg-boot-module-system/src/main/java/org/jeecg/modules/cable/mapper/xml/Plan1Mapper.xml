@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.cable.mapper.Plan1Mapper">
+
+    <select id="pageList" resultType="org.jeecg.modules.cable.entity.Plan1">
+        SELECT * FROM plan1
+        <where>
+            <if test="plan1Vo.planType!=null">
+                AND plan_type = #{plan1Vo.planType}
+            </if>
+            <if test="plan1Vo.itemSlip!=null">
+                AND item_slip LIKE concat('%',#{plan1Vo.itemSlip},'%')
+            </if>
+            <if test="plan1Vo.itemSlipType!=null">
+                AND item_slip_type LIKE concat('%',#{plan1Vo.itemSlipType},'%')
+            </if>
+            <if test="plan1Vo.projectNo!=null">
+                AND project_no LIKE concat('%',#{plan1Vo.projectNo},'%')
+            </if>
+            <if test="plan1Vo.completeState!=null">
+                AND complete_state = #{plan1Vo.completeState}
+            </if>
+            <if test="plan1Vo.dateBegin!=null">
+                AND plans_complete_time &gt;= #{plan1Vo.dateBegin}
+            </if>
+            <if test="plan1Vo.dateEnd!=null">
+                AND plans_complete_time &lt;= #{plan1Vo.dateEnd}
+            </if>
+        </where>
+        ORDER BY complete_state ASC,update_time DESC,send_orders_state ASC
+    </select>
+
+    <select id="StorageLocationListVoPage" resultType="org.jeecg.modules.cable.vo.StorageLocationListVo">
+         SELECT
+            s.storage_location_name,
+            COUNT(1) AS sum
+        FROM
+            storage_location AS s
+            LEFT join inventory As i on i.warehouse_id=s.warehouse_id
+            LEFT JOIN plan1 AS p ON p.project_no = i.project_no
+         where i.project_no=#{storageLocationListVo.projectNo}
+        GROUP BY
+            s.warehouse_id
+    </select>
+
+    <!-- 导出 plan1 -->
+    <select id="exportPlan1" resultType="org.jeecg.modules.cable.importPackage.Plan1Im">
+        SELECT
+        plan1.id,
+        plan1.item_slip_no,
+        plan1.item_slip,
+        plan1.item_slip_type,
+        plan1.business_type,
+        plan1.the_factory,
+        plan1.factory_text,
+        plan1.disposal_way,
+        plan1.the_location,
+        plan1.the_location_text,
+        plan1.project_no,
+        plan1.project_name,
+        plan1.demolition_plan,
+        plan1.engineering_address,
+        plan1.plans_complete_time,
+        plan1.raw_material_code,
+        plan1.raw_material_text,
+        plan1.raw_material_unit,
+        plan1.waste_material_code,
+        plan1.waste_material_text,
+        plan1.waste_material_unit,
+        plan1.num_receipts,
+        plan1.already_deliver_storage,
+        plan1.already_receiving_storage,
+        plan1.deliver_num,
+        plan1.deliver_time,
+        plan1.deliver_voucher,
+        plan1.asset_no,
+        plan1.asset_text,
+        plan1.real_id,
+        plan1.equipment_deveui,
+        plan1.object_instruct,
+        plan1.manufacturing,
+        plan1.factory_no,
+        plan1.waste_val,
+        plan1.waste_reason,
+        plan1.delete_logo,
+        plan1.design_num,
+        plan1.the_contact,
+        plan1.delivery_create_by,
+        plan1.delivery_create_time,
+        plan1.delivery_receive_time,
+        plan1.project_contact,
+        plan1.project_phone,
+        plan1.the_phone,
+        plan1.warehouse_contact,
+        plan1.warehouse_phone,
+        plan1.system_no,
+        plan1.note_information,
+        plan1.project_no_remarks,
+        plan1.rate_formation,
+        CASE
+        plan1.plan_type
+        WHEN 0 THEN
+        '配变电'
+        WHEN 1 THEN
+        '线路'
+        WHEN 2 THEN
+        '电缆1'
+        WHEN 3 THEN
+        '其它' ELSE '未知'
+        END AS project_type,
+        max( IF ( send_orders.operator_schema = 0, storages.accomplish_time, NULL ) ) AS receiving_time,
+        max( IF ( send_orders.operator_schema = 1, storages.accomplish_time, NULL ) ) AS stock_time,
+        sum( IF ( send_orders.operator_schema = 0, storages.accomplish_num, NULL ) ) AS receiving_num,
+        sum( IF ( send_orders.operator_schema = 1, storages.accomplish_num, NULL ) ) AS stock_num,
+        max( IF ( send_orders.operator_schema = 0, CONCAT( storages.accomplish_time, '_', warehouse.`name` ), NULL ) )
+        AS
+        inventory_point,
+        max( IF ( send_orders.operator_schema = 1, CONCAT( storages.accomplish_time, '_', warehouse.`name` ), NULL ) )
+        AS
+        terminal_bin
+        FROM
+        plan1
+        LEFT JOIN send_orders ON send_orders.plan_id = plan1.id
+        AND send_orders.plan_type = 1
+        LEFT JOIN (
+        SELECT
+        receiving_storage.id,
+        receiving_storage.send_orders_id,
+        receiving_storage.material_id,
+        receiving_storage.warehouse_id,
+        receiving_storage.storage_location_id,
+        receiving_storage.accomplish_num,
+        receiving_storage.accomplish_num_unit,
+        receiving_storage.accomplish_weight,
+        receiving_storage.accomplish_weight_unit,
+        receiving_storage.recycling_specifications,
+        receiving_storage.texture,
+        receiving_storage.recycling_situation,
+        receiving_storage.whether_complete,
+        receiving_storage.receipt_no,
+        receiving_storage.incomplete_description,
+        receiving_storage.state,
+        receiving_time AS accomplish_time
+        FROM
+        receiving_storage
+        WHERE
+        state = 1 UNION ALL
+        SELECT
+        deliver_storage.id,
+        deliver_storage.send_orders_id,
+        deliver_storage.material_id,
+        deliver_storage.warehouse_id,
+        deliver_storage.storage_location_id,
+        deliver_storage.accomplish_num,
+        deliver_storage.accomplish_num_unit,
+        deliver_storage.accomplish_weight,
+        deliver_storage.accomplish_weight_unit,
+        deliver_storage.recycling_specifications,
+        deliver_storage.texture,
+        deliver_storage.recycling_situation,
+        deliver_storage.whether_complete,
+        deliver_storage.receipt_no,
+        deliver_storage.incomplete_description,
+        deliver_storage.state,
+        deliver_time AS accomplish_time
+        FROM
+        deliver_storage
+        WHERE
+        state = 1
+        ) storages ON send_orders.id = storages.send_orders_id
+        LEFT JOIN warehouse ON warehouse.id = send_orders.warehouse_id
+        <where>
+            <if test="null != plan1Im.planType and '' != plan1Im.planType">
+                AND plan1.plan_type = #{plan1Im.planType}
+            </if>
+            <if test="null != plan1Im.itemSlip and '' != plan1Im.itemSlip">
+                AND storages.item_slip LIKE CONCAT('%',#{plan1Im.itemSlip},'%')
+            </if>
+            <if test="null != plan1Im.itemSlipType and '' != plan1Im.itemSlipType">
+                AND storages.item_slip_type LIKE CONCAT('%',#{plan1Im.itemSlipType},'%')
+            </if>
+            <if test="null != plan1Im.projectType and '' != plan1Im.projectType">
+                AND storages.project_type LIKE CONCAT('%',#{plan1Im.projectType},'%')
+            </if>
+            <if test="null != plan1Im.projectNo and '' != plan1Im.projectNo">
+                AND storages.project_no LIKE CONCAT('%',#{plan1Im.projectNo},'%')
+            </if>
+            <if test="null != plan1Im.completeState and '' != plan1Im.completeState">
+                AND storages.complete_state = #{plan1Im.completeState}
+            </if>
+        </where>
+        GROUP BY
+        plan1.id
+    </select>
+
+    <select id="selectSettleAccounts" resultType="org.jeecg.modules.cable.vo.SettleAccountsVo">
+        SELECT * FROM (
+        SELECT
+        id AS plan_id,
+        1 AS plan_name,
+        plan_type,
+        project_no,
+        project_name,
+        the_contact AS contact,
+        the_phone AS phone,
+        engineering_address AS address,
+        asset_no,
+        complete_state,
+        backup1
+        FROM
+        plan1
+        WHERE
+        complete_state = 1 UNION ALL
+        SELECT
+        id AS plan_id,
+        2 AS plan_name,
+        '备品' AS plan_type,
+        project_no,
+        equipment_name AS project_name,
+        equipment_owners AS contact,
+        '' AS phone,
+        address,
+        asset_no,
+        complete_state,
+        backup1
+        FROM
+        plan2
+        WHERE
+        complete_state = 1 UNION ALL
+        SELECT
+        id AS plan_id,
+        2 AS plan_name,
+        plan_type,
+        project_no,
+        eng_name AS project_name,
+        field_consignee AS contact,
+        c_phone AS phone,
+        address,
+        '' AS asset_no,
+        complete_state,
+        backup1
+        FROM
+        plan3
+        WHERE
+        complete_state = 1 UNION ALL
+        SELECT
+        id AS plan_id,
+        3 AS plan_name,
+        '电缆2' plan_type,
+        project_no,
+        eng_name AS project_name,
+        team_contact AS contact,
+        '' AS phone,
+        sampling_addres AS address,
+        '' AS asset_no,
+        complete_state,
+        backup1
+        FROM
+        plan4
+        WHERE
+        complete_state = 1
+        ) AS se
+        <where>
+            <if test="backup1!=null">
+                AND backup1 = #{backup1}
+            </if>
+            <if test="planType!=null">
+                AND plan_type = #{planType}
+            </if>
+            <if test="projectNo!=null">
+                AND project_no LIKE CONCAT('%',#{projectNo},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        p.plan_type AS p_plan_type,
+        so.plan_type,
+        p.project_name,
+        p.the_contact AS linkman,
+        p.the_phone AS phone,
+        p.engineering_address AS address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan1 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 1
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        '备品' AS p_plan_type,
+        so.plan_type,
+        p.equipment_name AS project_name,
+        p.equipment_owners AS linkman,
+        '' AS phone,
+        p.address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan2 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 2
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        p.plan_type AS p_plan_type,
+        so.plan_type,
+        p.eng_name AS project_name,
+        p.field_consignee AS linkman,
+        p.c_phone AS phone,
+        p.address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan3 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 3
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        '电缆2' AS p_plan_type,
+        so.plan_type,
+        p.eng_name AS project_name,
+        p.team_contact AS linkman,
+        '' AS phone,
+        p.sampling_addres AS address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan4 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 4
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id
+        ) AS p
+        <where>
+            <if test="null != planId">
+                AND p.plan_id = #{planId}
+            </if>
+            <if test="null != planName">
+                AND p.plan_type = #{planName}
+            </if>
+        </where>
+    </select>
+</mapper>
