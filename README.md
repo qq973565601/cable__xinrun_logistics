@@ -13,4 +13,4 @@
 JeecgBoot官方文档：http://jeecg-boot.mydoc.io/
 
 #### 项目截图
-[C:\Users\Administrator\Pictures\img\1.jpg]	 登录截图
+![登录截图](https://images.gitee.com/uploads/images/2020/0628/192351_69d1a279_5459645.jpeg "1.jpg")
