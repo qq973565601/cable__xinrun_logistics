@@ -5,6 +5,7 @@
 
 #### 软件架构
 - jeecg-boot-master 后台项目
+- cable.sql 后台管理系统数据库脚本
 - logistics：微信小程序
 - wxImg: 微信小程序图片
 
