@@ -11,7 +11,9 @@
       <a-col>
         <!-- 操作按钮 -->
         <div v-if="actionButton" class="action-button">
-          <a-button type="primary" icon="plus" @click="handleClickAdd" :disabled="disabled">新增</a-button>
+          <template v-if="addButton">
+            <a-button type="primary" icon="plus" @click="handleClickAdd" :disabled="disabled">新增</a-button>
+          </template>
           <span class="gap"></span>
           <template v-if="selectedRowIds.length>0">
             <a-popconfirm
@@ -792,6 +794,11 @@
         type: Boolean,
         default: false
       },
+      // 是否显示操作按钮
+      addButton: {
+        type: Boolean,
+        default: false
+      },
       // 是否显示行号
       rowNumber: {
         type: Boolean,
@@ -1196,7 +1203,7 @@
           //   dataId = this.caseId + dataId
           // }
 
-
+          dataId += "";
           let row = {id: dataId}
           let value = {id: dataId}
           let disabled = false

@@ -50,7 +50,7 @@
 
           </template>
         </a-row>
-          <a-row :gutter="12">
+        <a-row :gutter="12">
           <a-col :md="7" :sm="10">
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -546,11 +546,11 @@
        */
       completePlan() {
         var ids = this.selectedRowKeys
-        if(ids.length == 0)
+        if (ids.length == 0)
           return this.$message.warning('请选择合并派单项目!')
         console.log("点击了合并完单", ids)
         //TODO 打开合并完单页面
-        this.$refs.CompletePlan1Model.completePlanModelShow(ids,1)
+        this.$refs.CompletePlan1Model.completePlanModelShow(ids, 1)
         this.$refs.CompletePlan1Model.title = '合并完单'
       },
       /**
@@ -558,12 +558,12 @@
        */
       mergePlan() {
         let ids = this.selectedRowKeys
-        if(ids.length == 0)
+        if (ids.length == 0)
           return this.$message.warning('请选择合并派单项目!')
 
         console.log("点击了合并派单", ids)
         //TODO 打开合并派单页面
-        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids,1)
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids, 1)
         this.$refs.MergePlanModelPlan1.title = '合并派单'
       },
       /* 派单操作 */

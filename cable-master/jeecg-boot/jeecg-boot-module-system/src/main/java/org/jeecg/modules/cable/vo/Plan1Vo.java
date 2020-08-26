@@ -15,10 +15,15 @@ import java.util.Date;
  */
 @Data
 public class Plan1Vo extends Plan1 implements Serializable {
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateBegin;
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateEnd;
+
+    /**
+     * 可出库数量[批量完单操作时使用此属性] ----2020/8/26 bai
+     */
+    private int inventoryQuantity;
 }

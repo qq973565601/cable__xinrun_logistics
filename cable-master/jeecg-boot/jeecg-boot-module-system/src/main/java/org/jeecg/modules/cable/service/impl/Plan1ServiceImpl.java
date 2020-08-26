@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,61 +29,71 @@ import java.util.List;
  */
 @Service
 public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements IPlan1Service {
-  @Autowired
-  private ISysDictItemService sysDictItemService;
+    @Autowired
+    private ISysDictItemService sysDictItemService;
 
-  @Override
-  public IPage<Plan1> pageList(Plan1Vo plan1Vo, Page<Plan1> page) {
-    List<Plan1> list = baseMapper.pageList(plan1Vo, page);
-    return page.setRecords(list);
-  }
-
-  @Override
-  public IPage<Plan1> idsqueryPageList(List<String> ids, Page<Plan1> page) {
-    //TODO 构造条件，根据id的集合做条件查询
-    List<Plan1> list = baseMapper.selectBatchIds(ids);
-    return page.setRecords(list);
-  }
-
-  @Override
-  public IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page) {
-    List<StorageLocationListVo> list = baseMapper.StorageLocationListVoPage(storageLocationListVo, page);
-    return page.setRecords(list);
-  }
-
-  @Override
-  public List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain) {
-    List<Plan1Im> list = baseMapper.exportPlan1(plan1Im);
-    for (Plan1Im p : list) {
-      // 单位之间的转换
-      List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
-      for (SysDictItem dictItem : dictItems) {
-        // 导出时判断单位是否存在，存在则进行单位转换
-        if (StrUtil.isNotBlank(p.getRawMaterialUnit())) {
-          if (p.getRawMaterialUnit().equals(dictItem.getItemValue())) {
-            p.setRawMaterialUnit(dictItem.getItemText());
-          }
-        }
-        if (StrUtil.isNotBlank(p.getWasteMaterialUnit())) {
-          if (p.getWasteMaterialUnit().equals(dictItem.getItemValue())) {
-            p.setWasteMaterialUnit(dictItem.getItemText());
-          }
-        }
-      }
-      // 设置反馈说明
-      p.setExplain(explain);
+    @Override
+    public List<Plan1Vo> getPlan1ReceivingStorageList(List<Serializable> ids) {
+        return baseMapper.getPlan1ReceivingStorageList(ids);
     }
-    return list;
-  }
 
-  @Override
-  public IPage<SettleAccountsVo> selectSettleAccounts(String backup1,String planType,String projectNo, Page<SettleAccountsVo> page) {
-    List<SettleAccountsVo> list = baseMapper.selectSettleAccounts(backup1,planType,projectNo,page);
-    return page.setRecords(list);
-  }
+    @Override
+    public List<Plan1> getPlan1DeliverStorage(List<Serializable> ids) {
+        return baseMapper.getPlan1DeliverStorage(ids);
+    }
 
-  @Override
-  public IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(Integer planId, Integer planName, Page<SettleAccountsDetailsVo> page) {
-    return page.setRecords(baseMapper.selectSettleAccountsDetails(planId, planName, page));
-  }
+    @Override
+    public IPage<Plan1> pageList(Plan1Vo plan1Vo, Page<Plan1> page) {
+        List<Plan1> list = baseMapper.pageList(plan1Vo, page);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public IPage<Plan1> idsqueryPageList(List<String> ids, Page<Plan1> page) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<Plan1> list = baseMapper.selectBatchIds(ids);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page) {
+        List<StorageLocationListVo> list = baseMapper.StorageLocationListVoPage(storageLocationListVo, page);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain) {
+        List<Plan1Im> list = baseMapper.exportPlan1(plan1Im);
+        for (Plan1Im p : list) {
+            // 单位之间的转换
+            List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
+            for (SysDictItem dictItem : dictItems) {
+                // 导出时判断单位是否存在，存在则进行单位转换
+                if (StrUtil.isNotBlank(p.getRawMaterialUnit())) {
+                    if (p.getRawMaterialUnit().equals(dictItem.getItemValue())) {
+                        p.setRawMaterialUnit(dictItem.getItemText());
+                    }
+                }
+                if (StrUtil.isNotBlank(p.getWasteMaterialUnit())) {
+                    if (p.getWasteMaterialUnit().equals(dictItem.getItemValue())) {
+                        p.setWasteMaterialUnit(dictItem.getItemText());
+                    }
+                }
+            }
+            // 设置反馈说明
+            p.setExplain(explain);
+        }
+        return list;
+    }
+
+    @Override
+    public IPage<SettleAccountsVo> selectSettleAccounts(String backup1, String planType, String projectNo, Page<SettleAccountsVo> page) {
+        List<SettleAccountsVo> list = baseMapper.selectSettleAccounts(backup1, planType, projectNo, page);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(Integer planId, Integer planName, Page<SettleAccountsDetailsVo> page) {
+        return page.setRecords(baseMapper.selectSettleAccountsDetails(planId, planName, page));
+    }
 }

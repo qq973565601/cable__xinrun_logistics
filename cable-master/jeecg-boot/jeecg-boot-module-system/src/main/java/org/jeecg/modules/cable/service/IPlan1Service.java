@@ -10,6 +10,7 @@ import org.jeecg.modules.cable.vo.SettleAccountsDetailsVo;
 import org.jeecg.modules.cable.vo.SettleAccountsVo;
 import org.jeecg.modules.cable.vo.StorageLocationListVo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -19,46 +20,62 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface IPlan1Service extends IService<Plan1> {
+    /**
+     * 查询计划1批量出库完单的数据
+     * 2020/8/26 bai
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划1批量出库完单的数据
+     */
+    List<Plan1Vo> getPlan1ReceivingStorageList(List<Serializable> ids);
 
-  /**
-   * 根据ids集合条件查询
-   * 条件分页查询计划1
-   *
-   * @param plan1Vo
-   * @Author Xm
-   * @Date 2020/5/27 15:09
-   */
-  IPage<Plan1> pageList(Plan1Vo plan1Vo, Page<Plan1> page);
+    /**
+     * 查询计划1批量入库完单的数据
+     * 2020/8/26 bai
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划1批量入库完单的数据
+     */
+    List<Plan1> getPlan1DeliverStorage(List<Serializable> ids);
 
-  /**
-   * 根据ids集合条件查询
-   *
-   * @param ids
-   *  liu
-   * @Date 2020/7/21
-   */
-  IPage<Plan1> idsqueryPageList(List<String> ids, Page<Plan1> page);
+    /**
+     * 根据ids集合条件查询
+     * 条件分页查询计划1
+     *
+     * @param plan1Vo
+     * @Author Xm
+     * @Date 2020/5/27 15:09
+     */
+    IPage<Plan1> pageList(Plan1Vo plan1Vo, Page<Plan1> page);
 
-  /**
-   * 查看库位
-   *
-   * @param storageLocationListVo 用来保存vo
-   * @param page                  分页条件
-   * @Author Xm
-   * @Date 2020/5/15 11:26
-   */
-  IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page);
+    /**
+     * 根据ids集合条件查询
+     *
+     * @param ids liu
+     * @Date 2020/7/21
+     */
+    IPage<Plan1> idsqueryPageList(List<String> ids, Page<Plan1> page);
 
-  /**
-   * 导出 plan1
-   * bai
-   * 2020/5/27
-   *
-   * @return
-   */
-  List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain);
+    /**
+     * 查看库位
+     *
+     * @param storageLocationListVo 用来保存vo
+     * @param page                  分页条件
+     * @Author Xm
+     * @Date 2020/5/15 11:26
+     */
+    IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page);
 
-  IPage<SettleAccountsVo> selectSettleAccounts(String backup1,String planType,String projectNo,Page<SettleAccountsVo> page);
+    /**
+     * 导出 plan1
+     * bai
+     * 2020/5/27
+     *
+     * @return
+     */
+    List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain);
 
-  IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(Integer planId, Integer planName, Page<SettleAccountsDetailsVo> page);
+    IPage<SettleAccountsVo> selectSettleAccounts(String backup1, String planType, String projectNo, Page<SettleAccountsVo> page);
+
+    IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(Integer planId, Integer planName, Page<SettleAccountsDetailsVo> page);
 }

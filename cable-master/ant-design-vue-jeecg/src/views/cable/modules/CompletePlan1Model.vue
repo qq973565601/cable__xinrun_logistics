@@ -1,135 +1,47 @@
 <template>
   <a-modal
     :title="title"
-    :width="1200"
+    :width="1500"
     :visible="visible"
     :maskClosable="false"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel">
-
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form"
-              :label-col="{ span: 8 }"
-              :wrapper-col="{ span: 14 }">
-        <!-- 主表单区域 -->
-
+      <!-- 父表单 -->
+      <a-form :form="form" :label-col="{ span: 8 }" :wrapper-col="{ span: 14 }">
         <a-row :gutter="24">
           <a-col :md="6" :sm="12">
-            <a-form-item label="派单类型">
-              <a-select v-decorator="['operatorSchema',validatorRules.operatorSchema]" placeholder="请选择派单类型" @change="changeOperatorSchema">
-                  <a-select-option value="0">出库</a-select-option>
-                  <a-select-option value="1">入库</a-select-option>
+            <a-form-item label="完单类型">
+              <a-select v-decorator="['operatorSchema', validatorRules.operatorSchema]" placeholder="请选择派单类型"
+                        @change="switchOperatorSchema">
+                <a-select-option value="0">出库</a-select-option>
+                <a-select-option value="1">入库</a-select-option>
               </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="12">
-            <a-form-item label="自家仓库">
-              <j-dict-select-tag v-decorator="['warehouseId',validatorRules.warehouseId]" :triggerChange="true" @change="types"
-                                 placeholder="请选择自家仓库" dictCode="warehouse,name,id,type='1'"/>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="6" :sm="12" v-if="this.sendOrderType">
-            <a-form-item label="自家库位">
-              <a-select v-decorator="['storageLocationId',validatorRules.storageLocationId]" id="sl"
-                        placeholder="请选择自家库位">
-                <template v-for="storageLocation in storageLocations">
-                  <a-select-option v-bind:value="storageLocation.id">{{storageLocation.storageLocationName}}
-                  </a-select-option>
-                </template>
-              </a-select>
-              <!--<a-select v-decorator="['storageLocationId',validatorRules.storageLocationId]" id="sl"
-                        placeholder="请选择自家库位">
-                <template v-for="storageLocation in storageLocations">
-                  <a-select-option v-bind:value="storageLocation.id">{{storageLocation.storageLocationName}}
-                  </a-select-option>
-                </template>
-              </a-select>-->
-            </a-form-item>
-          </a-col>
-          <!-- 出库才选择终点仓库,入库不需要选择终点仓库[根据 this.sendOrderType 做判断是否显示] -->
-          <a-col :md="6" :sm="12" v-if="this.sendOrderType">
-            <a-form-item label="终点仓库">
-
-              <j-dict-select-tag v-decorator="['endWarehouseId',validatorRules.endWarehouseId]" :triggerChange="true"
-                                 placeholder="请选择终点仓库" dictCode="warehouse,name,id"/>
-
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="12">
             <a-form-item label="任务日期">
-              <j-date v-decorator="['taskTime',validatorRules.taskTime]" :showTime="true" date-format="YYYY-MM-DD"
+              <j-date v-decorator="['taskTime', validatorRules.taskTime]" :showTime="true" date-format="YYYY-MM-DD"
                       placeholder="请选择任务时间">
               </j-date>
             </a-form-item>
           </a-col>
-
-
-          <a-col :span="12">
-            <a-form-item label="员工">
-              <a-select
-                mode="multiple"
-                placeholder="请选择员工"
-                optionFilterProp="children"
-                v-decorator="['realname',validatorRules.realname]"
-                :getPopupContainer="(target) => target.parentNode">
-                <a-select-option v-for="(role,roleindex) in users" :key="roleindex.toString()" :value="role.id">
-                  {{ role.realname }}
-                </a-select-option>
-              </a-select>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="回单">
+              <j-upload v-decorator="['receipt_photos', validatorRules.receipt_photos]" text="点击上传"></j-upload>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="交接单号">
+              <a-input v-decorator="['']" placeholder="请输入交接单号"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
-
-        <!--<a-row :gutter="24">
-          &lt;!&ndash;<a-row :gutter="24">
-            <a-col :span="12">
-              <a-form-item label="员工">
-                <a-select
-                  mode="multiple"
-                  placeholder="请选择员工"
-                  optionFilterProp="children"
-                  v-decorator="['realname',validatorRules.realname]"
-                  :getPopupContainer="(target) => target.parentNode">
-                  <a-select-option v-for="(role,roleindex) in users" :key="roleindex.toString()" :value="role.id">
-                    {{ role.realname }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item label="车辆">
-                <a-select
-                  mode="multiple"
-                  placeholder="请选择车辆"
-                  optionFilterProp="children"
-                  v-decorator="['license',validatorRules.license]"
-                  :getPopupContainer="(target) => target.parentNode">
-                  <a-select-option v-for="(role,roleindex) in vehicles" :key="roleindex.toString()" :value="role.license">
-                    {{ role.license }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </a-row>&ndash;&gt;
-
-          <a-col :span="12">
-            <a-button @click="handleOk" type="primary" style="width: 100px;float: right;margin-right: 230px">
-              <template v-if="!model.id">派单</template>
-              <template v-if="model.id">保存</template>
-            </a-button>
-            <a-button @click="queryCler" type="primary" style="width: 100px;float:right;margin-right: 30px;">
-              清空
-            </a-button>
-          </a-col>
-        </a-row>-->
       </a-form>
-
-      <!-- 子表单区域 -->
+      <!-- 子表单 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="派单信息" key="1" :forceRender="true">
-
+        <a-tab-pane tab="出库完单信息" key="1" :forceRender="true">
           <j-editable-table
             ref="editableTable1"
             :loading="table1.loading"
@@ -140,12 +52,9 @@
             :rowNumber="false"
             :alwaysEdit="false"
             :rowSelection="true"
-            :actionButton="false"/>
-
+            :actionButton="true"/>
         </a-tab-pane>
-
-        <a-tab-pane tab="车辆人员信息" key="2" :forceRender="true">
-
+        <a-tab-pane tab="入库完单信息" key="2" :forceRender="true">
           <j-editable-table
             ref="editableTable2"
             :loading="table2.loading"
@@ -156,31 +65,30 @@
             :rowNumber="false"
             :rowSelection="true"
             :actionButton="true"/>
-
-          <span slot="factoryText" slot-scope="text">
-            <j-ellipsis :value="text" :length="10"/>
-          </span>
-
         </a-tab-pane>
       </a-tabs>
-
     </a-spin>
   </a-modal>
 </template>
 
 <script>
-
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import JEditableTable from '@/components/jeecg/JEditableTable'
-  import { FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import { httpAction, getAction } from '@/api/manage'
+  import {FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables} from '@/utils/JEditableTableUtil'
+  import {httpAction, getAction} from '@/api/manage'
   import JDate from '@/components/jeecg/JDate'
   import pick from 'lodash.pick'
-  import moment from 'moment'
+  import JUpload from '@/components/jeecg/JUpload'
+  import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
 
   export default {
     name: 'CompletePlan1Model',
+    mixins: [JeecgListMixin],
     components: {
-      JDate, JEditableTable
+      JDate,
+      JEditableTable,
+      JUpload,
+      JSearchSelectTag
     },
     data() {
       return {
@@ -188,183 +96,205 @@
         visible: false,
         form: this.$form.createForm(this),
         confirmLoading: false,
-        // 派单类型
-        sendOrderType: false,
-        storageLocations:[],
+        storageLocations: [],
         model: {},
         validatorRules: {
-          operatorSchema: {rules: [{required: true, message: '请选择派单类型'}]},
-          warehouseId: {rules: [{required: true, message: '请选择目标仓库'}]},
-          endWarehouseId: {rules: [{required: true, message: '请选择终点仓库'}]},
-          storageLocationId: {rules: [{required: true, message: '请选择库位'}]},
-          taskTime: {rules: [{required: true, message: '请选择任务时间'}]}
+          operatorSchema: {rules: [{required: true, message: '请选择完单类型'}]},
+          taskTime: {rules: [{required: true, message: '请选择任务时间'}]},
+          receipt_photos: {rules: [{required: true, message: '请上传回单图片'}]},
         },
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 6 }
+          xs: {span: 24},
+          sm: {span: 6}
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 24 - 6 }
+          xs: {span: 24},
+          sm: {span: 24 - 6}
         },
         activeKey: '1',
-        // 客户信息
+        // 出库完单信息
         table1: {
           loading: false,
           dataSource: [],
           columns: [
             {
-              title: '工程账号',
-              key: 'projectNo',
+              title: '项目名称',
+              key: 'projectName',
+              width: '20%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '物料描述',
+              key: 'rawMaterialText',
+              width: '16%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '资产编号',
+              key: 'assetNo',
               width: '15%',
               type: FormTypes.normal,
-              defaultValue: 'A1002',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              placeholder: '请输入${title}'
             },
             {
-              title: '工程名称',
+              title: '可出库数量',
+              key: 'inventoryQuantity',
+              width: '8%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '完单数量',
+              key: 'accomplishNum',
+              width: '10%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '单位',
+              key: 'unit',
+              width: '10%',
+              type: FormTypes.select,
+              dictCode: "unit",
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '自家仓库',
+              key: 'warehouseId',
+              width: '15%',
+              type: FormTypes.select,
+              dictCode: "warehouse,name,id,type='1'",
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationId',
+              width: '15%',
+              type: FormTypes.select,
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '终点仓库',
+              key: 'endWarehouseId',
+              width: '15%',
+              type: FormTypes.select,
+              dictCode: "warehouse,name,id",
+              placeholder: '请选择${title}'
+            }
+          ]
+        },
+        // 入库完单信息
+        table2: {
+          loading: false,
+          dataSource: [],
+          columns: [
+            {
+              title: '项目名称',
               key: 'projectName',
-              width: '18%',
+              width: '20%',
               type: FormTypes.normal,
-              defaultValue: 'A一零零二',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }],
-              scopedSlots: { customRender: 'factoryText' },
+              placeholder: '请输入${title}'
             },
             {
-              title: '物料名称',
-              key: 'wasteMaterialText',
-              width: '18%',
+              title: '物料描述',
+              key: 'rawMaterialText',
+              width: '16%',
               type: FormTypes.normal,
-              defaultValue: 'A02',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '资产编号',
+              key: 'assetNo',
+              width: '15%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
             },
             {
               title: '物料数量',
               key: 'numReceipts',
               width: '8%',
               type: FormTypes.inputNumber,
-              defaultValue: '',
-              placeholder: '${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              placeholder: '请输入${title}'
             },
             {
-              title: '地址',
-              key: 'engineeringAddress',
-              width: '15%',
-              type: FormTypes.normal,
-              defaultValue: '长江南路电力仓库',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              title: '完单数量',
+              key: 'accomplishNum',
+              width: '10%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}'
             },
             {
-              title: '联系人',
-              key: 'projectContact',
-              width: '8%',
-              type: FormTypes.normal,
-              defaultValue: '李四',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '联系电话',
-              key: 'projectPhone',
-              width: '15%',
-              type: FormTypes.normal,
-              defaultValue: '10086',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            /*{
-              title: '性别',
-              key: 'sex',
-              width: '18%',
+              title: '单位',
+              key: 'unit',
+              width: '10%',
               type: FormTypes.select,
-              options: [ // 下拉选项
-                { title: '男', value: '1' },
-                { title: '女', value: '2' }
-              ],
-              defaultValue: '',
+              dictCode: "unit",
               placeholder: '请选择${title}'
             },
             {
-              title: '身份证号',
-              key: 'idcard',
+              title: '目标仓库',
+              key: 'warehouseId',
               width: '15%',
-              type: FormTypes.input,
-              defaultValue: '',
-              placeholder: '请输入${title}',
-              validateRules: [{
-                pattern: '^\\d{6}(18|19|20)?\\d{2}(0[1-9]|1[012])(0[1-9]|[12]\\d|3[01])\\d{3}(\\d|[xX])$',
-                message: '${title}格式不正确'
-              }]
+              type: FormTypes.select,
+              dictCode: "warehouse,name,id",
+              placeholder: '请选择${title}'
             },
             {
-              title: '手机号',
-              key: 'telphone',
+              title: '库位',
+              key: 'storageLocationId',
               width: '15%',
-              type: FormTypes.input,
-              defaultValue: '',
-              placeholder: '请输入${title}',
-              validateRules: [{
-                pattern: '^1(3|4|5|7|8)\\d{9}$',
-                message: '${title}格式不正确'
-              }]
-            }*/
-          ]
-        },
-        // 车辆人员信息
-        table2: {
-          loading: false,
-          dataSource: [],
-          columns: [
-            {
-              title: '车辆',
-              key: 'license',
-              width: '20%',
-              type: FormTypes.sel_search,
-              options:this.vehicles,
-              dictCode:"vehicle,license,license,state='0'",
-              defaultValue: '',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              type: FormTypes.select,
+              placeholder: '请选择${title}'
             },
             {
-              title: '数量',
-              key: 'number',
-              width: '10%',
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '15%',
               type: FormTypes.inputNumber,
-              defaultValue: '1',
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              placeholder: '请输入${title}'
             },
             {
-              title: '员工',
-              key: 'realname',
-              width: '20%',
-              type: FormTypes.sel_search,
-              options:this.vehicles,
-              dictCode:"sys_user,realname,id,status='1'",
-              defaultValue: '',
+              title: '是否异常',
+              key: 'sceneSituation',
+              width: '15%',
+              type: FormTypes.select,
               placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              options: [ // 下拉选项
+                {title: '正常', value: '0'},
+                {title: '异常', value: '1'}
+              ],
+            },
+            {
+              title: '说明',
+              key: 'annotation',
+              width: '15%',
+              type: FormTypes.input,
+              placeholder: '请输入${title}'
             },
           ]
         },
         url: {
           add: '/test/jeecgOrderMain/add',
           edit: '/test/jeecgOrderMain/edit',
-          orderCustomerList: '/cable/plan1/idslist',
-          orderTicketList: '/test/jeecgOrderMain/queryOrderTicketListByMainId'
+          getPlan1ReceivingStorageList: '/cable/plan1/getPlan1ReceivingStorageList',
+          getPlan1DeliverStorage: '/cable/plan1/getPlan1DeliverStorage'
         }
       }
     },
-    created() {
-      this.vehiclesList()
-    },
     methods: {
+      /**
+       * 完单类型切换不同 tab 卡片操作[0:出库\1:入库]
+       */
+      switchOperatorSchema(type) {
+        console.log("完单模式[0:出库\\1:入库]>>>>>>>>>>>", type)
+        if (type == 0) {
+          this.activeKey = '1' // 通过切换 activeKey 的值来达到切换 tab 卡片的操作
+        } else {
+          this.activeKey = '2' // 通过切换 activeKey 的值来达到切换 tab 卡片的操作
+        }
+      },
       /**
        * 自家仓库
        */
@@ -379,21 +309,6 @@
           }
         })
       },
-      /**
-       * 派单类型 change 方法[待定功能]============
-       * @Param value 派单类型[0出库/1入库]
-       */
-      changeOperatorSchema(value) {
-        console.log('派单类型[0出库/1入库]', value)
-        if (value == 0) {
-          // 出库操作
-          this.sendOrderType = true
-        }
-        if (value == 1) {
-          // 入库操作
-          this.sendOrderType = false
-        }
-      },
       // 获取所有的editableTable实例
       getAllTable() {
         return Promise.all([
@@ -401,39 +316,28 @@
           getRefPromise(this, 'editableTable2')
         ])
       },
-
       add() {
         // 默认新增一条数据
         this.getAllTable().then(editableTables => {
           editableTables[0].add()
           editableTables[1].add()
         })
-
         this.edit({})
       },
       completePlanModelShow(record) {
         this.activeKey = '1'
         this.form.resetFields()
         this.model = Object.assign({}, record)
-
-        /*this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model, 'orderCode', 'ctype', 'orderMoney', 'content'))
-          //时间格式化
-          this.form.setFieldsValue({ orderDate: this.model.orderDate ? moment(this.model.orderDate) : null })
-        })*/
-
-        console.log("打开合并完单页面》》》： ",record)
         // 加载子表数据
         if (record) {
-          let params = { ids: record.toString() }
-          this.requestTableData(this.url.orderCustomerList, params, this.table1)
-          // this.requestTableData(this.url.orderTicketList, params, this.table2)
+          let params = {ids: record.toString()}
+          this.requestTableData(this.url.getPlan1ReceivingStorageList, params, this.table1)
+          this.requestTableData(this.url.getPlan1DeliverStorage, params, this.table2)
         }
-
       },
       close() {
         this.storageLocations = []
-        this.vehicles={}
+        this.vehicles = {}
         this.visible = false
         this.getAllTable().then(editableTables => {
           editableTables[0].initialize()
@@ -447,13 +351,12 @@
         getAction(url, params).then(res => {
           if (res.success) {
             this.visible = true
-            tab.dataSource = res.result.records
-          }else {
+            tab.dataSource = res.result
+          } else {
             this.visible = false
             this.$message.warning(res.message)
             return
           }
-          console.log("查询成功》》数据是》》：",res.result.records,"表格是》：",tab)
         }).finally(() => {
           tab.loading = false
         })
@@ -466,11 +369,15 @@
       },
       /** ATab 选项卡切换事件 */
       handleChangeTabs(key) {
+        if (key == '1') {
+          this.form.setFieldsValue({operatorSchema:'0'})
+        } else {
+          this.form.setFieldsValue({operatorSchema:'1'})
+        }
         getRefPromise(this, `editableTable${key}`).then(editableTable => {
           editableTable.resetScrollTop()
         })
       },
-
       /** 触发表单验证 */
       validateFields() {
         this.getAllTable().then(tables => {
@@ -520,10 +427,8 @@
           this.confirmLoading = false
         })
       }
-
     }
   }
 </script>
-
 <style scoped>
 </style>

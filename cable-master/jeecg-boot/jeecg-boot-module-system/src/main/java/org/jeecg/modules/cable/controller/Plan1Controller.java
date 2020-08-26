@@ -52,21 +52,54 @@ import static org.jeecgframework.poi.excel.ExcelExportUtil.exportExcel;
 public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @Autowired
     private IPlan1Service plan1Service;
-
     @Autowired
     private IPlan2Service plan2Service;
-
     @Autowired
     private IPlan3Service plan3Service;
-
     @Autowired
     private IPlan4Service plan4Service;
-
     @Autowired
     private IMaterialService materialService;
-
     @Autowired
     private ISysDictItemService sysDictItemService;
+
+    /**
+     * 查询计划1批量出库完单的数据
+     * bai
+     * 2020/8/26
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划1批量出库完单的数据
+     */
+    @GetMapping(value = "/getPlan1ReceivingStorageList")
+    public Result<?> getPlan1ReceivingStorageList(@RequestParam(name = "ids") String ids) {
+        List<Plan1Vo> list = plan1Service.getPlan1ReceivingStorageList(Arrays.asList(ids.split(",")));
+        for (Plan1Vo item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
+
+    /**
+     * 查询计划1批量入库完单的数据
+     * bai
+     * 2020/8/26
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划1批量入库完单的数据
+     */
+    @GetMapping(value = "/getPlan1DeliverStorage")
+    public Result<?> getPlan1DeliverStorage(@RequestParam(name = "ids") String ids) {
+        List<Plan1> list = plan1Service.getPlan1DeliverStorage(Arrays.asList(ids.split(",")));
+        for (Plan1 item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
 
     /**
      * 分页列表查询
@@ -107,8 +140,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     }
 
     /**
-     *  根据ids集合
-     *  实现分页列表查询
+     * 根据ids集合
+     * 实现分页列表查询
      *
      * @return
      */
@@ -116,20 +149,20 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
     @GetMapping(value = "/idslist")
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         //截取得到ids数组
         String[] split = ids.split(",");
         //转型得到ids集合
         List<String> idlist = Arrays.asList(split);
 
         Page<Plan1> page = new Page<>(pageNo, pageSize);
-        IPage<Plan1> pageList = plan1Service.idsqueryPageList(idlist,page);
+        IPage<Plan1> pageList = plan1Service.idsqueryPageList(idlist, page);
 
         // 检验工程账号是否一致 Begin
         for (Plan1 plan : pageList.getRecords()) {
             if (!pageList.getRecords().get(0).getProjectNo().equals(plan.getProjectNo()))
-            return Result.error("工程账号必须一致");
+                return Result.error("工程账号必须一致");
         }
         // 检验工程账号是否一致 End
 
@@ -268,7 +301,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if(null != sysUser) {
+        if (null != sysUser) {
             material.setCreateBy(sysUser.getUsername());
             material.setUpdateBy(sysUser.getUsername());
         }
@@ -349,7 +382,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         if (sendOrdersVo.getPlanType().equals("1")) {
             Plan1 plan1 = plan1Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan1.setUpdateBy(sysUser.getUsername());
+                plan1.setUpdateBy(sysUser.getUsername());
             plan1.setUpdateTime(new Date());
             plan1.setTheContact(sendOrdersVo.getLinkman());
             plan1.setThePhone(sendOrdersVo.getPhone());
@@ -360,7 +393,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("2")) {
             Plan2 plan2 = plan2Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan2.setUpdateBy(sysUser.getUsername());
+                plan2.setUpdateBy(sysUser.getUsername());
             plan2.setUpdateTime(new Date());
             plan2.setEquipmentOwners(sendOrdersVo.getLinkman());
 
@@ -370,7 +403,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("3")) {
             Plan3 plan3 = plan3Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan3.setUpdateBy(sysUser.getUsername());
+                plan3.setUpdateBy(sysUser.getUsername());
             plan3.setUpdateTime(new Date());
             plan3.setFieldConsignee(sendOrdersVo.getLinkman());
             plan3.setCPhone(sendOrdersVo.getLinkman());
@@ -381,7 +414,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("4")) {
             Plan4 plan4 = plan4Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan4.setUpdateBy(sysUser.getUsername());
+                plan4.setUpdateBy(sysUser.getUsername());
             plan4.setUpdateTime(new Date());
             plan4.setTeamContact(sendOrdersVo.getLinkman());
 

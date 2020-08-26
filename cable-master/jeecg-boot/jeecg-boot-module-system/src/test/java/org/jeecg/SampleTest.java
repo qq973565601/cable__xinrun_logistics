@@ -28,7 +28,6 @@ public class SampleTest {
 	@Resource
 	private MockController mock;
 
-
 	@Test
 	public void testSelect() {
 		System.out.println(("----- selectAll method test ------"));
@@ -51,7 +50,7 @@ public class SampleTest {
 	public void testTran() {
 		jeecgDemoService.testTran();
 	}
-	
+
 	//author:lvdandan-----date：20190315---for:添加数据日志测试----
 	/**
 	 * 测试数据日志添加
