@@ -169,14 +169,17 @@
               type: FormTypes.select,
               dictCode: "warehouse,name,id,type='1'",
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{required: true, message: '请选择${title}'}],
+              // 当 FormTypes 为 select 时的 change 事件
+              onchange: "onchange"
             },
             {
               title: '自家库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
             },
             {
               title: '终点仓库',
@@ -246,14 +249,17 @@
               type: FormTypes.select,
               dictCode: "warehouse,name,id,type='1'",
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{required: true, message: '请选择${title}'}],
+              // 当 FormTypes 为 select 时的 change 事件
+              onchange: "onchange"
             },
             {
               title: '自家库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
             },
             {
               title: '终点仓库',
@@ -323,14 +329,16 @@
               type: FormTypes.select,
               dictCode: "warehouse,name,id",
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{required: true, message: '请选择${title}'}],
+              onchange: "onchange",
             },
             {
               title: '库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
             },
             {
               title: '完单容积',

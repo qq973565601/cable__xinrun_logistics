@@ -764,6 +764,9 @@
   import JInputPop from '@/components/jeecg/minipop/JInputPop'
   import JFilePop from '@/components/jeecg/minipop/JFilePop'
   import JEllipsis from '@/components/jeecg/JEllipsis'
+  import pick from "lodash.pick";
+  import { httpAction, getAction } from '@/api/manage'
+
 
   // 行高，需要在实例加载完成前用到
   let rowHeight = 61
@@ -843,6 +846,7 @@
     },
     data() {
       return {
+        onchangeColumn:{},
         // 是否首次运行
         isFirst: true,
         // 当前实例是否是行编辑
@@ -1062,6 +1066,29 @@
 
     },
     methods: {
+
+      /**
+       * 自定义select change事件
+       */
+      onChange(val,key) {
+        console.log("进入了onChange方法！！！！！！！")
+        console.log("进入了onChange>>>>>>:",val)
+
+        for (let i = 0; i < this.columns.length; i++) {
+          if(this.columns[i].key == key){
+            this.columns[i+1].options = []
+            console.log("this.columns[i+1]>>>>>>s",this.columns[i+1])
+            let url = "/sys/dict/getDictItems/" + this.columns[i+1].dictCode + val ;
+            getAction(url).then((res) => {
+              if (res.success) {
+                this.columns[i+1].options = res.result
+                console.log(res.result)
+              }
+            })
+          }
+        }
+
+      },
 
       getElement(id, noCaseId = false) {
         if (!this.el[id]) {
@@ -2300,6 +2327,13 @@
         this.elemValueChange(FormTypes.checkbox, row, column, checked)
       },
       handleChangeSelectCommon(value, id, row, column) {
+        console.log("进入 handleChangeSelectCommon：",value,"<<id>>：",id,"<<row>>：", row,"<<column>>：", column)
+        console.log("this.rows>>>:",this)
+        this.onchangeColumn = column
+
+        if (column.onchange == "onchange") this.onChange(value,column.key);
+
+
         this.selectValues = this.bindValuesChange(value, id, 'selectValues')
         // 做单个表单验证
         this.validateOneInput(value, row, column, this.notPassedIds, true, 'change')
