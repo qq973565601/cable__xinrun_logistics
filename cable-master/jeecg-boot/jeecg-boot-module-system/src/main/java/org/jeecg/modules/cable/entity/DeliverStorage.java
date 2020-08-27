@@ -34,6 +34,10 @@ public class DeliverStorage implements Serializable {
     @ApiModelProperty(value = "id")
     private Integer id;
 
+	private Integer planId;
+
+	private Integer planType;
+
 	/**派单id*/
 	@Excel(name = "派单id", width = 15)
     @ApiModelProperty(value = "派单id")

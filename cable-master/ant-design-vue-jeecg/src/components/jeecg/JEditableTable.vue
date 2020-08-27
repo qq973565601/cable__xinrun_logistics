@@ -1078,6 +1078,10 @@
           if(this.columns[i].key == key){
             this.columns[i+1].options = []
             console.log("this.columns[i+1]>>>>>>s",this.columns[i+1])
+            if(val == undefined || val == null || val == '') {
+              this.columns[i+1].options = []
+              return
+            }
             let url = "/sys/dict/getDictItems/" + this.columns[i+1].dictCode + val ;
             getAction(url).then((res) => {
               if (res.success) {
@@ -1087,7 +1091,6 @@
             })
           }
         }
-
       },
 
       getElement(id, noCaseId = false) {

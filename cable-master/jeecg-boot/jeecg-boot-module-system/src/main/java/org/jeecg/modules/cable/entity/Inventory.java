@@ -2,12 +2,14 @@ package org.jeecg.modules.cable.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import io.swagger.annotations.ApiModel;
@@ -25,9 +27,25 @@ import lombok.experimental.Accessors;
 @TableName("inventory")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @ApiModel(value = "inventory对象", description = "库存表")
 public class Inventory implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, String assetNo) {
+        this.warehouseId = warehouseId;
+        this.storageLocationId = storageLocationId;
+        this.projectNo = projectNo;
+        this.projectName = projectName;
+        this.materialId = materialId;
+        this.inventoryQuantity = inventoryQuantity;
+        this.createTime = createTime;
+        this.createBy = createBy;
+        this.backup1 = backup1;
+        this.backup2 = backup2;
+        this.backup3 = backup3;
+        this.assetNo = assetNo;
+    }
 
     /**
      * 库存表id
@@ -104,19 +122,19 @@ public class Inventory implements Serializable {
      */
     @Excel(name = "backup1", width = 15)
     @ApiModelProperty(value = "backup1")
-    private java.lang.String backup1;
+    private java.lang.Integer backup1;
     /**
      * 计划表名
      */
     @Excel(name = "backup2", width = 15)
     @ApiModelProperty(value = "backup2")
-    private java.lang.String backup2;
+    private java.lang.Integer backup2;
     /**
      * 单位
      */
     @Excel(name = "backup3", width = 15)
     @ApiModelProperty(value = "backup3")
-    private java.lang.String backup3;
+    private java.lang.Integer backup3;
     /**
      * backup4
      */

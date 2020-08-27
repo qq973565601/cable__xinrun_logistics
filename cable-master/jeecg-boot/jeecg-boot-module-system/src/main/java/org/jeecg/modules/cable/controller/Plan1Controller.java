@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.StrUtil;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
@@ -62,6 +63,23 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     private IMaterialService materialService;
     @Autowired
     private ISysDictItemService sysDictItemService;
+
+    /**
+     * 计划1合并完单
+     * 2020/8/27 bai
+     *
+     * @param plan1Vo 合并完单中的表单数据
+     * @return 受影响的行数
+     */
+    @PostMapping(value = "/consolidationCompleted")
+    public Result<?> consolidationCompleted(@RequestBody Plan1Vo plan1Vo) {
+        Result<?> result = plan1Service.consolidationCompleted(Arrays.asList(plan1Vo.getPlan1Ids().split(",")), plan1Vo.getOperatorSchema(), plan1Vo.getReceiptNo(), plan1Vo.getReceiptPhotos(), plan1Vo.getTaskTime(), plan1Vo.getCompleteOrderList());
+        if (result.getCode() == 200) {
+            return Result.ok(result.getMessage());
+        } else {
+            return Result.error(result.getMessage());
+        }
+    }
 
     /**
      * 查询计划1批量出库完单的数据

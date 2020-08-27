@@ -29,12 +29,12 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="回单">
-              <j-upload v-decorator="['receipt_photos', validatorRules.receipt_photos]" text="点击上传"></j-upload>
+              <j-upload v-decorator="['receiptPhotos', validatorRules.receipt_photos]" text="点击上传"></j-upload>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="交接单号">
-              <a-input v-decorator="['receipt_no']" placeholder="请输入交接单号"></a-input>
+              <a-input v-decorator="['receiptNo']" placeholder="请输入交接单号"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -111,6 +111,8 @@
           xs: {span: 24},
           sm: {span: 24 - 6}
         },
+        // 计划1页面打开合并完单获取到的计划id集
+        plan1Ids: '',
         activeKey: '1',
         tabTitle: '出库完单信息',
         defaultTable: {
@@ -221,7 +223,7 @@
             {
               title: '可出库数量',
               key: 'inventoryQuantity',
-              width: '8%',
+              width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}'
             },
@@ -287,7 +289,7 @@
             {
               title: '物料描述',
               key: 'rawMaterialText',
-              width: '16%',
+              width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
@@ -301,7 +303,7 @@
             {
               title: '物料数量',
               key: 'numReceipts',
-              width: '8%',
+              width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}'
             },
@@ -370,6 +372,7 @@
           ]
         },
         url: {
+          add: '/cable/plan1/consolidationCompleted',
           getPlan1ReceivingStorageList: '/cable/plan1/getPlan1ReceivingStorageList',
           getPlan1DeliverStorage: '/cable/plan1/getPlan1DeliverStorage'
         }
@@ -426,9 +429,9 @@
         this.model = Object.assign({}, record)
         // 加载子表数据
         if (record) {
-          let params = {ids: record.toString()}
-          this.requestTableData(this.url.getPlan1ReceivingStorageList, params, this.table1)
-          this.requestTableData(this.url.getPlan1DeliverStorage, params, this.table2)
+          this.plan1Ids = {ids: record.toString()}
+          this.requestTableData(this.url.getPlan1ReceivingStorageList, this.plan1Ids, this.table1)
+          this.requestTableData(this.url.getPlan1DeliverStorage, this.plan1Ids, this.table2)
         }
       },
       close() {
@@ -506,9 +509,10 @@
       },
       /** 发起新增或修改的请求 */
       requestAddOrEdit(formData) {
+        formData['plan1Ids'] = this.plan1Ids.ids
         console.log("发起合并完单的操作方法, 请求参数为>>>>>>", formData)
-        if (this.url.add == null || this.url.edit == null) {
-          this.$message.error("请设置url.add 和 url.edit属性")
+        if (this.url.add == null) {
+          this.$message.error("请设置url.add属性")
           return
         }
         let url = this.url.add, method = 'post'

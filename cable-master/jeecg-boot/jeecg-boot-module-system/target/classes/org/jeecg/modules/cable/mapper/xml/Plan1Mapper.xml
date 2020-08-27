@@ -9,7 +9,7 @@
             p.project_name,
             p.raw_material_text,
             p.asset_no,
-            i.inventory_quantity
+            sum(i.inventory_quantity) as inventory_quantity
         FROM
             plan1 p
             LEFT JOIN inventory i ON p.id = i.backup1
@@ -17,6 +17,7 @@
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+        GROUP BY p.id
     </select>
 
     <!-- 查询计划1批量入库完单的数据 -->

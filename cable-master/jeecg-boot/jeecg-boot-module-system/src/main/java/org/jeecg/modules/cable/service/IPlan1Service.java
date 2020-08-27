@@ -1,7 +1,10 @@
 package org.jeecg.modules.cable.service;
 
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.poi.ss.formula.functions.T;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan1;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan1Im;
@@ -11,7 +14,9 @@ import org.jeecg.modules.cable.vo.SettleAccountsVo;
 import org.jeecg.modules.cable.vo.StorageLocationListVo;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 计划表1
@@ -20,6 +25,20 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface IPlan1Service extends IService<Plan1> {
+    /**
+     * 计划1合并完单
+     * 2020/8/27 bai
+     *
+     * @param plan1Ids          批量完单的计划 id集合
+     * @param operatorSchema    完单类型[0:出库\1:入库]
+     * @param receiptNo         交接单号
+     * @param receiptPhotos     回单照片
+     * @param taskTime          任务日期
+     * @param completeOrderList 合并完单填写的数据集
+     * @return 受影响的行数
+     */
+    Result<?> consolidationCompleted(List<Serializable> plan1Ids, String operatorSchema, String receiptNo, String receiptPhotos, String taskTime, List<?> completeOrderList);
+
     /**
      * 查询计划1批量出库完单的数据
      * 2020/8/26 bai
