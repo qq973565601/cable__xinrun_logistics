@@ -34,19 +34,19 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="交接单号">
-              <a-input v-decorator="['']" placeholder="请输入交接单号"></a-input>
+              <a-input v-decorator="['receipt_no']" placeholder="请输入交接单号"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
       <!-- 子表单 -->
-      <a-tabs v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="出库完单信息" key="1" :forceRender="true">
+      <a-tabs v-model="activeKey">
+        <a-tab-pane :tab="tabTitle" key="1" :forceRender="true">
           <j-editable-table
-            ref="editableTable1"
-            :loading="table1.loading"
-            :columns="table1.columns"
-            :dataSource="table1.dataSource"
+            ref="defaultTable"
+            :loading="defaultTable.loading"
+            :columns="defaultTable.columns"
+            :dataSource="defaultTable.dataSource"
             :maxHeight="300"
             align="center"
             :rowNumber="false"
@@ -54,7 +54,7 @@
             :rowSelection="true"
             :actionButton="true"/>
         </a-tab-pane>
-        <a-tab-pane tab="入库完单信息" key="2" :forceRender="true">
+        <!--<a-tab-pane tab="入库完单信息" key="2" :forceRender="true">
           <j-editable-table
             ref="editableTable2"
             :loading="table2.loading"
@@ -65,7 +65,7 @@
             :rowNumber="false"
             :rowSelection="true"
             :actionButton="true"/>
-        </a-tab-pane>
+        </a-tab-pane>-->
       </a-tabs>
     </a-spin>
   </a-modal>
@@ -112,6 +112,83 @@
           sm: {span: 24 - 6}
         },
         activeKey: '1',
+        tabTitle: '出库完单信息',
+        defaultTable: {
+          loading: false,
+          dataSource: [],
+          columns: [
+            {
+              title: '项目名称',
+              key: 'projectName',
+              width: '20%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '物料描述',
+              key: 'rawMaterialText',
+              width: '16%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '资产编号',
+              key: 'assetNo',
+              width: '15%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '可出库数量',
+              key: 'inventoryQuantity',
+              width: '8%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '完单数量',
+              key: 'accomplishNum',
+              width: '10%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
+            },
+            {
+              title: '单位',
+              key: 'unit',
+              width: '10%',
+              type: FormTypes.select,
+              dictCode: "unit",
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
+            },
+            {
+              title: '自家仓库',
+              key: 'warehouseId',
+              width: '15%',
+              type: FormTypes.select,
+              dictCode: "warehouse,name,id,type='1'",
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationId',
+              width: '15%',
+              type: FormTypes.select,
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '终点仓库',
+              key: 'endWarehouseId',
+              width: '15%',
+              type: FormTypes.select,
+              dictCode: "warehouse,name,id",
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
+            }
+          ]
+        },
         // 出库完单信息
         table1: {
           loading: false,
@@ -150,7 +227,8 @@
               key: 'accomplishNum',
               width: '10%',
               type: FormTypes.inputNumber,
-              placeholder: '请输入${title}'
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
             },
             {
               title: '单位',
@@ -158,7 +236,8 @@
               width: '10%',
               type: FormTypes.select,
               dictCode: "unit",
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
             },
             {
               title: '自家仓库',
@@ -166,7 +245,8 @@
               width: '15%',
               type: FormTypes.select,
               dictCode: "warehouse,name,id,type='1'",
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
             },
             {
               title: '自家库位',
@@ -181,7 +261,8 @@
               width: '15%',
               type: FormTypes.select,
               dictCode: "warehouse,name,id",
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
             }
           ]
         },
@@ -223,7 +304,8 @@
               key: 'accomplishNum',
               width: '10%',
               type: FormTypes.inputNumber,
-              placeholder: '请输入${title}'
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
             },
             {
               title: '单位',
@@ -231,7 +313,8 @@
               width: '10%',
               type: FormTypes.select,
               dictCode: "unit",
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
             },
             {
               title: '目标仓库',
@@ -239,7 +322,8 @@
               width: '15%',
               type: FormTypes.select,
               dictCode: "warehouse,name,id",
-              placeholder: '请选择${title}'
+              placeholder: '请选择${title}',
+              validateRules: [{required: true, message: '请选择${title}'}]
             },
             {
               title: '库位',
@@ -253,7 +337,8 @@
               key: 'accomplishVolume',
               width: '15%',
               type: FormTypes.inputNumber,
-              placeholder: '请输入${title}'
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
             },
             {
               title: '是否异常',
@@ -265,6 +350,7 @@
                 {title: '正常', value: '0'},
                 {title: '异常', value: '1'}
               ],
+              validateRules: [{required: true, message: '请选择${title}'}]
             },
             {
               title: '说明',
@@ -276,8 +362,6 @@
           ]
         },
         url: {
-          add: '/test/jeecgOrderMain/add',
-          edit: '/test/jeecgOrderMain/edit',
           getPlan1ReceivingStorageList: '/cable/plan1/getPlan1ReceivingStorageList',
           getPlan1DeliverStorage: '/cable/plan1/getPlan1DeliverStorage'
         }
@@ -285,14 +369,16 @@
     },
     methods: {
       /**
-       * 完单类型切换不同 tab 卡片操作[0:出库\1:入库]
+       * 完单类型 change 事件
+       * 2020/8/27 bai
        */
       switchOperatorSchema(type) {
-        console.log("完单模式[0:出库\\1:入库]>>>>>>>>>>>", type)
-        if (type == 0) {
-          this.activeKey = '1' // 通过切换 activeKey 的值来达到切换 tab 卡片的操作
+        if (type == 0) {    // 通过改变完单类型来切换不同的 table 信息
+          this.tabTitle = '出库完单信息'
+          this.defaultTable = this.table1
         } else {
-          this.activeKey = '2' // 通过切换 activeKey 的值来达到切换 tab 卡片的操作
+          this.tabTitle = '入库完单信息'
+          this.defaultTable = this.table2
         }
       },
       /**
@@ -312,8 +398,9 @@
       // 获取所有的editableTable实例
       getAllTable() {
         return Promise.all([
-          getRefPromise(this, 'editableTable1'),
-          getRefPromise(this, 'editableTable2')
+          getRefPromise(this, 'defaultTable') // 默认 table
+          //getRefPromise(this, 'editableTable1'), // 出库时 table 格式
+          //getRefPromise(this, 'editableTable2') // 入库时 table 格式
         ])
       },
       add() {
@@ -325,6 +412,7 @@
         this.edit({})
       },
       completePlanModelShow(record) {
+        console.log("进入了合并完单页面>>>", record)
         this.activeKey = '1'
         this.form.resetFields()
         this.model = Object.assign({}, record)
@@ -351,6 +439,7 @@
         getAction(url, params).then(res => {
           if (res.success) {
             this.visible = true
+            this.defaultTable.dataSource = res.result // 刚开始查询给默认的 table 数据库进行赋值操作
             tab.dataSource = res.result
           } else {
             this.visible = false
@@ -368,16 +457,16 @@
         this.close()
       },
       /** ATab 选项卡切换事件 */
-      handleChangeTabs(key) {
-        if (key == '1') {
-          this.form.setFieldsValue({operatorSchema:'0'})
+      /*handleChangeTabs(key) {
+        /!*if (key == '1') {
+          this.form.setFieldsValue({operatorSchema: '0'}) // 通过切换 tab 选项卡的同时切换完单类型 与之绑定
         } else {
-          this.form.setFieldsValue({operatorSchema:'1'})
-        }
+          this.form.setFieldsValue({operatorSchema: '1'}) // 通过切换 tab 选项卡的同时切换完单类型 与之绑定
+        }*!/
         getRefPromise(this, `editableTable${key}`).then(editableTable => {
           editableTable.resetScrollTop()
         })
-      },
+      },*/
       /** 触发表单验证 */
       validateFields() {
         this.getAllTable().then(tables => {
@@ -403,12 +492,17 @@
         orderMain.orderDate = orderMain.orderDate ? orderMain.orderDate.format('YYYY-MM-DD HH:mm:ss') : null
         return {
           ...orderMain, // 展开
-          jeecgOrderCustomerList: allValues.tablesValue[0].values,
-          jeecgOrderTicketList: allValues.tablesValue[1].values
+          completeOrderList: allValues.tablesValue[0].values // 传递到后台的批量填写的表单集合数据
+          //jeecgOrderTicketList: allValues.tablesValue[1].values
         }
       },
       /** 发起新增或修改的请求 */
       requestAddOrEdit(formData) {
+        console.log("发起合并完单的操作方法, 请求参数为>>>>>>", formData)
+        if (this.url.add == null || this.url.edit == null) {
+          this.$message.error("请设置url.add 和 url.edit属性")
+          return
+        }
         let url = this.url.add, method = 'post'
         if (this.model.id) {
           url = this.url.edit

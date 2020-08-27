@@ -200,7 +200,7 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
                 ReceivingStorage receivingStorage = new ReceivingStorage();
                 receivingStorage.setWarehouseId(sendOrdersVo.getWarehouseId());
                 receivingStorage.setStorageLocationId(sendOrdersVo.getStorageLocationId());
-                receivingStorage.setSendOrdersId(id);
+//                receivingStorage.setSendOrdersId(id);
                 receivingStorage.setState(0);
                 receivingStorage.setMaterialId(materialList.get(0).getId());
                 //TODO 出库/完单表添加数据
@@ -501,14 +501,14 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * @Author Xm
      * @Date 2020/5/27 10:52
      */
-    @PutMapping(value = "/planedit")
+    /*@PutMapping(value = "/planedit")
     public Result<?> planedit(@RequestBody JSONObject jsonObject) {
         PlanVo planVo = JSON.parseObject(jsonObject.toJSONString(), PlanVo.class);
         Result<?> planedit = sendOrdersService.planedit(planVo);
         if(planedit.getCode() == 200) return Result.ok(planedit.getMessage());
         if(planedit.getCode() == 500) return Result.error(planedit.getMessage());
         return Result.ok(planedit);
-    }
+    }*/
 
     /**
      * 根据计划id和计划类型查询历史派单信息

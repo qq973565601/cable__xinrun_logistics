@@ -548,7 +548,6 @@
         var ids = this.selectedRowKeys
         if (ids.length == 0)
           return this.$message.warning('请选择合并派单项目!')
-        console.log("点击了合并完单", ids)
         //TODO 打开合并完单页面
         this.$refs.CompletePlan1Model.completePlanModelShow(ids, 1)
         this.$refs.CompletePlan1Model.title = '合并完单'

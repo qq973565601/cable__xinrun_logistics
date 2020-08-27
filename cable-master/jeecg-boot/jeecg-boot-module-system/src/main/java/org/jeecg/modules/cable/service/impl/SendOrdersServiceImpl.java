@@ -148,7 +148,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
         return list;
     }
 
-    @Transactional
+    /*@Transactional
     @Override
     public Result<?> planedit(PlanVo planVo) {
         // 完单状态[0:未完单/1:已完单]
@@ -350,7 +350,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
             storageLocationMapper.updateById(storageLocation);
             return Result.ok("出库完单成功!");
         }
-    }
+    }*/
 
     @Override
     public IPage<SendOrdersVo> selectSendOrdersController(String planId, String planType, Page<SendOrdersVo> page) {
