@@ -56,8 +56,10 @@
                         @click="showExportPlan2Modal">导出</a-button>
               <a-button @click="TheSameDay" icon="search" type="primary"
                         style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">今日派单</a-button>
-                <a-button @click="mergePlan" icon="search" type="primary"
-                          style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="mergePlan" icon="search" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="completePlan" icon="check-circle" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并完单</a-button>
               <a-modal
                 v-model="plan2ExportModal_visible"
                 :width=600 style="margin-top: 150px">
@@ -177,6 +179,7 @@
     <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
     <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
+    <complete-plan2-model ref="CompletePlan2Model" @ok="CompletePlan"></complete-plan2-model>
 
   </a-card>
 </template>
@@ -184,17 +187,18 @@
 <script>
   import JEllipsis from '../../components/jeecg/JEllipsis'
   import '@/assets/less/TableExpand.less'
-  import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {mixinDevice} from '@/utils/mixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import Plan2Modal from './modules/Plan2Modal'
   import PlanAccomplishModal from './modules/PlanAccomplishModal'
   import PlanSendOrdersModal from './modules/PlanSendOrdersModal'
   import PlanSendOrdersTheSameDayModal from './modules/PlanSendOrdersTheSameDayModal'
   import JInput from '@/components/jeecg/JInput'
-  import { httpAction, getAction } from '@/api/manage'
-  import { downFile } from '../../api/manage'
+  import {httpAction, getAction} from '@/api/manage'
+  import {downFile} from '../../api/manage'
   import PlanCompleteStateModal from './modules/PlanCompleteStateModal'
   import MergePlan from "./modules/MergePlanModel";
+  import CompletePlan2Model from "./modules/CompletePlan2Model";
 
   export default {
     name: 'Plan2List',
@@ -207,7 +211,8 @@
       PlanSendOrdersModal,
       JEllipsis,
       PlanSendOrdersTheSameDayModal,
-      PlanCompleteStateModal
+      PlanCompleteStateModal,
+      CompletePlan2Model
     },
     data() {
       return {
@@ -231,49 +236,49 @@
             title: '新资产编号',
             align: 'center',
             dataIndex: 'assetNo',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '工程名称',
             align: 'center',
             dataIndex: 'site',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '设备名',
             align: 'center',
             dataIndex: 'equipmentName',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '设备号',
             align: 'center',
             dataIndex: 'equipmentNo',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '型号',
             align: 'center',
             dataIndex: 'model',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '项目编号',
             align: 'center',
             dataIndex: 'projectNo',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '退役时间',
             align: 'center',
             dataIndex: 'retiredDate',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '地址',
             align: 'center',
             dataIndex: 'address',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '派单状态',
@@ -293,7 +298,7 @@
             title: '完成状态',
             align: 'center',
             dataIndex: 'completeState_dictText',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '操作',
@@ -301,7 +306,7 @@
             align: 'center',
             // fixed:"right",
             width: 147,
-            scopedSlots: { customRender: 'action' }
+            scopedSlots: {customRender: 'action'}
           }
         ],
         url: {
@@ -316,11 +321,22 @@
       }
     },
     computed: {
-      importExcelUrl: function() {
+      importExcelUrl: function () {
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
       }
     },
     methods: {
+      /**
+       * 计划2合并完单事件
+       */
+      completePlan() {
+        var ids = this.selectedRowKeys
+        if (ids.length == 0)
+          return this.$message.warning('请选择合并完单项目!')
+        //TODO 打开合并完单页面
+        this.$refs.CompletePlan2Model.completePlanModelShow(ids)
+        this.$refs.CompletePlan2Model.title = '合并完单'
+      },
       /**
        * 计划2完成状态
        */
@@ -340,7 +356,7 @@
         if (!fileName || typeof fileName != 'string') {
           fileName = '导出文件'
         }
-        let param = { ...this.queryParam }
+        let param = {...this.queryParam}
         if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
           param['selections'] = this.selectedRowKeys.join(',')
         }
@@ -352,9 +368,9 @@
             return
           }
           if (typeof window.navigator.msSaveBlob !== 'undefined') {
-            window.navigator.msSaveBlob(new Blob([data], { type: 'application/vnd.ms-excel' }), fileName + '.xls')
+            window.navigator.msSaveBlob(new Blob([data], {type: 'application/vnd.ms-excel'}), fileName + '.xls')
           } else {
-            let url = window.URL.createObjectURL(new Blob([data], { type: 'application/vnd.ms-excel' }))
+            let url = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.ms-excel'}))
             let link = document.createElement('a')
             link.style.display = 'none'
             link.href = url
@@ -396,12 +412,12 @@
        */
       mergePlan() {
         var ids = this.selectedRowKeys
-        if(ids.length <= 1){
+        if (ids.length <= 1) {
           return this.$message.warning('请选择合并派单项目!')
         }
         console.log("点击了合并派单", ids)
         //TODO 打开合并派单页面
-        this.$refs.MergePlan.mergePlanModelShow(ids,2)
+        this.$refs.MergePlan.mergePlanModelShow(ids, 2)
         this.$refs.MergePlan.title = '合并派单'
       },
       /* 派单操作 */

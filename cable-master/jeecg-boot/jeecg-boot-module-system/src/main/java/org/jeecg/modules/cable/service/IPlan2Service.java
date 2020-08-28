@@ -2,11 +2,13 @@ package org.jeecg.modules.cable.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.cable.entity.Plan1;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan2;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan2Im;
+import org.jeecg.modules.cable.vo.Plan2Vo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,6 +18,37 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface IPlan2Service extends IService<Plan2> {
+    /**
+     * 计划2合并完单
+     * 2020/8/28 bai
+     *
+     * @param ids          批量完单的计划 id集合
+     * @param operatorSchema    完单类型[0:出库\1:入库]
+     * @param receiptNo         交接单号
+     * @param receiptPhotos     回单照片
+     * @param taskTime          任务日期
+     * @param completeOrderList 合并完单填写的数据集
+     * @return 受影响的行数
+     */
+    Result<?> consolidationCompleted(List<Serializable> ids, String operatorSchema, String receiptNo, String receiptPhotos, String taskTime, List<?> completeOrderList);
+
+    /**
+     * 查询计划2批量出库完单的数据
+     * 2020/8/28 bai
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划2批量出库完单的数据
+     */
+    List<Plan2Vo> getPlan2ReceivingStorageList(List<Serializable> ids);
+
+    /**
+     * 查询计划2批量入库完单的数据
+     * 2020/8/28 bai
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划2批量入库完单的数据
+     */
+    List<Plan2> getPlan2DeliverStorage(List<Serializable> ids);
 
     /**
      * 根据ids集合条件查询
@@ -25,6 +58,7 @@ public interface IPlan2Service extends IService<Plan2> {
      * @Date 2020/7/21
      */
     IPage<Plan2> idsqueryPageList2(List<String> ids, Page<Plan2> page);
+
     /**
      * 分页展示计划表2数据
      *  bai
@@ -32,6 +66,7 @@ public interface IPlan2Service extends IService<Plan2> {
      * @return
      */
     IPage<Plan2> pageList(Plan2 plan2, Page<Plan2> page);
+
     /**
      * 导出 plan2
      * bai

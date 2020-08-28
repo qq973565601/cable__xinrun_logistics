@@ -30,7 +30,7 @@
           </a-col>
 
           <template v-if="true">
-<!--          <template v-if="toggleSearchStatus">-->
+            <!--          <template v-if="toggleSearchStatus">-->
 
             <a-col :md="4" :sm="7">
               <a-form-item label="项目编号">
@@ -326,7 +326,7 @@
             title: '入库状态',
             align: 'center',
             dataIndex: '',
-            customRender: (text,record) => {
+            customRender: (text, record) => {
               if (record.alreadyDeliverStorage === null) return '未入库'
               else return '已入库'
             }
@@ -344,7 +344,7 @@
             title: '出库状态',
             align: 'center',
             dataIndex: '',
-            customRender: (text,record) => {
+            customRender: (text, record) => {
               if (record.alreadyReceivingStorage === null) return '未出库'
               else return '已出库'
             }
@@ -376,7 +376,7 @@
             title: '操作',
             dataIndex: 'action',
             align: 'center',
-            fixed:"right",
+            fixed: "right",
             width: 110,
             scopedSlots: {customRender: 'action'}
           }
@@ -542,14 +542,14 @@
         })
       },
       /**
-       * 合并完单
+       * 计划1合并完单
        */
       completePlan() {
         var ids = this.selectedRowKeys
         if (ids.length == 0)
-          return this.$message.warning('请选择合并派单项目!')
+          return this.$message.warning('请选择合并完单项目!')
         //TODO 打开合并完单页面
-        this.$refs.CompletePlan1Model.completePlanModelShow(ids, 1)
+        this.$refs.CompletePlan1Model.completePlanModelShow(ids)
         this.$refs.CompletePlan1Model.title = '合并完单'
       },
       /**

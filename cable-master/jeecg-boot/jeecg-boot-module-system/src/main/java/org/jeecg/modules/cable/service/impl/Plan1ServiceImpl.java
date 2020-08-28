@@ -162,7 +162,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                         //TODO BigDecimal 类型比较大小返回值为 {-1:小于\0:等于\1:大于}
                         int result = inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                         if (result == 0 || result == 1) {
-                            //TODO 表示库存数够进行出库完单操作,执行更新操作,将库存数较少
+                            //TODO 表示库存数够进行出库完单操作,执行更新操作,将库存数减少
                             System.err.println("出库前库存数为[" + inventory.getInventoryQuantity() + "]");
                             BigDecimal num = inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                             inventory.setInventoryQuantity(num);

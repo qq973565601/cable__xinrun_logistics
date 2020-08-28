@@ -24,8 +24,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.cable.vo.Plan1Vo;
+import org.jeecg.modules.cable.vo.Plan2Vo;
 import org.jeecg.modules.system.entity.SysUser;
-import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -55,15 +56,65 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @Autowired
     private IPlan2Service plan2Service;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Autowired
     private IMaterialService materialService;
 
-    @Autowired
-    private ISysDictItemService sysDictItemService;
+    /**
+     * 计划2合并完单
+     * 2020/8/28 bai
+     *
+     * @param plan2Vo 合并完单中的表单数据
+     * @return 受影响的行数
+     */
+    @PostMapping(value = "/consolidationCompleted")
+    public Result<?> consolidationCompleted(@RequestBody Plan2Vo plan2Vo) {
+        Result<?> result = plan2Service.consolidationCompleted(Arrays.asList(plan2Vo.getPlan2Ids().split(",")), plan2Vo.getOperatorSchema(), plan2Vo.getPlan2ReceiptNo(), plan2Vo.getReceiptPhotos(), plan2Vo.getTaskTime(), plan2Vo.getCompleteOrderList());
+        if (result.getCode() == 200) {
+            return Result.ok(result.getMessage());
+        } else {
+            return Result.error(result.getMessage());
+        }
+    }
+
+    /**
+     * 查询计划2批量出库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划2批量出库完单的数据
+     */
+    @GetMapping(value = "/getPlan2ReceivingStorageList")
+    public Result<?> getPlan2ReceivingStorageList(@RequestParam(name = "ids") String ids) {
+        List<Plan2Vo> list = plan2Service.getPlan2ReceivingStorageList(Arrays.asList(ids.split(",")));
+        for (Plan2Vo item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
+
+    /**
+     * 查询计划2批量入库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划2批量入库完单的数据
+     */
+    @GetMapping(value = "/getPlan2DeliverStorage")
+    public Result<?> getPlan2DeliverStorage(@RequestParam(name = "ids") String ids) {
+        List<Plan2> list = plan2Service.getPlan2DeliverStorage(Arrays.asList(ids.split(",")));
+        for (Plan2 item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
 
     /**
      * 分页列表查询
@@ -100,10 +151,9 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         return Result.ok(pageList);
     }
 
-
     /**
-     *  根据ids集合
-     *  实现分页列表查询
+     * 根据ids集合
+     * 实现分页列表查询
      *
      * @return
      */
@@ -118,7 +168,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         //转型得到ids集合
         List<String> idlist = Arrays.asList(split);
         Page<Plan2> page = new Page<>(pageNo, pageSize);
-        IPage<Plan2> pageList = plan2Service.idsqueryPageList2(idlist,page);
+        IPage<Plan2> pageList = plan2Service.idsqueryPageList2(idlist, page);
         return Result.ok(pageList);
     }
 
@@ -174,7 +224,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-//	/**
+    //	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -211,8 +261,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
      * 2020/5/29
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan2 plan2,
-                                  @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan2 plan2, @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "备品计划";
         // 获取导出数据
@@ -316,5 +365,4 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         List<SysUser> list = sysUserService.list(queryWrapper);
         return Result.ok(list);
     }
-
 }
