@@ -1082,7 +1082,7 @@
               this.columns[i+1].options = []
               return
             }
-            let url = "/sys/dict/getDictItems/" + this.columns[i+1].dictCode + val ;
+            let url = "/sys/dict/getDictItems/storage_location,storage_location_name,id,warehouse_id=" + val ;
             getAction(url).then((res) => {
               if (res.success) {
                 this.columns[i+1].options = res.result

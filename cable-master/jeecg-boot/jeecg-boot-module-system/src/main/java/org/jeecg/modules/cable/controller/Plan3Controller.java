@@ -23,6 +23,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.cable.vo.Plan1Vo;
+import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -53,12 +55,65 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
     @Autowired
     private IPlan3Service plan3Service;
-
     @Autowired
     private IMaterialService materialService;
-
     @Autowired
     private ISysDictItemService sysDictItemService;
+
+    /**
+     * 计划3合并完单
+     * 2020/8/28 bai
+     *
+     * @param plan3Vo 合并完单中的表单数据
+     * @return 受影响的行数
+     */
+    @PostMapping(value = "/consolidationCompleted")
+    public Result<?> consolidationCompleted(@RequestBody Plan3Vo plan3Vo) {
+        Result<?> result = plan3Service.consolidationCompleted(Arrays.asList(plan3Vo.getPlan3Ids().split(",")), plan3Vo.getOperatorSchema(), plan3Vo.getPlan3ReceiptNo(), plan3Vo.getReceiptPhotos(), plan3Vo.getTaskTime(), plan3Vo.getCompleteOrderList());
+        if (result.getCode() == 200) {
+            return Result.ok(result.getMessage());
+        } else {
+            return Result.error(result.getMessage());
+        }
+    }
+
+    /**
+     * 查询计划3批量出库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划3批量出库完单的数据
+     */
+    @GetMapping(value = "/getPlan3ReceivingStorageList")
+    public Result<?> getPlan3ReceivingStorageList(@RequestParam(name = "ids") String ids) {
+        List<Plan3Vo> list = plan3Service.getPlan3ReceivingStorageList(Arrays.asList(ids.split(",")));
+        for (Plan3Vo item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
+
+    /**
+     * 查询计划3批量入库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划3批量入库完单的数据
+     */
+    @GetMapping(value = "/getPlan3DeliverStorage")
+    public Result<?> getPlan3DeliverStorage(@RequestParam(name = "ids") String ids) {
+        List<Plan3> list = plan3Service.getPlan3DeliverStorage(Arrays.asList(ids.split(",")));
+        for (Plan3 item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
 
     /**
      * 分页列表查询
@@ -151,7 +206,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-//	/**
+    //	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -190,8 +245,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      * @return
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan3 plan3,
-                                  @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan3 plan3, @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集

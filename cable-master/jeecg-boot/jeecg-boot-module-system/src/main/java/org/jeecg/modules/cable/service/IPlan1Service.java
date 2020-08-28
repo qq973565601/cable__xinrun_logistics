@@ -1,9 +1,7 @@
 package org.jeecg.modules.cable.service;
 
-import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.poi.ss.formula.functions.T;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan1;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -14,9 +12,7 @@ import org.jeecg.modules.cable.vo.SettleAccountsVo;
 import org.jeecg.modules.cable.vo.StorageLocationListVo;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: 计划表1

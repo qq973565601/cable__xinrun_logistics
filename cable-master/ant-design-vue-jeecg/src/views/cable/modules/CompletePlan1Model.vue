@@ -181,7 +181,7 @@
               width: '15%',
               type: FormTypes.select,
               placeholder: '请选择${title}',
-              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
+
             },
             {
               title: '终点仓库',
@@ -261,7 +261,7 @@
               width: '15%',
               type: FormTypes.select,
               placeholder: '请选择${title}',
-              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
+
             },
             {
               title: '终点仓库',
@@ -340,7 +340,7 @@
               width: '15%',
               type: FormTypes.select,
               placeholder: '请选择${title}',
-              dictCode: "storage_location,storage_location_name,id,warehouse_id=",
+
             },
             {
               title: '完单容积',

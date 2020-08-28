@@ -41,6 +41,8 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
     private IMaterialService materialService;
     @Autowired
     private IInventoryService inventoryService;
+    @Autowired
+    private IStorageLocationService storageLocationService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -92,17 +94,28 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         // 存在库存,在原本的库存数上增加入库数量即可
-                        System.err.println("入库前库存数为[" + inventory.getInventoryQuantity() + "]");
-                        BigDecimal num = inventory.getInventoryQuantity().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                        inventory.setInventoryQuantity(num);
+                        inventory.setInventoryQuantity(inventory.getInventoryQuantity().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                        if (inventory.getBackup4() != null) {
+                            inventory.setBackup4(inventory.getBackup4().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
+                        } else {
+                            inventory.setBackup4(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
+                        }
                         boolean flag = inventoryService.updateById(inventory);
                         System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
-                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), map.get("assetNo").toString());
+                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), map.get("assetNo").toString());
                         boolean flag = inventoryService.save(entity);
                         System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");
                     }
+                    StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
+                    if (storageLocation.getTheCurrentVolume() == null) {
+                        storageLocation.setTheCurrentVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
+                    } else {
+                        storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
+                    }
+                    boolean flag = storageLocationService.updateById(storageLocation);
+                    System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
                 }
                 deliverStorageService.saveBatch(deliverStorageList);
                 return Result.ok("入库完单成功");
@@ -151,11 +164,18 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                         // 查看库存表中是否有充足数量够出库操作、够则进行出库、不够则提示库存不足
                         // BigDecimal 类型比较大小返回值为 {-1:小于\0:等于\1:大于}
                         int result = inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
+                        int result2 = inventory.getBackup4().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         if (result == 0 || result == 1) {
-                            // 表示库存数够进行出库完单操作,执行更新操作,将库存数减少
-                            System.err.println("出库前库存数为[" + inventory.getInventoryQuantity() + "]");
-                            BigDecimal num = inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                            inventory.setInventoryQuantity(num);
+                            inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                            if (inventory.getBackup4() != null) {
+                                if (result2 == 0 || result2 == 1) {
+                                    inventory.setBackup4(inventory.getBackup4().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
+                                } else {
+                                    return Result.error("当前库存容积不足, 无法进行出库完单操作,第 " + (i + 1) + "  条库存容积为[" + inventory.getBackup4() + "]");
+                                }
+                            } else {
+                                return Result.error("此库存容积并不存在, 无法进行出库完单操作");
+                            }
                             boolean flag = inventoryService.updateById(inventory);
                             System.err.println("出库是否成功:" + flag + ",出库后库存数为[" + inventory.getInventoryQuantity() + "]");
                         } else {
@@ -163,6 +183,19 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                         }
                     } else {
                         return Result.error("此库存并不存在, 无法进行出库完单操作");
+                    }
+                    StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
+                    if (storageLocation != null) {
+                        int result = storageLocation.getTheCurrentVolume().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
+                        if (result == 0 || result == 1) {
+                            storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
+                            boolean flag = storageLocationService.updateById(storageLocation);
+                            System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
+                        } else {
+                            return Result.error("当前库存容积不足, 无法进行出库完单操作");
+                        }
+                    } else {
+                        return Result.error("此库存容积并不存在, 无法进行出库完单操作");
                     }
                 }
                 receivingStorageService.saveBatch(receivingStorageList);

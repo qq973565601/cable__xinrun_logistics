@@ -32,7 +32,7 @@ import lombok.experimental.Accessors;
 public class Inventory implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, String assetNo) {
+    public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, BigDecimal backup4, String assetNo) {
         this.warehouseId = warehouseId;
         this.storageLocationId = storageLocationId;
         this.projectNo = projectNo;
@@ -44,6 +44,7 @@ public class Inventory implements Serializable {
         this.backup1 = backup1;
         this.backup2 = backup2;
         this.backup3 = backup3;
+        this.backup4 = backup4;
         this.assetNo = assetNo;
     }
 

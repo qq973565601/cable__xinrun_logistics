@@ -89,8 +89,10 @@
                         @click="showExportPlan3Modal">导出</a-button>
               <a-button @click="TheSameDay" icon="search" type="primary"
                         style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">今日派单</a-button>
-                <a-button @click="mergePlan" icon="search" type="primary"
-                          style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="mergePlan" icon="search" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="completePlan" icon="check-circle" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并完单</a-button>
               <a-modal
                 v-model="plan3ExportModal_visible"
                 :width=600 style="margin-top: 150px">
@@ -204,7 +206,7 @@
     <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
     <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
-
+    <complete-plan3-model ref="CompletePlan3Model" @ok="CompletePlan"></complete-plan3-model>
   </a-card>
 </template>
 
@@ -222,6 +224,7 @@
   import {downFile} from '../../api/manage'
   import PlanCompleteStateModal from './modules/PlanCompleteStateModal'
   import MergePlan from "./modules/MergePlanModel";
+  import CompletePlan3Model from "./modules/CompletePlan3Model";
 
   export default {
     name: 'Plan3List',
@@ -234,7 +237,8 @@
       PlanAccomplishModal,
       JEllipsis,
       PlanSendOrdersTheSameDayModal,
-      PlanCompleteStateModal
+      PlanCompleteStateModal,
+      CompletePlan3Model
     },
     data() {
       return {
@@ -339,6 +343,17 @@
     },
     computed: {},
     methods: {
+      /**
+       * 计划3合并完单
+       */
+      completePlan() {
+        var ids = this.selectedRowKeys
+        if (ids.length == 0)
+          return this.$message.warning('请选择合并完单项目!')
+        //TODO 打开合并完单页面
+        this.$refs.CompletePlan3Model.completePlanModelShow(ids)
+        this.$refs.CompletePlan3Model.title = '合并完单'
+      },
       /**
        * 计划3完成状态
        */
