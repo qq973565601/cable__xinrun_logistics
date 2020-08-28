@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.cable.mapper.Plan4Mapper">
+    <!-- 查询计划4批量出库完单的数据 -->
+    <select id="getPlan4ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan4Vo">
+        SELECT
+            p.id,
+            p.project_no,
+            p.eng_name,
+            CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
+            p.cable_name,
+            sum(i.inventory_quantity) as inventory_quantity
+        FROM
+            plan4 p
+        LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 4
+        WHERE p.id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        GROUP BY p.id
+    </select>
+
+    <!-- 查询计划4批量入库完单的数据 -->
+    <select id="getPlan4DeliverStorage" resultType="org.jeecg.modules.cable.entity.Plan4">
+        SELECT
+            p.id,
+            p.project_no,
+            p.eng_name,
+            CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
+            p.cable_name,
+            p.sampling_length
+        FROM
+            plan4 p
+        WHERE p.id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="pageList" resultType="org.jeecg.modules.cable.entity.Plan4">
         SELECT * FROM plan4
         <where>
@@ -19,6 +55,7 @@
         </where>
       ORDER BY complete_state ASC,update_time DESC,send_orders_state ASC
     </select>
+
     <!-- 导出计划表4数据 -->
     <select id="exportPlan4" resultType="org.jeecg.modules.cable.importpackage.Plan4Im">
       SELECT
@@ -76,6 +113,7 @@
       GROUP BY
       plan4.id
     </select>
+
     <!-- 导出计划表4汇总 -->
     <select id="exportFeedbackSummary" resultType="org.jeecg.modules.cable.vo.Plan4Vo">
         SELECT
@@ -92,5 +130,4 @@
         GROUP BY
          plan4.project_no,cable_cross
     </select>
-
 </mapper>

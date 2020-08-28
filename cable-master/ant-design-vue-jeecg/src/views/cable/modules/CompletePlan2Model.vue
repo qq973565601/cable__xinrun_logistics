@@ -182,6 +182,14 @@
               placeholder: '请选择${title}',
             },
             {
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '15%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
+            },
+            {
               title: '终点仓库',
               key: 'endWarehouseId',
               width: '15%',
@@ -258,6 +266,14 @@
               width: '15%',
               type: FormTypes.select,
               placeholder: '请选择${title}',
+            },
+            {
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '15%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{required: true, message: '请输入${title}'}]
             },
             {
               title: '终点仓库',

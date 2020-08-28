@@ -68,8 +68,10 @@
               <a-button style="margin-left: 8px" type="primary" icon="import" @click="showExportModal">导出反馈汇总</a-button>
               <a-button @click="TheSameDay" icon="search" type="primary"
                         style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">今日派单</a-button>
-                <a-button @click="mergePlan" icon="search" type="primary"
-                          style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="mergePlan" icon="search" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
+              <a-button @click="completePlan" icon="check-circle" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并完单</a-button>
               <a-modal
                 v-model="visible"
                 :width=700
@@ -109,7 +111,6 @@
               </a-modal>
             </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
@@ -197,7 +198,7 @@
     <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
     <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
-
+    <complete-plan4-model ref="CompletePlan4Model" @ok="CompletePlan"></complete-plan4-model>
   </a-card>
 </template>
 
@@ -215,6 +216,7 @@
   import PlanSendOrdersTheSameDayModal from './modules/PlanSendOrdersTheSameDayModal'
   import PlanCompleteStateModal from './modules/PlanCompleteStateModal'
   import MergePlan from "./modules/MergePlanModel";
+  import CompletePlan4Model from "./modules/CompletePlan4Model";
 
   export default {
     name: 'Plan4List',
@@ -228,7 +230,8 @@
       JDate,
       JEllipsis,
       PlanSendOrdersTheSameDayModal,
-      PlanCompleteStateModal
+      PlanCompleteStateModal,
+      CompletePlan4Model
     },
     data() {
       return {
@@ -372,6 +375,17 @@
       }
     },
     methods: {
+      /**
+       * 计划4合并完单
+       */
+      completePlan() {
+        var ids = this.selectedRowKeys
+        if (ids.length == 0)
+          return this.$message.warning('请选择合并完单项目!')
+        //TODO 打开合并完单页面
+        this.$refs.CompletePlan4Model.completePlanModelShow(ids)
+        this.$refs.CompletePlan4Model.title = '合并完单'
+      },
       /**
        * 计划4完成状态
        */

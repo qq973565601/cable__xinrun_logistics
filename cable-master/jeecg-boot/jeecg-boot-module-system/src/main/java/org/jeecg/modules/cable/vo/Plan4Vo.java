@@ -11,11 +11,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+/**
+ * @author Administrator
+ */
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 public class Plan4Vo implements Serializable {
+    private static final long serialVersionUID = 1931889797509480354L;
 
     // 工程账号
     @Excel(name = "工程账号", width = 15)
@@ -47,8 +52,8 @@ public class Plan4Vo implements Serializable {
 
     // 退役日期
     @Excel(name = "退役日期", width = 15, format = "yyyy-MM-dd")
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date decommissioningDate;
 
     // 情况说明
@@ -91,4 +96,36 @@ public class Plan4Vo implements Serializable {
     @Excel(name = "报废流程节点", width = 15)
     private String scrapProcessNode;
 
+    /**
+     * 项目名称
+     */
+    private String engName;
+    /**
+     * 可出库数量[批量完单操作时使用此属性] ----2020/8/26 bai
+     */
+    private int inventoryQuantity;
+    /**
+     * 批量完单的计划 id集合
+     */
+    private String plan4Ids;
+    /**
+     * 完单类型[0:出库\1:入库]
+     */
+    private String operatorSchema;
+    /**
+     * 交接单号
+     */
+    private String plan4ReceiptNo;
+    /**
+     * 回单照片
+     */
+    private String receiptPhotos;
+    /**
+     * 任务日期
+     */
+    private String taskTime;
+    /**
+     * 合并完单填写的数据集
+     */
+    private List<?> completeOrderList;
 }

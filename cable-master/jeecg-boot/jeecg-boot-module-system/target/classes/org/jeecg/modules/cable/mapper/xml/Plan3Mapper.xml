@@ -12,7 +12,7 @@
             sum(i.inventory_quantity) as inventory_quantity
         FROM
             plan3 p
-            LEFT JOIN inventory i ON p.id = i.backup1
+            LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 3
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}

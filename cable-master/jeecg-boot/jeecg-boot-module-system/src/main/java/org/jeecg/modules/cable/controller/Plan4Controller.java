@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan4;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
 import org.jeecg.modules.cable.service.IPlan4Service;
@@ -52,6 +52,61 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     private IPlan4Service plan4Service;
 
     /**
+     * 计划4合并完单
+     * 2020/8/28 bai
+     *
+     * @param plan4Vo 合并完单中的表单数据
+     * @return 受影响的行数
+     */
+    @PostMapping(value = "/consolidationCompleted")
+    public Result<?> consolidationCompleted(@RequestBody Plan4Vo plan4Vo) {
+        Result<?> result = plan4Service.consolidationCompleted(Arrays.asList(plan4Vo.getPlan4Ids().split(",")), plan4Vo.getOperatorSchema(), plan4Vo.getPlan4ReceiptNo(), plan4Vo.getReceiptPhotos(), plan4Vo.getTaskTime(), plan4Vo.getCompleteOrderList());
+        if (result.getCode().equals(CommonConstant.SC_OK_200)) {
+            return Result.ok(result.getMessage());
+        } else {
+            return Result.error(result.getMessage());
+        }
+    }
+
+    /**
+     * 查询计划4批量出库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量出库完单 ids
+     * @return 计划4批量出库完单的数据
+     */
+    @GetMapping(value = "/getPlan4ReceivingStorageList")
+    public Result<?> getPlan4ReceivingStorageList(@RequestParam(name = "ids") String ids) {
+        List<Plan4Vo> list = plan4Service.getPlan4ReceivingStorageList(Arrays.asList(ids.split(",")));
+        for (Plan4Vo item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
+
+    /**
+     * 查询计划4批量入库完单的数据
+     * bai
+     * 2020/8/28
+     *
+     * @param ids 批量入库完单 ids
+     * @return 计划4批量入库完单的数据
+     */
+    @GetMapping(value = "/getPlan4DeliverStorage")
+    public Result<?> getPlan4DeliverStorage(@RequestParam(name = "ids") String ids) {
+        List<Plan4> list = plan4Service.getPlan4DeliverStorage(Arrays.asList(ids.split(",")));
+        for (Plan4 item : list) {
+            if (!list.get(0).getProjectNo().equals(item.getProjectNo())) {
+                return Result.error("工程账号必须一致");
+            }
+        }
+        return Result.ok(list);
+    }
+
+    /**
      * 分页列表查询
      * bai
      * 2020/5/29
@@ -70,8 +125,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     }
 
     /**
-     *  根据ids集合
-     *  实现分页列表查询
+     * 根据ids集合
+     * 实现分页列表查询
      *
      * @return
      */
@@ -86,7 +141,7 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
         //转型得到ids集合
         List<String> idlist = Arrays.asList(split);
         Page<Plan4> page = new Page<>(pageNo, pageSize);
-        IPage<Plan4> pageList = plan4Service.idsqueryPageList4(idlist,page);
+        IPage<Plan4> pageList = plan4Service.idsqueryPageList4(idlist, page);
         return Result.ok(pageList);
     }
 
@@ -142,7 +197,7 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-//	/**
+    //	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -181,8 +236,7 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      * @param plan4
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan4 plan4,
-                                  @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan4 plan4, @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集

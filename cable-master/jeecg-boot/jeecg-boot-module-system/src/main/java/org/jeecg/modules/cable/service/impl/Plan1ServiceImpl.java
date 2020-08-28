@@ -124,11 +124,9 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     boolean flag = storageLocationService.updateById(storageLocation);
                     System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
                 }
-                deliverStorageService.saveBatch(deliverStorageList); // 批量向入库完单表添加数据
+                deliverStorageService.saveBatch(deliverStorageList);
                 return Result.ok("入库完单成功");
             case "0":
-                // 出库 receiving_storage
-                // 出库完单向出库完单表存数据
                 List<ReceivingStorage> receivingStorageList = new LinkedList<ReceivingStorage>();
                 for (int i = 0; i < completeOrderList.size(); i++) {
                     // 将泛型集合转换
@@ -143,6 +141,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString())); // 库位id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))); // 出库完单数量
                     receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString())); // 出库完单数量单位
+                    receivingStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     receivingStorage.setReceiptNo(receiptNo); // 交接单号
                     receivingStorage.setState(1); // 完单状态 默认已完成
                     receivingStorage.setReceiptPhotos(receiptPhotos); // 回单图片路径
@@ -206,7 +205,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                         return Result.error("此库存容积并不存在, 无法进行出库完单操作");
                     }
                 }
-                receivingStorageService.saveBatch(receivingStorageList); // 批量向出库完单表添加数据
+                receivingStorageService.saveBatch(receivingStorageList);
                 return Result.ok("出库完单成功");
             default:
                 return Result.ok("完单操作失败");

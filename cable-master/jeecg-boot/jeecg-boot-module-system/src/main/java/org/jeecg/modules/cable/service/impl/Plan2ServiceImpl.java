@@ -134,6 +134,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString()));
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
+                    receivingStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     receivingStorage.setReceiptNo(receiptNo);
                     receivingStorage.setState(1);
                     receivingStorage.setReceiptPhotos(receiptPhotos);
