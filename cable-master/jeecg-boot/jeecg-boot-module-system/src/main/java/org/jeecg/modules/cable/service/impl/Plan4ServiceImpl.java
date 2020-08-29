@@ -71,6 +71,14 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     deliverStorage.setRecyclingSpecifications(map.get("recyclingSpecifications").toString());
                     deliverStorage.setTexture(map.get("texture").toString());
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString()));
+                    if (map.get("scenePhotos1") != null) {
+                        LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
+                        deliverStorage.setScenePhotos(photos1.get("path").toString());
+                        if (map.get("scenePhotos2") != null) {
+                            LinkedHashMap<String, Object> photos2 = (LinkedHashMap<String, Object>) map.get("scenePhotos2");
+                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString());
+                        }
+                    }
                     deliverStorage.setReceiptNo(receiptNo);
                     deliverStorage.setState(1);
                     deliverStorage.setReceiptPhotos(receiptPhotos);
