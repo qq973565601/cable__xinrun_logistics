@@ -179,6 +179,7 @@
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
+              validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
             },
             {
@@ -265,6 +266,7 @@
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
+              validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
             },
             {
