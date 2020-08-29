@@ -72,10 +72,10 @@
 </template>
 
 <script>
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import JEditableTable from '@/components/jeecg/JEditableTable'
-  import {FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables} from '@/utils/JEditableTableUtil'
-  import {httpAction, getAction} from '@/api/manage'
+  import { FormTypes, VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
+  import { httpAction, getAction } from '@/api/manage'
   import JDate from '@/components/jeecg/JDate'
   import pick from 'lodash.pick'
   import JUpload from '@/components/jeecg/JUpload'
@@ -99,17 +99,17 @@
         storageLocations: [],
         model: {},
         validatorRules: {
-          operatorSchema: {rules: [{required: true, message: '请选择完单类型'}]},
-          taskTime: {rules: [{required: true, message: '请选择任务时间'}]},
-          receipt_photos: {rules: [{required: true, message: '请上传回单图片'}]},
+          operatorSchema: { rules: [{ required: true, message: '请选择完单类型' }] },
+          taskTime: { rules: [{ required: true, message: '请选择任务时间' }] },
+          receipt_photos: { rules: [{ required: true, message: '请上传回单图片' }] }
         },
         labelCol: {
-          xs: {span: 24},
-          sm: {span: 6}
+          xs: { span: 24 },
+          sm: { span: 6 }
         },
         wrapperCol: {
-          xs: {span: 24},
-          sm: {span: 24 - 6}
+          xs: { span: 24 },
+          sm: { span: 24 - 6 }
         },
         // 计划1页面打开合并完单获取到的计划id集
         plan1Ids: '',
@@ -153,34 +153,34 @@
               width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '单位',
               key: 'unit',
               width: '10%',
               type: FormTypes.select,
-              dictCode: "unit",
+              dictCode: 'unit',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
               title: '自家仓库',
               key: 'warehouseId',
               width: '15%',
               type: FormTypes.select,
-              dictCode: "warehouse,name,id,type='1'",
+              dictCode: 'warehouse,name,id,type=\'1\'',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}],
-              // 当 FormTypes 为 select 时的 change 事件
-              onchange: "onchange"
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              onchange: 'onchange'
             },
             {
               title: '自家库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}',
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
             },
             {
               title: '完单容积',
@@ -188,16 +188,16 @@
               width: '15%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '终点仓库',
               key: 'endWarehouseId',
               width: '15%',
               type: FormTypes.select,
-              dictCode: "warehouse,name,id",
+              dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
             }
           ]
         },
@@ -240,34 +240,34 @@
               width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '单位',
               key: 'unit',
               width: '10%',
               type: FormTypes.select,
-              dictCode: "unit",
+              dictCode: 'unit',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
               title: '自家仓库',
               key: 'warehouseId',
               width: '15%',
               type: FormTypes.select,
-              dictCode: "warehouse,name,id,type='1'",
+              dictCode: 'warehouse,name,id,type=\'1\'',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}],
-              // 当 FormTypes 为 select 时的 change 事件
-              onchange: "onchange"
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              onchange: 'onchange'
             },
             {
               title: '自家库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}',
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
             },
             {
               title: '完单容积',
@@ -275,16 +275,16 @@
               width: '15%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '终点仓库',
               key: 'endWarehouseId',
               width: '15%',
               type: FormTypes.select,
-              dictCode: "warehouse,name,id",
+              dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
             }
           ]
         },
@@ -327,34 +327,34 @@
               width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '单位',
               key: 'unit',
               width: '10%',
               type: FormTypes.select,
-              dictCode: "unit",
+              dictCode: 'unit',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
               title: '目标仓库',
               key: 'warehouseId',
               width: '15%',
               type: FormTypes.select,
-              dictCode: "warehouse,name,id",
+              dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
-              validateRules: [{required: true, message: '请选择${title}'}],
-              onchange: "onchange",
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              onchange: 'onchange'
             },
             {
               title: '库位',
               key: 'storageLocationId',
               width: '15%',
               type: FormTypes.select,
-              placeholder: '请选择${title}',
-
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
             },
             {
               title: '完单容积',
@@ -362,7 +362,7 @@
               width: '15%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{required: true, message: '请输入${title}'}]
+              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '是否异常',
@@ -371,10 +371,37 @@
               type: FormTypes.select,
               placeholder: '请选择${title}',
               options: [ // 下拉选项
-                {title: '正常', value: '0'},
-                {title: '异常', value: '1'}
+                { title: '正常', value: '0' },
+                { title: '异常', value: '1' }
               ],
-              validateRules: [{required: true, message: '请选择${title}'}]
+              validateRules: [{ required: true, message: '请选择${title}' }]
+            },
+            {
+              title: '异常原因',
+              key: 'anomalousCause',
+              width: '15%',
+              type: FormTypes.input,
+              placeholder: '请输入${title}'
+            },
+            {
+              title: '异常图片1',
+              key: 'scenePhotos1',
+              width: '10%',
+              type: FormTypes.upload,
+              token: true,
+              action: window._CONFIG['domianURL'] + '/sys/common/upload',
+              responseName: 'message',
+              placeholder: '点击上传'
+            },
+            {
+              title: '异常图片2',
+              key: 'scenePhotos2',
+              width: '10%',
+              type: FormTypes.upload,
+              token: true,
+              action: window._CONFIG['domianURL'] + '/sys/common/upload',
+              responseName: 'message',
+              placeholder: '点击上传'
             },
             {
               title: '说明',
@@ -382,7 +409,7 @@
               width: '15%',
               type: FormTypes.input,
               placeholder: '请输入${title}'
-            },
+            }
           ]
         },
         url: {
@@ -411,9 +438,9 @@
        */
       types(val) {
         this.storageLocations = []
-        this.form.setFieldsValue(pick({storageLocationId: undefined}, 'storageLocationId'))
+        this.form.setFieldsValue(pick({ storageLocationId: undefined }, 'storageLocationId'))
         let va = val
-        getAction('/cable/storageLocation/list', {warehouseId: va}).then((res) => {
+        getAction('/cable/storageLocation/list', { warehouseId: va }).then((res) => {
           if (res.success) {
             this.storageLocations = res.result
             console.log(this.storageLocations)
@@ -437,13 +464,13 @@
         this.edit({})
       },
       completePlanModelShow(record) {
-        console.log("进入了合并完单页面>>>", record)
+        console.log('进入了合并完单页面>>>', record)
         this.activeKey = '1'
         this.form.resetFields()
         this.model = Object.assign({}, record)
         // 加载子表数据
         if (record) {
-          this.plan1Ids = {ids: record.toString()}
+          this.plan1Ids = { ids: record.toString() }
           this.requestTableData(this.url.getPlan1ReceivingStorageList, this.plan1Ids, this.table1)
           this.requestTableData(this.url.getPlan1DeliverStorage, this.plan1Ids, this.table2)
         }
@@ -468,7 +495,9 @@
             tab.dataSource = res.result
           } else {
             this.visible = false
-            this.$message.warning(res.message)
+            if (this.url.getPlan1ReceivingStorageList == url) {
+              this.$message.warning(res.message)
+            }
             return
           }
         }).finally(() => {
@@ -524,9 +553,9 @@
       /** 发起新增或修改的请求 */
       requestAddOrEdit(formData) {
         formData['plan1Ids'] = this.plan1Ids.ids
-        console.log("发起合并完单的操作方法, 请求参数为>>>>>>", formData)
+        console.log('发起合并完单的操作方法, 请求参数为>>>>>>', formData)
         if (this.url.add == null) {
-          this.$message.error("请设置url.add属性")
+          this.$message.error('请设置url.add属性')
           return
         }
         let url = this.url.add, method = 'post'

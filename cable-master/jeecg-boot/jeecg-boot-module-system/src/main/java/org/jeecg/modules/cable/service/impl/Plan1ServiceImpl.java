@@ -73,6 +73,15 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     deliverStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString())); // 完单数量单位
                     deliverStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))); // 完单容积
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString())); // 是否异常
+                    deliverStorage.setAnomalousCause(map.get("anomalousCause").toString()); // 异常原因
+                    if (map.get("scenePhotos1") != null) { // 判断是否上传了多张异常图片
+                        LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
+                        deliverStorage.setScenePhotos(photos1.get("path").toString()); // 添加异常图片1
+                        if (map.get("scenePhotos2") != null) {
+                            LinkedHashMap<String, Object> photos2 = (LinkedHashMap<String, Object>) map.get("scenePhotos2");
+                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString()); // 添加异常图片2
+                        }
+                    }
                     deliverStorage.setReceiptNo(receiptNo); // 交接单号
                     deliverStorage.setState(1); // 完单状态 默认已完成
                     deliverStorage.setReceiptPhotos(receiptPhotos); // 回单照片路径
