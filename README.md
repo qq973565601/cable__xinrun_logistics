@@ -26,3 +26,13 @@
 ![登录截图](https://images.gitee.com/uploads/images/2020/0628/192351_69d1a279_5459645.jpeg "1.jpg")
 2. 首页
 ![首页](https://images.gitee.com/uploads/images/2020/0628/192911_b2a0b33a_5459645.jpeg "2.jpg")
+3. 系统设置 - 可以更改系统主体颜色设置等等
+![系统设置](https://images.gitee.com/uploads/images/2020/0829/131611_5c8e13e6_5459645.jpeg "系统设置.jpg")
+4. 员工管理模块 
+![员工管理](https://images.gitee.com/uploads/images/2020/0829/131638_4fd807ec_5459645.jpeg "员工管理.jpg")
+5. 角色授权 - 通过分配给用户不同的角色，可访问不同的菜单列表
+![角色授权](https://images.gitee.com/uploads/images/2020/0829/131718_1e498bac_5459645.jpeg "角色授权.jpg")
+6. 计划导出 - 通过 excelPoi 技术实现信息导出功能
+![计划导出](https://images.gitee.com/uploads/images/2020/0829/131754_11c8c927_5459645.jpeg "计划导出.jpg")
+7. 定时任务 - 定时指定某些特定的任务
+![定时任务](https://images.gitee.com/uploads/images/2020/0829/131834_ebdb6126_5459645.jpeg "定时任务.jpg")
