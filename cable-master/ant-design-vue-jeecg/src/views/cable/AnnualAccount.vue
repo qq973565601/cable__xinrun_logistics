@@ -35,7 +35,7 @@
 
           <a-col :md="4" :sm="7">
             <a-form-item label="项目编号">
-              <a-input v-model="queryParam.projectNo"  placeholder="请输入项目编号"></a-input>
+              <a-input v-model="queryParam.projectNo" placeholder="请输入项目编号"></a-input>
             </a-form-item>
           </a-col>
 
@@ -78,7 +78,8 @@
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
+        selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
@@ -116,13 +117,13 @@
 
   export default {
     name: 'AnnualAccount',
-    mixins:[JeecgListMixin, mixinDevice],
+    mixins: [JeecgListMixin, mixinDevice],
     components: {
       ACol,
       AFormItem,
       JEllipsis
     },
-    data() {
+    data () {
       return {
         description: '物料年度出入台账',
         // 计划年份
@@ -136,226 +137,215 @@
             align: 'center',
             dataIndex: 'planType',
             scopedSlots: { customRender: 'factoryText' }
-          /*},
-          {
-            title:'项目编号',
-            align:"center",
-            dataIndex: 'projectNo',
+          }, {
+            title: '物料编号',
+            align: 'center',
+            dataIndex: 'serial',
             scopedSlots: { customRender: 'factoryText' }
-          },{
-            title:'项目名称',
-            align:"center",
-            dataIndex: 'projectName',
-            scopedSlots: { customRender: 'factoryText' }*/
-          },{
-            title:'物料编号',
-            align:"center",
-            dataIndex:'serial',
+          }, {
+            title: '物料名称',
+            align: 'center',
+            dataIndex: 'name',
             scopedSlots: { customRender: 'factoryText' }
-          },{
-            title:'物料名称',
-            align:"center",
-            dataIndex:'name',
-            scopedSlots: { customRender: 'factoryText' }
-          },{
+          }, {
             title: '1月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m1_1'
-              },{
+                align: 'center',
+                dataIndex: 'm11'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m1_0'
+                align: 'center',
+                dataIndex: 'm10'
               }
             ]
-          },{
+          }, {
             title: '2月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m2_1'
-              },{
+                align: 'center',
+                dataIndex: 'm21'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m2_0'
+                align: 'center',
+                dataIndex: 'm20'
               }
             ]
-          },{
+          }, {
             title: '3月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m3_1'
-              },{
+                align: 'center',
+                dataIndex: 'm31'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m3_0'
+                align: 'center',
+                dataIndex: 'm30'
               }
             ]
-          },{
+          }, {
             title: '4月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m4_1'
-              },{
+                align: 'center',
+                dataIndex: 'm41'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m4_0'
+                align: 'center',
+                dataIndex: 'm40'
               }
             ]
-          },{
+          }, {
             title: '5月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m5_1'
-              },{
+                align: 'center',
+                dataIndex: 'm51'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m5_0'
+                align: 'center',
+                dataIndex: 'm50'
               }
             ]
-          },{
+          }, {
             title: '6月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m6_1'
-              },{
+                align: 'center',
+                dataIndex: 'm61'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m6_0'
+                align: 'center',
+                dataIndex: 'm60'
               }
             ]
-          },{
+          }, {
             title: '7月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m7_1'
-              },{
+                align: 'center',
+                dataIndex: 'm71'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m7_0'
+                align: 'center',
+                dataIndex: 'm70'
               }
             ]
-          },{
+          }, {
             title: '8月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m8_1'
-              },{
+                align: 'center',
+                dataIndex: 'm81'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m8_0'
+                align: 'center',
+                dataIndex: 'm80'
               }
             ]
-          },{
+          }, {
             title: '9月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m9_1'
-              },{
+                align: 'center',
+                dataIndex: 'm91'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m9_0'
+                align: 'center',
+                dataIndex: 'm90'
               }
             ]
-          },{
+          }, {
             title: '10月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m10_1'
-              },{
+                align: 'center',
+                dataIndex: 'm101'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m10_0'
+                align: 'center',
+                dataIndex: 'm100'
               }
             ]
-          },{
+          }, {
             title: '11月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m11_1'
-              },{
+                align: 'center',
+                dataIndex: 'm111'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m11_0'
+                align: 'center',
+                dataIndex: 'm110'
               }
             ]
-          },{
+          }, {
             title: '12月',
-            align:"center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'m12_1'
-              },{
+                align: 'center',
+                dataIndex: 'm121'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'m12_0'
+                align: 'center',
+                dataIndex: 'm120'
               }
             ]
-          },{
+          }, {
             title: '合计',
-            align: "center",
+            align: 'center',
             children: [
               {
                 title: '入库',
-                align:"center",
-                dataIndex:'mh_0'
-              },{
+                align: 'center',
+                dataIndex: 'mh1'
+              }, {
                 title: '出库',
-                align:"center",
-                dataIndex:'mh_1'
+                align: 'center',
+                dataIndex: 'mh0'
               }
             ]
           }
         ],
         url: {
-          list:'/cable/material/getAnnualAccountList'
+          list: '/cable/material/getAnnualAccountList'
         }
       }
     },
     methods: {
       // 计划年份
-      getCurrentYear() {
-        let date = new Date();
-        this.year = date.getFullYear();
+      getCurrentYear () {
+        let date = new Date()
+        this.year = date.getFullYear()
       }
     },
-    mounted() {
+    mounted () {
       // 调用计划年份
-      this.getCurrentYear();
+      this.getCurrentYear()
     }
   }
 </script>

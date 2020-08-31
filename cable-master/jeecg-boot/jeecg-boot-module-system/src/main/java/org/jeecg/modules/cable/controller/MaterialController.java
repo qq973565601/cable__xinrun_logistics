@@ -90,8 +90,8 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
          * 2020-08-20
          * liu 改
          */
-        int count = materialService.count(new QueryWrapper<Material>().eq("serial",material.getSerial()).ne("id",material.getId()));
-        if( count > 0) return false;
+        int count = materialService.count(new QueryWrapper<Material>().eq("serial", material.getSerial()).ne("id", material.getId()));
+        if (count > 0) return false;
         return true;
     }
 
@@ -141,14 +141,15 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
     @AutoLog(value = "物料表-分页查询物料年度出入台账统计")
     @ApiOperation(value = "物料表-分页查询物料年度出入台账统计", notes = "物料表-分页查询物料年度出入台账统计")
     @GetMapping(value = "/getAnnualAccountList")
-    public Result<?> getAnnualAccountList(@RequestParam(name = "dateTime", required = false) String dateTime,
+    public Result<?> getAnnualAccountList(@RequestParam(name = "planType", required = false) String planType,
+                                          @RequestParam(name = "dateTime", required = false) String dateTime,
                                           @RequestParam(name = "serial", required = false) String serial,
                                           @RequestParam(name = "name", required = false) String name,
                                           @RequestParam(name = "projectNo", required = false) String projectNo,
                                           @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<AnnualReportVo> page = new Page<AnnualReportVo>(pageNo, pageSize);
-        IPage<AnnualReportVo> pageList = materialService.getAnnualAccountList(dateTime, serial, name, projectNo, page);
+        IPage<AnnualReportVo> pageList = materialService.getAnnualAccountList(planType, dateTime, serial, name, projectNo, page);
         return Result.ok(pageList);
     }
 

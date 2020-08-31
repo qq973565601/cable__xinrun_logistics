@@ -38,37 +38,37 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         List<MaterialRemainingAccountVo> list = baseMapper.getMaterialRemainingAccountList(serial, name, projectNo, page);
         for (MaterialRemainingAccountVo materialRemainingAccountVo : list) {
             BigDecimal bigDecimal = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow_0_0() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow_0_0());
+            if (materialRemainingAccountVo.getNow00() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow00());
             }
-            if (materialRemainingAccountVo.getNow_1_0() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow_1_0());
+            if (materialRemainingAccountVo.getNow10() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow10());
             }
-            if (materialRemainingAccountVo.getNow_2_0() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow_2_0());
+            if (materialRemainingAccountVo.getNow20() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow20());
             }
-            if (materialRemainingAccountVo.getNow_3_0() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow_3_0());
+            if (materialRemainingAccountVo.getNow30() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow30());
             }
-            if (materialRemainingAccountVo.getNow_4_0() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow_4_0());
+            if (materialRemainingAccountVo.getNow40() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow40());
             }
             materialRemainingAccountVo.setYlckNums(bigDecimal);
             BigDecimal bigDecimal1 = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow_0_1() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow_0_1());
+            if (materialRemainingAccountVo.getNow01() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow01());
             }
-            if (materialRemainingAccountVo.getNow_1_1() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow_1_1());
+            if (materialRemainingAccountVo.getNow11() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow11());
             }
-            if (materialRemainingAccountVo.getNow_2_1() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow_2_1());
+            if (materialRemainingAccountVo.getNow21() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow21());
             }
-            if (materialRemainingAccountVo.getNow_3_1() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow_3_1());
+            if (materialRemainingAccountVo.getNow31() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow31());
             }
-            if (materialRemainingAccountVo.getNow_4_1() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow_4_1());
+            if (materialRemainingAccountVo.getNow41() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow41());
             }
             materialRemainingAccountVo.setYlrkNums(bigDecimal1);
         }
@@ -76,85 +76,39 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
-    public IPage<AnnualReportVo> getAnnualAccountList(String dateTime, String serial, String name, String projectNo, Page<AnnualReportVo> page) {
-        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(dateTime, serial, name, projectNo, page);
+    public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, Page<AnnualReportVo> page) {
+        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo, page);
         for (AnnualReportVo annualReportVo : list) {
-            BigDecimal bigDecimal = new BigDecimal(0);
-            if (annualReportVo.getM1_0() != null) {
-                bigDecimal.add(annualReportVo.getM1_0());
-            }
-            if (annualReportVo.getM2_0() != null) {
-                bigDecimal.add(annualReportVo.getM2_0());
-            }
-            if (annualReportVo.getM3_0() != null) {
-                bigDecimal.add(annualReportVo.getM3_0());
-            }
-            if (annualReportVo.getM4_0() != null) {
-                bigDecimal.add(annualReportVo.getM4_0());
-            }
-            if (annualReportVo.getM5_0() != null) {
-                bigDecimal.add(annualReportVo.getM5_0());
-            }
-            if (annualReportVo.getM6_0() != null) {
-                bigDecimal.add(annualReportVo.getM6_0());
-            }
-            if (annualReportVo.getM7_0() != null) {
-                bigDecimal.add(annualReportVo.getM7_0());
-            }
-            if (annualReportVo.getM8_0() != null) {
-                bigDecimal.add(annualReportVo.getM8_0());
-            }
-            if (annualReportVo.getM9_0() != null) {
-                bigDecimal.add(annualReportVo.getM9_0());
-            }
-            if (annualReportVo.getM10_0() != null) {
-                bigDecimal.add(annualReportVo.getM10_0());
-            }
-            if (annualReportVo.getM11_0() != null) {
-                bigDecimal.add(annualReportVo.getM11_0());
-            }
-            if (annualReportVo.getM12_0() != null) {
-                bigDecimal.add(annualReportVo.getM12_0());
-            }
-            annualReportVo.setMh_0(bigDecimal);
-            BigDecimal bigDecimal1 = new BigDecimal(0);
-            if (annualReportVo.getM1_1() != null) {
-                bigDecimal1.add(annualReportVo.getM1_1());
-            }
-            if (annualReportVo.getM2_1() != null) {
-                bigDecimal1.add(annualReportVo.getM2_1());
-            }
-            if (annualReportVo.getM3_1() != null) {
-                bigDecimal1.add(annualReportVo.getM3_1());
-            }
-            if (annualReportVo.getM4_1() != null) {
-                bigDecimal1.add(annualReportVo.getM4_1());
-            }
-            if (annualReportVo.getM5_1() != null) {
-                bigDecimal1.add(annualReportVo.getM5_1());
-            }
-            if (annualReportVo.getM6_1() != null) {
-                bigDecimal1.add(annualReportVo.getM6_1());
-            }
-            if (annualReportVo.getM7_1() != null) {
-                bigDecimal1.add(annualReportVo.getM7_1());
-            }
-            if (annualReportVo.getM8_1() != null) {
-                bigDecimal1.add(annualReportVo.getM8_1());
-            }
-            if (annualReportVo.getM9_1() != null) {
-                bigDecimal1.add(annualReportVo.getM9_1());
-            }
-            if (annualReportVo.getM10_1() != null) {
-                bigDecimal1.add(annualReportVo.getM10_1());
-            }
-            if (annualReportVo.getM11_1() != null) {
-                bigDecimal1.add(annualReportVo.getM11_1());
-            }
-            if (annualReportVo.getM12_1() != null) {
-                bigDecimal1.add(annualReportVo.getM12_1());
-            }
-            annualReportVo.setMh_1(bigDecimal1);
+            BigDecimal m10 = annualReportVo.getM10();
+            BigDecimal m20 = annualReportVo.getM20();
+            BigDecimal m30 = annualReportVo.getM30();
+            BigDecimal m40 = annualReportVo.getM40();
+            BigDecimal m50 = annualReportVo.getM50();
+            BigDecimal m60 = annualReportVo.getM60();
+            BigDecimal m70 = annualReportVo.getM70();
+            BigDecimal m80 = annualReportVo.getM80();
+            BigDecimal m90 = annualReportVo.getM90();
+            BigDecimal m100 = annualReportVo.getM100();
+            BigDecimal m110 = annualReportVo.getM110();
+            BigDecimal m120 = annualReportVo.getM120();
+            BigDecimal receivingNum = new BigDecimal(0);
+            receivingNum = receivingNum.add(m10).add(m20).add(m30).add(m40).add(m50).add(m60).add(m70).add(m80).add(m90).add(m100).add(m110).add(m120);
+            annualReportVo.setMh0(receivingNum);  // 统计一年中的总出库数量
+            BigDecimal m11 = annualReportVo.getM11();
+            BigDecimal m21 = annualReportVo.getM21();
+            BigDecimal m31 = annualReportVo.getM31();
+            BigDecimal m41 = annualReportVo.getM41();
+            BigDecimal m51 = annualReportVo.getM51();
+            BigDecimal m61 = annualReportVo.getM61();
+            BigDecimal m71 = annualReportVo.getM71();
+            BigDecimal m81 = annualReportVo.getM81();
+            BigDecimal m91 = annualReportVo.getM91();
+            BigDecimal m101 = annualReportVo.getM101();
+            BigDecimal m111 = annualReportVo.getM111();
+            BigDecimal m121 = annualReportVo.getM121();
+            BigDecimal deliverNum = new BigDecimal(0);
+            deliverNum = deliverNum.add(m11).add(m21).add(m31).add(m41).add(m51).add(m61).add(m71).add(m81).add(m91).add(m101).add(m111).add(m121);
+            annualReportVo.setMh1(deliverNum); // 统计一年中的总入库数量
         }
         return page.setRecords(list);
     }

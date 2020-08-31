@@ -12,23 +12,25 @@ import java.math.BigDecimal;
  */
 @Data
 public class MaterialRemainingAccountVo implements Serializable {
+  private static final long serialVersionUID = -7485816670928860657L;
+
   private String planType;
   private String projectNo;
   private String projectName;
   private String serial;
   private String name;
-  private BigDecimal now_5_1;
-  private BigDecimal now_5_0;
-  private BigDecimal now_4_1;
-  private BigDecimal now_4_0;
-  private BigDecimal now_3_1;
-  private BigDecimal now_3_0;
-  private BigDecimal now_2_1;
-  private BigDecimal now_2_0;
-  private BigDecimal now_1_1;
-  private BigDecimal now_1_0;
-  private BigDecimal now_0_1;
-  private BigDecimal now_0_0;
+  private BigDecimal now51;
+  private BigDecimal now50;
+  private BigDecimal now41;
+  private BigDecimal now40;
+  private BigDecimal now31;
+  private BigDecimal now30;
+  private BigDecimal now21;
+  private BigDecimal now20;
+  private BigDecimal now11;
+  private BigDecimal now10;
+  private BigDecimal now01;
+  private BigDecimal now00;
   /**
    * 余留入库总数
    */

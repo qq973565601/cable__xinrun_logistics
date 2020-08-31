@@ -70,6 +70,7 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                     deliverStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
                     deliverStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString()));
+                    deliverStorage.setAnomalousCause(map.get("anomalousCause").toString()); // 异常原因
                     if (map.get("scenePhotos1") != null) {
                         LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
                         deliverStorage.setScenePhotos(photos1.get("path").toString());
