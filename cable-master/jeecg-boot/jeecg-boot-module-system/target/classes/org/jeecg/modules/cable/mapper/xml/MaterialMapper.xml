@@ -549,17 +549,59 @@
         IF
         (
         storages.type = 1,
-        IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 ),- IFNULL( IF ( storages.type = 0, accomplish_num, 0 ),
-        0 )
+        IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 ),- IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 )
         )
         ) AS KCnums
         FROM
         (
         SELECT
+        d.id,
+        d.plan_id,
+        d.plan_type,
+        d.material_id,
+        d.warehouse_id,
+        d.storage_location_id,
+        d.accomplish_num,
+        d.accomplish_num_unit,
+        d.accomplish_weight,
+        d.accomplish_weight_unit,
+        d.accomplish_volume,
+        d.receipt_no,
+        d.state,
+        d.deliver_time AS taskTime,
+        d.create_time,
+        1 AS type
+        FROM
+        deliver_storage d
+        WHERE
+        state = 1 UNION ALL
+        SELECT
+        r.id,
+        r.plan_id,
+        r.plan_type,
+        r.material_id,
+        r.warehouse_id,
+        r.storage_location_id,
+        r.accomplish_num,
+        r.accomplish_num_unit,
+        r.accomplish_weight,
+        r.accomplish_weight_unit,
+        r.accomplish_volume,
+        r.receipt_no,
+        r.state,
+        r.receiving_time AS taskTime,
+        r.create_time,
+        0 AS type
+        FROM
+        receiving_storage r
+        WHERE
+        state = 1
+        ) storages
+        LEFT JOIN (
+        SELECT
         id,
         project_no,
         project_name,
-        1 AS type,
         CASE
         plan_type
         WHEN '配变电' THEN
@@ -571,15 +613,20 @@
         WHEN '其它' THEN
         '其它' ELSE '未知'
         END AS planType,
+        1 AS type,
+        raw_material_code AS materialSerial,
+        raw_material_text AS materialName,
         num_receipts
         FROM
         plan1 UNION ALL
         SELECT
         id,
         project_no,
-        NULL AS project_name,
-        2 AS type,
+        site AS project_name,
         '备品' AS planType,
+        2 AS type,
+        backup3 AS materialSerial,
+        backup2 AS materialName,
         0 AS num_receipts
         FROM
         plan2 UNION ALL
@@ -587,74 +634,34 @@
         id,
         project_no,
         eng_name AS project_name,
-        3 AS type,
         CASE
         plan_type
-        WHEN '正常' THEN
-        '正常'
+        WHEN '新品' THEN
+        '新品'
         WHEN '抢修' THEN
         '抢修'
         WHEN '临措' THEN
         '临措' ELSE '未知'
         END AS planType,
+        3 AS type,
+        material_code AS materialSerial,
+        material_describe AS materialName,
         num AS num_receipts
         FROM
         plan3 UNION ALL
         SELECT
         id,
         project_no,
-        eng_name project_name,
-        4 AS type,
+        eng_name AS project_name,
         '电缆' AS planType,
-        0 AS num_receipts
+        4 AS type,
+        CONCAT( voltage_grade, ' ', cable_cross ) AS materialSerial,
+        CONCAT( voltage_grade, ' ', cable_cross ) AS materialName,
+        sampling_length as num_receipts
         FROM
         plan4
-        ) p
-        LEFT JOIN send_orders s ON s.plan_type = p.type
-        AND s.plan_id = p.id
-        LEFT JOIN (
-        SELECT
-        deliver_storage.id,
-        deliver_storage.send_orders_id,
-        deliver_storage.material_id,
-        deliver_storage.warehouse_id,
-        deliver_storage.storage_location_id,
-        deliver_storage.accomplish_num,
-        deliver_storage.accomplish_num_unit,
-        deliver_storage.accomplish_weight,
-        deliver_storage.accomplish_weight_unit,
-        deliver_storage.recycling_specifications,
-        deliver_storage.texture,
-        deliver_storage.recycling_situation,
-        deliver_storage.whether_complete,
-        deliver_storage.receipt_no,
-        deliver_storage.incomplete_description,
-        deliver_storage.state,
-        1 AS type
-        FROM
-        deliver_storage UNION ALL
-        SELECT
-        receiving_storage.id,
-        receiving_storage.send_orders_id,
-        receiving_storage.material_id,
-        receiving_storage.warehouse_id,
-        receiving_storage.storage_location_id,
-        receiving_storage.accomplish_num,
-        receiving_storage.accomplish_num_unit,
-        receiving_storage.accomplish_weight,
-        receiving_storage.accomplish_weight_unit,
-        receiving_storage.recycling_specifications,
-        receiving_storage.texture,
-        receiving_storage.recycling_situation,
-        receiving_storage.whether_complete,
-        receiving_storage.receipt_no,
-        receiving_storage.incomplete_description,
-        receiving_storage.state,
-        0 AS type
-        FROM
-        receiving_storage
-        ) storages ON storages.send_orders_id = s.id
-        AND s.operator_schema = storages.type
+        ) p ON storages.plan_id = p.id
+        AND storages.plan_type = p.type
         LEFT JOIN material m ON storages.material_id = m.id
         <where>
             <if test="null != planType and '' != planType">
@@ -674,7 +681,9 @@
             </if>
         </where>
         GROUP BY
-        CONCAT( p.id, p.type )
+        storages.plan_id,
+        storages.plan_type,
+        storages.material_id
     </select>
     <select id="materialOutPutDayRList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">
       SELECT

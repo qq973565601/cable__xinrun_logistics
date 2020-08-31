@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -23,30 +24,37 @@ import java.util.List;
 @Service
 public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse> implements IWarehouseService {
 
-  @Override
-  public IPage<InventoryIocationListVo> InventoryIocationListVoPage(InventoryIocationListVo inventoryIocationListVo, Page<InventoryIocationListVo> page) {
-    List<InventoryIocationListVo> list = baseMapper.InventoryIocationListVoPage(inventoryIocationListVo, page);
-    return page.setRecords(list);
-  }
+    @Override
+    public IPage<InventoryIocationListVo> InventoryIocationListVoPage(InventoryIocationListVo inventoryIocationListVo, Page<InventoryIocationListVo> page) {
+        List<InventoryIocationListVo> list = baseMapper.InventoryIocationListVoPage(inventoryIocationListVo, page);
+        return page.setRecords(list);
+    }
 
-  @Override
-  public List<KuweiVo> keweiQuery(String id, String type, String warehouseId) {
-    return baseMapper.keweiQuery(id, type, warehouseId);
-  }
+    @Override
+    public List<KuweiVo> keweiQuery(String id, String type, String warehouseId) {
+        return baseMapper.keweiQuery(id, type, warehouseId);
+    }
 
-  @Override
-  public IPage<InventoryVo> selectPageinventory(InventoryVo inventoryVo, Page<InventoryVo> page) {
-    List<InventoryVo> list = baseMapper.selectPageinventory(inventoryVo,page);
-    return page.setRecords(list);
-  }
-  @Override
-  public IPage<InventoryVo> selectInfo(InventoryVo inventoryVo, Page<InventoryVo> page) {
-    List<InventoryVo> list = baseMapper.selectInfo(inventoryVo,page);
-    return page.setRecords(list);
-  }
-  @Override
-  public List<KuweiVo> kewei(String id) {
-    String[] ids = id.split(",");
-    return baseMapper.kewei(ids);
-  }
+    @Override
+    public IPage<InventoryVo> selectPageinventory(InventoryVo inventoryVo, Page<InventoryVo> page) {
+        List<InventoryVo> list = baseMapper.selectPageinventory(inventoryVo, page);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public IPage<InventoryVo> selectInfo(InventoryVo inventoryVo, Page<InventoryVo> page) {
+        List<InventoryVo> list = baseMapper.selectInfo(inventoryVo, page);
+        return page.setRecords(list);
+    }
+
+    @Override
+    public List<KuweiVo> kewei(String id) {
+        String[] ids = id.split(",");
+        return baseMapper.kewei(ids);
+    }
+
+    @Override
+    public List<KuweiVo> queryInventory(Serializable projectNo) {
+        return baseMapper.queryInventory(projectNo);
+    }
 }

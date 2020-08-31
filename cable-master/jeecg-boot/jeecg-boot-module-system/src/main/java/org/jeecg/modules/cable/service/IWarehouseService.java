@@ -8,6 +8,7 @@ import org.jeecg.modules.cable.vo.InventoryIocationListVo;
 import org.jeecg.modules.cable.vo.InventoryVo;
 import org.jeecg.modules.cable.vo.KuweiVo;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -39,4 +40,13 @@ public interface IWarehouseService extends IService<Warehouse> {
     IPage<InventoryVo> selectInfo(InventoryVo inventoryVo, Page<InventoryVo> page);
 
     List<KuweiVo> kewei(String id);
+
+    /**
+     * 根据项目编号查询对应的库存库位存储数量
+     * 2020/8/31 bai
+     *
+     * @param projectNo 项目编号
+     * @return 库存库位信息
+     */
+    List<KuweiVo> queryInventory(Serializable projectNo);
 }

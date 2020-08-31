@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -161,19 +162,21 @@ public class TestsrController {
     @Autowired
     private IWarehouseService warehouseService;
 
-    //
-//  @GetMapping(value = "/keweiQuery")
-//  public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id,
-//                              @RequestParam(value = "type", required = false) String type,
-//                              @RequestParam(value = "warehouseId", required = false) String warehouseId) {
-//    List<KuweiVo> list = warehouseService.keweiQuery(id, type, warehouseId);
-//    return Result.ok(list);
-//  }
-    @GetMapping(value = "/keweiQuery")
+    /*@GetMapping(value = "/keweiQuery")
     public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id) {
-
-
         List<KuweiVo> list = warehouseService.kewei(id);
         return Result.ok(list);
+    }*/
+
+    /**
+     * 根据项目编号查询对应的库存库位存储数量
+     * 2020/8/31 bai
+     *
+     * @param projectNo 项目编号
+     * @return 库存库位信息
+     */
+    @GetMapping(value = "/queryInventory")
+    public Result<?> queryInventory(@RequestParam(value = "projectNo", required = true) Serializable projectNo) {
+        return Result.ok(warehouseService.queryInventory(projectNo));
     }
 }

@@ -205,13 +205,12 @@
           {
             title: '当前库存（中间库）',
             align: 'center',
-            dataIndex: 'KCnums'
+            dataIndex: 'kcnums'
           },
           {
             title: '操作',
             dataIndex: 'action',
             align: 'center',
-            // fixed:"right",
             width: 147,
             scopedSlots: { customRender: 'action' }
           }

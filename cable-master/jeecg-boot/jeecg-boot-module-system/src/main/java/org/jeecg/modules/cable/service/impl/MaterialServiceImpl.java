@@ -142,8 +142,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public IPage<OutPutWarehouseVo> getOutPutWarehouseList(String planType, String serial, String name, String projectNo, String supplier, Page<OutPutWarehouseVo> page) {
-        page.setRecords(baseMapper.getOutPutWarehouseList(planType, serial, name, projectNo, supplier, page));
-        return page;
+        return page.setRecords(baseMapper.getOutPutWarehouseList(planType, serial, name, projectNo, supplier, page));
     }
 
     @Override

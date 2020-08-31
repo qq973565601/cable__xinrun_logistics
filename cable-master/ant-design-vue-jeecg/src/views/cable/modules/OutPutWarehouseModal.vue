@@ -6,9 +6,7 @@
     :confirmLoading="confirmLoading"
     cancelText="关闭"
     @cancel="handleCancel"
-    :footer="null"
-  >
-
+    :footer="null">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <div style="width: 1000px;">
@@ -23,42 +21,19 @@
                 :dataSource="dataSource"
                 :pagination="ipagination"
                 :loading="loading"
-                @change="handleTableChange"
-              >
-                <span slot="action" slot-scope="text, record">
-
-
-
-          </span>
-
+                @change="handleTableChange">
               </a-table>
             </div>
           </div>
-          <!--          <div style="overflow-y: scroll;overflow-x: hidden;height: 200px;">-->
-          <!--            <div class="message" v-for="(message,index) in messageList">-->
-          <!--              <img :src="message.picUrl" class="message-img"/>-->
-          <!--              <span class="message-span2">{{message.wxNc}}</span>-->
-          <!--              <p class="message-p">{{message.content}}</p>-->
-          <!--            </div>-->
-          <!--          </div>-->
-          <!-- 子表单区域 -->
-          <!--            <a-tab-pane tab="客户信息" key="1" :forceRender="true">-->
-
-
         </div>
-
-
       </a-form>
     </a-spin>
   </a-modal>
 </template>
 <script>
   import { getAction } from '@/api/manage'
-  import pick from 'lodash.pick'
-  import { validateDuplicateValue } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 
   export default {
     name: 'WarehouseModal',
@@ -66,19 +41,8 @@
     components: {
       JDate
     },
-    data() {
+    data () {
       return {
-        ipagination: {
-          current: 1,
-          pageSize: 5,
-          pageSizeOptions: ['5', '10', '15'],
-          showTotal: (total, range) => {
-            return range[0] + "-" + range[1] + " 共" + total + "条"
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: 0
-        },
         form: this.$form.createForm(this),
         title: '',
         width: 800,
@@ -88,7 +52,7 @@
           {
             title: '数量',
             align: 'center',
-            dataIndex: 'sum'
+            dataIndex: 'inventoryQuantity'
           },
           {
             title: '库位',
@@ -98,83 +62,31 @@
         ],
         confirmLoading: false,
         url: {
-
-
+          list: '/cable/testdata/queryInventory'
         },
         dataSource: [],
       }
     },
-    created() {
-    },
-
     methods: {
-      loadData(arg) {
-
-      },
-      outshwo(record) {
-        console.log('打开页面')
-        console.log(record.projectNo)
-        this.visible = true
-        let that = this;
-        console.log({projectNo:record.projectNo})
-        // getAction(that.url.list, {projectNo:record.projectNo}, 'get').then((res) => {
-        //   if (res.success) {
-        //    console.log('res',res)
-        //     this.dataSource = res.result.records
-        //     this.ipagination.total = res.result.total
-        //   } else {
-        //     that.$message.warning(res.message)
-        //   }
-        // })
-      },
-      handleTableChange(pagination, filters, sorter){
-        //TODO 筛选
-        if (Object.keys(sorter).length>0){
-          this.isorter.column = sorter.field;
-          this.isorter.order = "ascend"==sorter.order?"asc":"desc"
+      outshwo (record) {
+        console.log('查看库位所传项目编号为>>>>>>', record.projectNo)
+        if (record.projectNo == null) {
+          this.$message.warning('此条信息项目编号不存在')
+          return
         }
-        this.ipagination = pagination;
-        this.loadData();
+        this.visible = true
+        getAction(this.url.list, { 'projectNo': record.projectNo }).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result
+          } else {
+            this.$message.warning(res.message)
+          }
+        })
       },
-      close() {
+      handleCancel () {
         this.$emit('close')
         this.dataSource = []
         this.visible = false
-      },
-      handleOk() {
-        const that = this
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true
-            let httpurl = ''
-            let method = ''
-            if (!this.model.id) {
-              httpurl += this.url.add
-              method = 'post'
-            } else {
-              httpurl += this.url.edit
-              method = 'put'
-            }
-            let formData = Object.assign(this.model, values)
-            console.log('表单提交数据', formData)
-            httpAction(httpurl, formData, method).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.$emit('ok')
-              } else {
-                that.$message.warning(res.message)
-              }
-            }).finally(() => {
-              that.confirmLoading = false
-              that.close()
-            })
-          }
-
-        })
-      },
-      handleCancel() {
-        this.close()
       }
     }
   }
