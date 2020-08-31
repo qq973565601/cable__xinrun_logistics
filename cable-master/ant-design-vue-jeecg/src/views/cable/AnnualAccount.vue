@@ -33,11 +33,11 @@
             </a-form-item>
           </a-col>
 
-          <a-col :md="4" :sm="7">
+          <!--<a-col :md="4" :sm="7">
             <a-form-item label="项目编号">
               <a-input v-model="queryParam.projectNo" placeholder="请输入项目编号"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
 
           <a-col :md="4" :sm="7">
             <a-form-item label="计划年份">
