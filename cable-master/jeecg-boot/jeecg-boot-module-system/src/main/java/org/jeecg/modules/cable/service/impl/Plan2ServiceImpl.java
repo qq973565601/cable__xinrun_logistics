@@ -57,7 +57,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     DeliverStorage deliverStorage = new DeliverStorage();
                     deliverStorage.setPlanId(Integer.parseInt(ids.get(i).toString()));
                     deliverStorage.setPlanType(2);
-                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("equipmentName").toString()));
+                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("backup2").toString()));
                     deliverStorage.setMaterialId(material == null ? 0 : material.getId());
                     deliverStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString()));
                     deliverStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString()));
@@ -94,7 +94,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     wrapper.eq("asset_no", plan2.getAssetNo());
                     // 向计划表2中添加积累的已入库数量
                     if (plan2.getAlreadyDeliverStorage() == null) {
-                        plan2.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
+                        plan2.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("backup2").toString())));
                     } else {
                         plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }

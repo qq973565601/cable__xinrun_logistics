@@ -128,7 +128,7 @@
             },
             {
               title: '物料描述',
-              key: 'equipmentName',
+              key: 'backup2',
               width: '16%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
@@ -215,7 +215,7 @@
             },
             {
               title: '物料描述',
-              key: 'equipmentName',
+              key: 'backup2',
               width: '16%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
@@ -302,7 +302,7 @@
             },
             {
               title: '物料描述',
-              key: 'equipmentName',
+              key: 'backup2',
               width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
