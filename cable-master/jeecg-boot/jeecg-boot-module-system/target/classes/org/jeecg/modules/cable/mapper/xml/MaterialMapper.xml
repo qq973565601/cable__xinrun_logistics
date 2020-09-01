@@ -533,75 +533,55 @@
         WHERE id = #{id}
     </update>
 
+    <!-- 出入库台账 bai_2020/9/1 -->
     <select id="getOutPutWarehouseList" resultType="org.jeecg.modules.cable.vo.OutPutWarehouseVo">
         SELECT
-        p.planType,
-        p.project_no,
-        p.project_name,
-        m.serial,
-        m.`name`,
-        m.unit,
-        m.supplier,
-        sum( num_receipts ) AS 'jihuaruk',
-        sum( IFNULL( IF ( storages.type = 1, accomplish_num, 0 ), 0 ) ) AS deliverNum,
-        sum( IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 ) ) AS receivingNum,
-        sum(
-        IF
-        (
-        storages.type = 1,
-        IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 ),- IFNULL( IF ( storages.type = 0, accomplish_num, 0 ), 0 )
-        )
-        ) AS KCnums
+            storages.id,
+            storages.operator_schema,
+            storages.taskTime,
+            p.planType,
+            p.project_no,
+            p.project_name,
+            m.serial,
+            m.`name`,
+            p.asset_no,
+            p.pro_theorder_no,
+            sum( storages.accomplish_num ) AS accomplish_num,
+            w.`name` AS warehouseName,
+            s.storage_location_name,
+            storages.receipt_no
         FROM
         (
         SELECT
-        d.id,
-        d.plan_id,
-        d.plan_type,
-        d.material_id,
-        d.warehouse_id,
-        d.storage_location_id,
-        d.accomplish_num,
-        d.accomplish_num_unit,
-        d.accomplish_weight,
-        d.accomplish_weight_unit,
-        d.accomplish_volume,
-        d.receipt_no,
-        d.state,
-        d.deliver_time AS taskTime,
-        d.create_time,
-        1 AS type
+        id,
+        plan_id,
+        plan_type,
+        material_id,
+        warehouse_id,
+        storage_location_id,
+        accomplish_num,
+        deliver_time AS taskTime,
+        receipt_no,
+        1 AS operator_schema
         FROM
-        deliver_storage d
-        WHERE
-        state = 1 UNION ALL
+        deliver_storage UNION ALL
         SELECT
-        r.id,
-        r.plan_id,
-        r.plan_type,
-        r.material_id,
-        r.warehouse_id,
-        r.storage_location_id,
-        r.accomplish_num,
-        r.accomplish_num_unit,
-        r.accomplish_weight,
-        r.accomplish_weight_unit,
-        r.accomplish_volume,
-        r.receipt_no,
-        r.state,
-        r.receiving_time AS taskTime,
-        r.create_time,
-        0 AS type
+        id,
+        plan_id,
+        plan_type,
+        material_id,
+        warehouse_id,
+        storage_location_id,
+        accomplish_num,
+        receiving_time AS taskTime,
+        receipt_no,
+        0 AS operator_schema
         FROM
-        receiving_storage r
-        WHERE
-        state = 1
+        receiving_storage
         ) storages
         LEFT JOIN (
         SELECT
         id,
-        project_no,
-        project_name,
         CASE
         plan_type
         WHEN '配变电' THEN
@@ -613,27 +593,25 @@
         WHEN '其它' THEN
         '其它' ELSE '未知'
         END AS planType,
-        1 AS type,
-        raw_material_code AS materialSerial,
-        raw_material_text AS materialName,
-        num_receipts
+        project_no,
+        project_name,
+        asset_no,
+        NULL AS pro_theorder_no,
+        1 AS type
         FROM
         plan1 UNION ALL
         SELECT
         id,
+        '备品' AS planType,
         project_no,
         site AS project_name,
-        '备品' AS planType,
-        2 AS type,
-        backup3 AS materialSerial,
-        backup2 AS materialName,
-        0 AS num_receipts
+        asset_no,
+        NULL AS pro_theorder_no,
+        2 AS type
         FROM
         plan2 UNION ALL
         SELECT
         id,
-        project_no,
-        eng_name AS project_name,
         CASE
         plan_type
         WHEN '新品' THEN
@@ -643,48 +621,63 @@
         WHEN '临措' THEN
         '临措' ELSE '未知'
         END AS planType,
-        3 AS type,
-        material_code AS materialSerial,
-        material_describe AS materialName,
-        num AS num_receipts
+        project_no,
+        eng_name AS project_name,
+        NULL AS asset_no,
+        pro_theorder_no,
+        3 AS type
         FROM
         plan3 UNION ALL
         SELECT
         id,
+        '电缆' AS planType,
         project_no,
         eng_name AS project_name,
-        '电缆' AS planType,
-        4 AS type,
-        CONCAT( voltage_grade, ' ', cable_cross ) AS materialSerial,
-        CONCAT( voltage_grade, ' ', cable_cross ) AS materialName,
-        sampling_length as num_receipts
+        NULL AS asset_no,
+        NULL AS pro_theorder_no,
+        4 AS type
         FROM
         plan4
-        ) p ON storages.plan_id = p.id
-        AND storages.plan_type = p.type
+        ) p ON storages.plan_id = p.id AND storages.plan_type = p.type
         LEFT JOIN material m ON storages.material_id = m.id
+        LEFT JOIN warehouse w ON storages.warehouse_id = w.id
+        LEFT JOIN storage_location s ON storages.storage_location_id = s.id
         <where>
-            <if test="null != planType and '' != planType">
-                AND p.planType LIKE CONCAT('%',#{planType},'%')
+            <if test="vo.operatorSchema != null">
+                AND storages.operator_schema = #{vo.operatorSchema}
             </if>
-            <if test="null!=serial and ''!= serial">
-                AND m.serial LIKE CONCAT('%',#{serial},'%')
+            <if test="vo.startTime != null">
+                AND storages.taskTime &gt;= #{vo.startTime}
             </if>
-            <if test="null!=name and ''!=name">
-                AND m.`name` LIKE CONCAT('%',#{name},'%')
+            <if test="vo.endTime != null">
+                AND storages.taskTime &lt;= '2020-09-01'
             </if>
-            <if test="null!=projectNo and ''!=projectNo">
-                AND p.project_no LIKE CONCAT('%',#{projectNo},'%')
+            <if test="vo.planType != null and vo.planType != ''">
+                AND p.planType LIKE CONCAT('%',#{vo.planType},'%')
             </if>
-            <if test="null!=supplier and ''!=supplier">
-                AND m.supplier LIKE CONCAT('%',#{supplier},'%')
+            <if test="vo.projectName != null and vo.projectName != ''">
+                AND p.project_name LIKE CONCAT('%',#{vo.projectName},'%')
+            </if>
+            <if test="vo.name != null and vo.name != ''">
+                AND m.`name` LIKE CONCAT('%',#{vo.name},'%')
+            </if>
+            <if test="vo.proTheorderNo != null and vo.proTheorderNo != ''">
+                AND p.pro_theorder_no LIKE CONCAT('%',#{vo.proTheorderNo},'%')
+            </if>
+            <if test="vo.receiptNo != null and vo.receiptNo != ''">
+                AND storages.receipt_no LIKE CONCAT('%',#{vo.receiptNo},'%')
             </if>
         </where>
         GROUP BY
-        storages.plan_id,
-        storages.plan_type,
-        storages.material_id
+        storages.operator_schema,
+        p.project_no,
+        m.serial,
+        p.asset_no,
+        p.pro_theorder_no
+        ORDER BY
+        storages.taskTime DESC
     </select>
+
     <select id="materialOutPutDayRList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">
       SELECT
       IFNULL( sum( IFNULL(accomplish_num,0) ) ,0) AS y

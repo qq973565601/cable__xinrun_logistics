@@ -69,12 +69,15 @@ public interface MaterialMapper extends BaseMapper<Material> {
      */
     Integer editMaterial(Material material);
 
-    List<OutPutWarehouseVo> getOutPutWarehouseList(@Param("planType") String planType,
-                                                   @Param("serial") String serial,
-                                                   @Param("name") String name,
-                                                   @Param("projectNo") String projectNo,
-                                                   @Param("supplier") String supplier,
-                                                   @Param("page") Page<OutPutWarehouseVo> page);
+    /**
+     * 出入库台账
+     * 2020/9/1 bai
+     *
+     * @param vo   查询条件
+     * @param page 分页条件
+     * @return 出入库台账统计信息
+     */
+    List<OutPutWarehouseVo> getOutPutWarehouseList(@Param("vo") OutPutWarehouseVo vo, @Param("page") Page<OutPutWarehouseVo> page);
 
     StatisticalChartVo materialOutPutDayCList(@Param("date") String date, @Param("id") Integer id);
 

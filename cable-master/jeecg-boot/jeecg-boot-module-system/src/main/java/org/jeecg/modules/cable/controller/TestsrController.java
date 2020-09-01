@@ -140,22 +140,16 @@ public class TestsrController {
 
     /**
      * 出入库台账
-     * bai
-     * 2020/5/31
+     * 2020/9/1 bai
      *
-     * @return
+     * @return 出入库台账统计信息
      */
-    @ApiOperation(value = "物料表-分页查询出入库台账", notes = "物料表-分页查询出入库台账")
     @GetMapping(value = "/getOutPutWarehouseList")
-    public Result<?> getOutPutWarehouseList(@RequestParam(name = "planType", required = false) String planType,
-                                            @RequestParam(name = "serial", required = false) String serial,
-                                            @RequestParam(name = "name", required = false) String name,
-                                            @RequestParam(name = "projectNo", required = false) String projectNo,
-                                            @RequestParam(name = "supplier", required = false) String supplier,
+    public Result<?> getOutPutWarehouseList(OutPutWarehouseVo outPutWarehouseVo,
                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<OutPutWarehouseVo> page = new Page<>(pageNo, pageSize);
-        IPage<OutPutWarehouseVo> pageList = materialService.getOutPutWarehouseList(planType, serial, name, projectNo, supplier, page);
+        IPage<OutPutWarehouseVo> pageList = materialService.getOutPutWarehouseList(outPutWarehouseVo, page);
         return Result.ok(pageList);
     }
 

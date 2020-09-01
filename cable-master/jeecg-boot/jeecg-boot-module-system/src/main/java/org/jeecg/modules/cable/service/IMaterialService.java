@@ -73,7 +73,15 @@ public interface IMaterialService extends IService<Material> {
      */
     Integer editMaterial(Material material);
 
-    IPage<OutPutWarehouseVo> getOutPutWarehouseList(String planType, String serial, String name, String projectNo, String supplier, Page<OutPutWarehouseVo> page);
+    /**
+     * 出入库台账
+     * 2020/9/1 bai
+     *
+     * @param vo   查询条件
+     * @param page 分页条件
+     * @return 出入库台账统计信息
+     */
+    IPage<OutPutWarehouseVo> getOutPutWarehouseList(OutPutWarehouseVo vo, Page<OutPutWarehouseVo> page);
 
     List<Map<String, String>> materialOutPutList(MaterialOutPutAccountVo materialOutPutAccountVo);
 }

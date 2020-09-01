@@ -317,7 +317,7 @@
             },
             {
               title: '物料数量',
-              key: 'numReceipts',
+              key: 'num',
               width: '10%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}'
