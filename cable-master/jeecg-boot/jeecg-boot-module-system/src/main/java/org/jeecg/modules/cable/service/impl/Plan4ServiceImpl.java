@@ -114,11 +114,12 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                         } else {
                             inventory.setBackup4(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         }
+                        inventory.setBackup5(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
                         boolean flag = inventoryService.updateById(inventory);
                         System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
-                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan4.getProjectNo(), plan4.getEngName(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 4, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null);
+                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan4.getProjectNo(), plan4.getEngName(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 4, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())), null);
                         entity.setRecyclingSpecifications(plan4MaterialName);
                         boolean flag = inventoryService.save(entity);
                         System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");

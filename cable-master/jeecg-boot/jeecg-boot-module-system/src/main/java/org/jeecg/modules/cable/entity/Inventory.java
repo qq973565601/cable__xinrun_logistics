@@ -32,7 +32,25 @@ import lombok.experimental.Accessors;
 public class Inventory implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, BigDecimal backup4, String assetNo) {
+    /**
+     * 带参构造
+     *
+     * @param warehouseId       仓库 Id
+     * @param storageLocationId 库位 id
+     * @param projectNo         项目编号
+     * @param projectName       项目名称
+     * @param materialId        物料 id
+     * @param inventoryQuantity 库存数量
+     * @param createTime        创建时间
+     * @param createBy          创建人
+     * @param backup1           计划 id
+     * @param backup2           计划表名(1\2\3\4)
+     * @param backup3           单位
+     * @param backup4           容积
+     * @param backup5           入库完单重量(电缆)
+     * @param assetNo           资产编号
+     */
+    public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, BigDecimal backup4, BigDecimal backup5, String assetNo) {
         this.warehouseId = warehouseId;
         this.storageLocationId = storageLocationId;
         this.projectNo = projectNo;
@@ -45,6 +63,7 @@ public class Inventory implements Serializable {
         this.backup2 = backup2;
         this.backup3 = backup3;
         this.backup4 = backup4;
+        this.backup5 = backup5;
         this.assetNo = assetNo;
     }
 
@@ -148,7 +167,7 @@ public class Inventory implements Serializable {
      */
     @Excel(name = "backup5", width = 15)
     @ApiModelProperty(value = "backup5")
-    private java.lang.String backup5;
+    private BigDecimal backup5;
     /**
      * 电缆回收规格
      * liu
