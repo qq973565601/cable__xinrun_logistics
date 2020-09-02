@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan1;
-import org.jeecg.modules.cable.entity.Plan3;
 import org.jeecg.modules.cable.entity.Plan4;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
-import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.cable.vo.Plan4Vo;
 
 import java.io.Serializable;
@@ -60,7 +58,7 @@ public interface IPlan4Service extends IService<Plan4> {
      *  liu
      * @Date 2020/7/21
      */
-    IPage<Plan4> idsqueryPageList4(List<String> ids, Page<Plan4> page);
+    List<Plan4> idsqueryPageList4(List<String> ids);
 
     /**
      * 分页展示计划表4数据
@@ -87,5 +85,5 @@ public interface IPlan4Service extends IService<Plan4> {
      * 2020/5/28
      * @return
      */
-    List<Plan4Vo> exportFeedbackSummary();
+    List<Plan4Vo> exportFeedbackSummary(Plan4Vo plan4Vo);
 }

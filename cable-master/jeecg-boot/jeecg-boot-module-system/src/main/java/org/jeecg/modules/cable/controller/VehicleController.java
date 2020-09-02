@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
@@ -126,10 +127,11 @@ public class VehicleController extends JeecgController<Vehicle, IVehicleService>
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         Vehicle vehicle = vehicleService.getById(id);
         QueryWrapper<SendOrdersSubtabulation> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("license", vehicle.getLicense());
-        List<SendOrdersSubtabulation> list = sendOrdersSubtabulationService.list(queryWrapper);
-        if (list.size() > 0) {
-            return Result.error("该车不能被删除");
+        queryWrapper.eq("distribution_type", "0");
+        queryWrapper.eq("type_id", vehicle.getLicense());
+        int count = sendOrdersSubtabulationService.count(queryWrapper);
+        if (count > 0) {
+            return Result.error("该车 "+vehicle.getLicense()+" 已派单，不能被删除");
         } else {
             vehicleService.removeById(vehicle.getId());
             return Result.ok("删除成功!");
@@ -146,15 +148,16 @@ public class VehicleController extends JeecgController<Vehicle, IVehicleService>
     @ApiOperation(value = "车辆表-批量删除", notes = "车辆表-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        String[] id = ids.split(",");
-        if (id.length > 0) {
-            for (String s : id) {
+        String[] idlist = ids.split(",");
+        if (idlist.length > 0) {
+            for (String id : idlist) {
                 Vehicle vehicle = vehicleService.getById(id);
                 QueryWrapper<SendOrdersSubtabulation> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("license", vehicle.getLicense());
+                queryWrapper.eq("distribution_type", "0");
+                queryWrapper.eq("type_id", vehicle.getLicense());
                 List<SendOrdersSubtabulation> list = sendOrdersSubtabulationService.list(queryWrapper);
                 if (list.size() > 0) {
-                    return Result.error("该车不能被删除");
+                    return Result.error("该车 "+vehicle.getLicense()+" 已派单，不能被删除");
                 } else {
                     vehicleService.removeById(vehicle.getId());
                 }

@@ -77,7 +77,7 @@
         @change="handleTableChange">
 
         <span slot="factoryText" slot-scope="text">
-          <j-ellipsis :value="text" :length="10"/>
+          <j-ellipsis :value="text" :length="100"/>
         </span>
 
         <template slot="htmlSlot" slot-scope="text">
@@ -219,8 +219,7 @@
           if (res.success) {
             this.dataSource = res.result.records
             this.ipagination.total = res.result.total
-          }
-          if (res.code === 510) {
+          }else{
             this.$message.warning(res.message)
           }
           this.loading = false
@@ -230,10 +229,12 @@
       handleDel(val){
         deleteAction(this.url.delete,{id:val}).then((res) => {
           if (res.success) {
+            this.$message.success(res.message)
             this.loadData()
-          }else {
-            window.confirm("该车辆被派单过，不能删除")
+          } else {
+            this.$message.warning(res.message)
           }
+          this.loading = false
         })
       },
       //车辆类型加载

@@ -66,6 +66,12 @@
         <a-form-item label="入库单号" :labelCol="labelCol" :wrapperCol="wrapperCol" class="inupt_a">
           <a-input v-decorator="['receiptNo']" placeholder="请输入入库单号" ></a-input>
         </a-form-item>
+        <a-form-item label="物料描述" :labelCol="labelCol" :wrapperCol="wrapperCol" class="inupt_a">
+          <a-input v-decorator="['backup2']" placeholder="请输入物料描述" ></a-input>
+        </a-form-item>
+        <a-form-item label="物料代码" :labelCol="labelCol" :wrapperCol="wrapperCol" class="inupt_a">
+          <a-input v-decorator="['backup3']" placeholder="请输入物料代码" ></a-input>
+        </a-form-item>
         <a-form-item label="完成状态" :labelCol="labelCol" :wrapperCol="wrapperCol" class="inupt_b">
           <a-select v-decorator="['completeState', validatorRules.completeState]" class="inupt_b_a" style="width: 220px" placeholder="请选择完成状态">
             <template v-for="(types,index) in completeStates">

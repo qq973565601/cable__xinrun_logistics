@@ -15,7 +15,7 @@
                 <a-select-option value="电缆">电缆</a-select-option>
                 <a-select-option value="其他">其他</a-select-option>
                 <a-select-option value="备品">备品</a-select-option>
-                <a-select-option value="正常">正常</a-select-option>
+                <a-select-option value="新品">新品</a-select-option>
                 <a-select-option value="抢修">抢修</a-select-option>
                 <a-select-option value="临措">临措</a-select-option>
                 <a-select-option value="电缆2">电缆2</a-select-option>
@@ -53,12 +53,14 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+      rowKey="id"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -67,7 +69,6 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -207,7 +208,8 @@
       },
       handleEdits(record) {
         console.log('计划结算>>>>>>>>>>>>>>>>', record)
-        putAction('/cable/plan1/updateSettleAccounts', record).then((res) => {
+
+        getAction('/cable/plan1/updateSettleAccounts', { projectNo: record.projectNo }).then((res) => {
           if (res.success) {
             this.$message.success(res.message)
             this.loadData(1)

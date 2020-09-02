@@ -43,4 +43,8 @@ public class MaterialOutPutAccountVo implements Serializable {
     private String month;
     // 周
     private String week;
+    // 开始时间
+    private String startTime;
+    // 结束时间
+    private String endTime;
 }

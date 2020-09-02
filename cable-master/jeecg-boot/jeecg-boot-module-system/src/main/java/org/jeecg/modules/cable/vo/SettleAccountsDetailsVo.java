@@ -47,6 +47,14 @@ public class SettleAccountsDetailsVo implements Serializable {
      */
     private String rawMaterialText;
     /**
+     * 入库数量
+     */
+    private String receivingNum;
+    /**
+     * 出库数量
+     */
+    private String deliverNum;
+    /**
      * 物料数量
      * liu
      * 2020/7/15

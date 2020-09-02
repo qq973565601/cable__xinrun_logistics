@@ -213,9 +213,10 @@
         this.visible = true
       },
       data() {
-        let param ={}
-        param.pageNo = this.ipagination.current
-        param.pageSize = this.ipagination.pageSize
+        let param = {
+          pageNo : this.ipagination.current,
+          pageSize : this.ipagination.pageSize
+        }
         getAction(this.url.lists, param).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records

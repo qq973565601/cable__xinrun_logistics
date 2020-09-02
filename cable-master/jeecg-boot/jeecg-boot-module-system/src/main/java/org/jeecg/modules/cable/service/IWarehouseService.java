@@ -48,5 +48,5 @@ public interface IWarehouseService extends IService<Warehouse> {
      * @param projectNo 项目编号
      * @return 库存库位信息
      */
-    List<KuweiVo> queryInventory(Serializable projectNo);
+    List<KuweiVo> queryInventory(Serializable projectNo,Serializable materialId);
 }

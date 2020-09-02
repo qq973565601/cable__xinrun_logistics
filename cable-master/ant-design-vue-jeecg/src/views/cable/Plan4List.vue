@@ -6,14 +6,14 @@
         <a-row :gutter="24">
 
           <a-col :md="4" :sm="7">
-            <a-form-item label="工程账号">
-              <a-input placeholder="请输入工程账号" v-model="queryParam.projectNo"></a-input>
+            <a-form-item label="项目编号">
+              <a-input placeholder="请输入项目编号" v-model="queryParam.projectNo"></a-input>
             </a-form-item>
           </a-col>
 
           <a-col :md="4" :sm="7">
-            <a-form-item label="工程名称">
-              <a-input placeholder="请输入工程名称" v-model="queryParam.engName"></a-input>
+            <a-form-item label="项目名称">
+              <a-input placeholder="请输入项目名称" v-model="queryParam.engName"></a-input>
             </a-form-item>
           </a-col>
 
@@ -72,13 +72,20 @@
                         style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
               <a-button @click="completePlan" icon="check-circle" type="primary"
                         style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并完单</a-button>
+              <a-button @click="assignsJL" icon="check-circle" type="primary"
+                        style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">派单记录</a-button>
+              <a-button @click="assignsWD" icon="check-circle" type="primary"
+                          style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">完单记录</a-button>
               <a-modal
                 v-model="visible"
                 :width=700
                 on-ok="handleCancel" style="margin-top: 150px">
                 <!-- 自定义内容-begin -->
                 <a-form style="margin-top: 20px">
-
+                    <a-form-item
+                      label="起止日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-range-picker @change="onChange" v-model="queryParam.buildTime"/>
+                    </a-form-item>
                   <a-form-item label="退役日期" :labelCol="labelCol" :wrapperCol="wrapperCol"
                                style="display: inline-block;width: 400px;margin-right: -140px">
                     <j-date placeholder="输入退役日期" v-model="queryParam.decommissioningDate"></j-date>
@@ -111,6 +118,7 @@
               </a-modal>
             </span>
           </a-col>
+
         </a-row>
       </a-form>
     </div>
@@ -182,11 +190,12 @@
             <a>删除</a>
           </a-popconfirm>
           <a-divider type="vertical"/>
-          <a @click="assigns(record)">派单</a>
+          <a @click="plan4Status(record)">计划状态</a>
+
+          <!--<a @click="assigns(record)">派单</a>
           <a-divider type="vertical"/>
           <a @click="accomplish(record)">完单</a>
-          <a-divider type="vertical"/>
-          <a @click="plan4Status(record)">计划状态</a>
+          <a-divider type="vertical"/>-->
         </span>
 
       </a-table>
@@ -198,7 +207,10 @@
     <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
     <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
+    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="mergePlan"></merge-plan-model-plan1>
     <complete-plan4-model ref="CompletePlan4Model" @ok="CompletePlan"></complete-plan4-model>
+    <plan-send-orders-j-l-modal ref="planSendOrdersJLModal" @ok="modasFormOk"></plan-send-orders-j-l-modal><!-- 派单记录 modal -->
+    <plan-send-orders-wd-modal ref="planSendOrdersWdModal" @ok="modasFormOk"></plan-send-orders-wd-modal><!-- 完单记录 modal -->
   </a-card>
 </template>
 
@@ -216,12 +228,19 @@
   import PlanSendOrdersTheSameDayModal from './modules/PlanSendOrdersTheSameDayModal'
   import PlanCompleteStateModal from './modules/PlanCompleteStateModal'
   import MergePlan from "./modules/MergePlanModel";
+  import MergePlanModelPlan1 from "./modules/MergePlanModelPlan1";
+  import moment from "moment";
   import CompletePlan4Model from "./modules/CompletePlan4Model";
+  import PlanSendOrdersJLModal from "./modules/PlanSendOrdersJLModal";
+  import PlanSendOrdersWdModal from './modules/PlanSendOrdersWdModal';
 
   export default {
     name: 'Plan4List',
     mixins: [JeecgListMixin, mixinDevice],
     components: {
+      PlanSendOrdersWdModal,
+      PlanSendOrdersJLModal,
+      MergePlanModelPlan1,
       MergePlan,
       Plan4Modal,
       JInput,
@@ -244,6 +263,8 @@
         plan4Exportform: this.$form.createForm(this),
         confirmLoading: false,
         endOpen: false,
+        //导出反馈的起止时间
+        buildTime: [],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 }
@@ -257,13 +278,13 @@
         // 表头
         columns: [
           {
-            title: '工程账号',
+            title: '项目编号',
             align: 'center',
             dataIndex: 'projectNo',
             scopedSlots: { customRender: 'factoryText' }
           },
           {
-            title: '工程名称',
+            title: '项目名称',
             align: 'center',
             dataIndex: 'engName',
             scopedSlots: { customRender: 'factoryText' }
@@ -298,7 +319,7 @@
             dataIndex: 'samplingDate',
             scopedSlots: { customRender: 'factoryText' }
           },
-          {
+          /*{
             title: '抽取地点',
             align: 'center',
             dataIndex: 'samplingAddres',
@@ -310,49 +331,79 @@
             dataIndex: 'construc',
             scopedSlots: { customRender: 'factoryText' }
           },
-          /*{
+          {
             title: '班组联系人及电话',
             align: 'center',
             dataIndex: 'construcContact',
             scopedSlots: { customRender: 'factoryText' }
-          },*/
+          },
           {
             title: '施工队伍',
             align: 'center',
             dataIndex: 'team',
             scopedSlots: { customRender: 'factoryText' }
           },
-          /*{
+          {
             title: '队伍联系人及电话',
             align: 'center',
             dataIndex: 'teamContact',
             scopedSlots: { customRender: 'factoryText' }
           },*/
           {
+            title: '入库状态',
+            align: 'center',
+            dataIndex: '',
+            customRender: (text,record) => {
+              if (record.alreadyDeliverStorage === null || record.alreadyDeliverStorage === undefined || record.alreadyDeliverStorage === 0 ) return '未入库'
+              else return '已入库'
+            }
+          },
+          {
+            title: '入库数量',
+            align: 'center',
+            dataIndex: 'alreadyDeliverStorage',
+            customRender: (value, row, index) => {
+              if (value === null || value === undefined) return 0
+              else return value
+            }
+          },
+          {
+            title: '出库状态',
+            align: 'center',
+            dataIndex: '',
+            customRender: (text,record) => {
+              if (record.alreadyReceivingStorage === null || record.alreadyReceivingStorage === undefined || record.alreadyReceivingStorage === 0) return '未出库'
+              else return '已出库'
+            }
+          },
+          {
+            title: '出库数量',
+            align: 'center',
+            dataIndex: 'alreadyReceivingStorage',
+            customRender: (value, row, index) => {
+              if (value === null || value === undefined) return 0
+              else return value
+            }
+          },
+          {
             title: '派单状态',
             align: 'center',
             dataIndex: 'sendOrdersState',
             customRender: (value, row, index) => {
-              var s = ''
-              if (value === 0) {
-                s = '未派单'
-              } else if (value === 1) {
-                s = '已派单'
-              }
-              return s
+              if (value === 0) return '未派单'
+              else return '已派单'
             }
           },
           {
-            title: '完成状态',
+            title: '计划状态',
             align: 'center',
-            dataIndex: 'completeState_dictText',
-            scopedSlots: { customRender: 'factoryText' }
+            dataIndex: 'completeState_dictText'
           },
           {
             title: '操作',
             dataIndex: 'action',
             align: 'center',
-            // fixed:"right",
+            fixed:"right",
             width: 147,
             scopedSlots: { customRender: 'action' }
           }
@@ -446,21 +497,36 @@
           }
         })
       },
+      /**
+       * 时间控件 onChange
+       */
+      onChange(date, dateString) {
+        console.log(date, dateString);
+        this.buildTime = dateString;
+      },
       // 导出反馈汇总
       handleExportXls2(fileName) {
         if (!fileName || typeof fileName != 'string') {
           fileName = '导出文件'
         }
+          if(this.buildTime[0] === undefined || this.buildTime[0] === "") return this.$message.warning('请选择起始止时间段!')
         // 构造参数
         let param = {
+          beginTime: this.buildTime[0],
+          endTime: this.buildTime[1],
           decommissioningDate: this.queryParam.decommissioningDate,
           itemSlip: this.queryParam.itemSlip,
           description: this.queryParam.description,
           remark: this.queryParam.remark
         }
+        console.log("起始时间》》》：",this.buildTime)
+        console.log("导出参数参考》》》：",param)
         downFile(this.url.exportXlsUrl2, param).then((data) => {
-          if (!data) {
-            this.$message.warning('文件下载失败')
+          if (data) {
+            this.$message.success("导出文件成功！")
+            this.visible = false
+          }else{
+            this.$message.warning('文件下载失败！')
             this.visible = false
             return
           }
@@ -481,17 +547,41 @@
         })
       },
       /**
+       * 派单记录
+       */
+      assignsJL() {
+        let ids = this.selectedRowKeys
+        if(ids.length == 0)
+          return this.$message.warning('请选择查看派单记录的计划!')
+        console.log('派单记录4', ids)
+        this.$refs.planSendOrdersJLModal.dakpd(ids.toString(), 4)
+        this.$refs.planSendOrdersJLModal.title = ''
+      },
+      /**
+       * 完单记录
+       */
+      assignsWD(val) {
+        let ids = this.selectedRowKeys
+        if(ids.length == 0)
+          return this.$message.warning('请选择派单项目!')
+        console.log('完单记录4', ids)
+        this.$refs.planSendOrdersWdModal.dakpd(ids.toString(), 4)
+        this.$refs.planSendOrdersWdModal.title = ''
+      },
+      /**
        * 合并派单
        */
       mergePlan() {
-        var ids = this.selectedRowKeys
-        if(ids.length <= 1){
+        let ids = this.selectedRowKeys
+        if(ids.length == 0)
           return this.$message.warning('请选择合并派单项目!')
-        }
+
         console.log("点击了合并派单", ids)
         //TODO 打开合并派单页面
-        this.$refs.MergePlan.mergePlanModelShow(ids,4)
-        this.$refs.MergePlan.title = '合并派单'
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids,4)
+        this.$refs.MergePlanModelPlan1.title = '合并派单'
+        // this.$refs.MergePlan.mergePlanModelShow(ids,4)
+        // this.$refs.MergePlan.title = '合并派单'
       },
       /**
        * 派单
@@ -499,7 +589,8 @@
        */
       assigns(val) {
         console.log('派单')
-        this.$refs.planSendOrdersModal4.dakpd(val, 4)
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(val.id,4)
+        // this.$refs.planSendOrdersModal4.dakpd(val, 4)
         this.$refs.planSendOrdersModal4.title = ''
       },
       /**
@@ -508,8 +599,10 @@
        */
       accomplish(val) {
         console.log('完单')
-        this.$refs.planAccomplishModal4.dakwd(val, 4)
-        this.$refs.planAccomplishModal4.title = ''
+        this.$refs.CompletePlan4Model.completePlanModelShow(val.id)
+        this.$refs.CompletePlan4Model.title = '合并完单'
+        // this.$refs.planAccomplishModal4.dakwd(val, 4)
+        // this.$refs.planAccomplishModal4.title = ''
       },
       completeStateList() {
         getAction('/sys/dictItem/selectCompleteState').then((res) => {

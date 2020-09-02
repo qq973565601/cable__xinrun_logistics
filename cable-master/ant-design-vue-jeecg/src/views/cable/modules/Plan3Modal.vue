@@ -11,7 +11,7 @@
 
         <a-form-item label="新品类型" :labelCol="labelCol" :wrapperCol="wrapperCol" class="inupt_b">
           <a-select v-decorator="['planType', validatorRules.planType]" class="inupt_b_a" style="width: 220px" placeholder="请选择所属类型">
-            <a-select-option value="正常">正常</a-select-option>
+            <a-select-option value="新品">新品</a-select-option>
             <a-select-option value="抢修">抢修</a-select-option>
             <a-select-option value="临措">临措</a-select-option>
           </a-select>

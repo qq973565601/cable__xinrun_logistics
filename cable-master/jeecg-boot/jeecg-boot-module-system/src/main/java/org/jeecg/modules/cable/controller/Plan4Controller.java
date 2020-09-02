@@ -1,10 +1,7 @@
 package org.jeecg.modules.cable.controller;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,6 +9,8 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.cable.entity.Plan1;
+import org.jeecg.modules.cable.entity.Plan3;
 import org.jeecg.modules.cable.entity.Plan4;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
 import org.jeecg.modules.cable.service.IPlan4Service;
@@ -125,8 +124,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     }
 
     /**
-     * 根据ids集合
-     * 实现分页列表查询
+     *  根据ids集合
+     *  实现分页列表查询
      *
      * @return
      */
@@ -136,13 +135,24 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        //截取得到ids数组
-        String[] split = ids.split(",");
-        //转型得到ids集合
-        List<String> idlist = Arrays.asList(split);
-        Page<Plan4> page = new Page<>(pageNo, pageSize);
-        IPage<Plan4> pageList = plan4Service.idsqueryPageList4(idlist, page);
-        return Result.ok(pageList);
+        List<Plan1> list = new ArrayList<>();
+        Plan1 plan ;
+        List<Plan4> pageList = plan4Service.idsqueryPageList4(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+            plan = new Plan1();
+            plan.setId(pageList.get(i).getId());                                //计划id
+            plan.setProjectNo(pageList.get(i).getProjectNo());                  //工程账号
+            plan.setProjectName(pageList.get(i).getEngName());                  //项目名称
+            //TODO 电缆的"物料描述"为 "电缆名称" + "电压等级" + "电缆截面"
+            String material = pageList.get(i).getCableName() + " " + pageList.get(i).getVoltageGrade() + " " + pageList.get(i).getCableCross();
+            plan.setWasteMaterialText(material);                                    //物料描述
+            plan.setWasteMaterialCode(material);                                    //物料代码
+            list.add(plan);
+        }
+        return Result.ok(list);
+
     }
 
     /**
@@ -197,7 +207,7 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-    //	/**
+//	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -236,7 +246,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      * @param plan4
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan4 plan4, @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan4 plan4,
+                                  @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集
@@ -261,17 +272,18 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     public ModelAndView exportXls2(HttpServletRequest request, Plan4Vo plan4Vo) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
-        List<Plan4Vo> list = plan4Service.exportFeedbackSummary();
+        List<Plan4Vo> list = plan4Service.exportFeedbackSummary(plan4Vo);
         for (Plan4Vo vo : list) {
-            vo.setDecommissioningDate(plan4Vo.getDecommissioningDate());
-            vo.setItemSlip(plan4Vo.getItemSlip());
-            vo.setDescription(plan4Vo.getDescription());
-            vo.setRemark(plan4Vo.getRemark());
+            vo.setBuildTime(plan4Vo.getBeginTime() + " —— " + plan4Vo.getEndTime());    //起始日期
+            vo.setDecommissioningDate(plan4Vo.getDecommissioningDate());                  //退役日期
+            vo.setItemSlip(plan4Vo.getItemSlip());                                        //交接单号
+            vo.setDescription(plan4Vo.getDescription());                                  //情况说明
+            vo.setRemark(plan4Vo.getRemark());                                            //备注
             /*list.add(vo);*/
             break;
         }
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.CLASS, Plan4Vo.class);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams());
         mv.addObject(NormalExcelConstants.DATA_LIST, list);

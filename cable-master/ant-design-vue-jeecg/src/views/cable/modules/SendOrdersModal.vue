@@ -9,12 +9,12 @@
     <a-table
       ref="table"
       bordered
-      rowKey="id"
       size="middle"
       :columns="columns"
       :dataSource="dataSource"
       :pagination="ipagination"
-      @change="handleTableChange">
+      @change="handleTableChange"
+      style="margin-top:15px">
 
       <span slot="factoryText" slot-scope="text">
           <j-ellipsis :value="text" :length="10"/>
@@ -84,7 +84,6 @@
             title:'项目编码',
             align:"center",
             dataIndex: 'projectNo',
-            scopedSlots: { customRender: 'factoryText' },
           },
           {
             title:'项目名称',

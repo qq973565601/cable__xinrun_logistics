@@ -100,7 +100,7 @@
         @change="handleTableChange">
         <!-- 字符串超长截取省略号显示 -->
         <span slot="address" slot-scope="text">
-          <j-ellipsis :value="text" :length="10"/>
+          <j-ellipsis :value="text" :length="9"/>
         </span>
         <template slot="avatarslot" slot-scope="text, record, index">
           <div class="anty-img-wrap">
@@ -236,7 +236,7 @@
           {
             title: '家庭住址',
             align: 'center',
-            width: 80,
+            width: 110,
             dataIndex: 'address',
             scopedSlots: { customRender: 'address' }
           },

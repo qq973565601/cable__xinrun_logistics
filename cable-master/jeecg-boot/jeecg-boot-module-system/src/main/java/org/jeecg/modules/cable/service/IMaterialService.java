@@ -44,7 +44,7 @@ public interface IMaterialService extends IService<Material> {
      *
      * @return
      */
-    IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, Page<AnnualReportVo> page);
+    IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo,String assetNo, Page<AnnualReportVo> page);
 
     /**
      * 分页查询物料信息

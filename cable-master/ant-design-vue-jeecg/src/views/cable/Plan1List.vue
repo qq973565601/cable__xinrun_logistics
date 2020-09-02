@@ -30,7 +30,7 @@
           </a-col>
 
           <template v-if="true">
-            <!--          <template v-if="toggleSearchStatus">-->
+<!--          <template v-if="toggleSearchStatus">-->
 
             <a-col :md="4" :sm="7">
               <a-form-item label="项目编号">
@@ -50,7 +50,7 @@
 
           </template>
         </a-row>
-        <a-row :gutter="12">
+          <a-row :gutter="12">
           <a-col :md="7" :sm="10">
               <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                 <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -100,9 +100,9 @@
                           style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并派单</a-button>
                 <a-button @click="completePlan" icon="check-circle" type="primary"
                           style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">合并完单</a-button>
-                <a-button @click="completePlan" icon="check-circle" type="primary"
+                <a-button @click="assignsJL" icon="check-circle" type="primary"
                           style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">派单记录</a-button>
-                <a-button @click="completePlan" icon="check-circle" type="primary"
+                <a-button @click="assignsWD" icon="check-circle" type="primary"
                           style="margin-left: 8px;background-color: darkturquoise;border: darkturquoise">完单记录</a-button>
                 <a-modal
                   v-model="plan1ExportModal_visible"
@@ -203,25 +203,25 @@
             <a>删除</a>
           </a-popconfirm>
           <a-divider type="vertical"/>
-          <a @click="assigns(record)">派单</a>
+          <!--<a @click="assigns(record)">派单</a>
           <a-divider type="vertical"/>
           <a @click="accomplish(record)">完单</a>
-          <a-divider type="vertical"/>
+          <a-divider type="vertical"/>-->
           <a @click="plan1Status(record)">计划状态</a>
         </span>
 
       </a-table>
     </div>
 
-    <plan1-modal ref="modalForm" @ok="modalFormOk"></plan1-modal>
-    <planAccomplish-modal ref="planAccomplishModal"></planAccomplish-modal>   <!-- 完单 modal -->
+    <plan1-modal ref="modalForm" @ok="modasFormOk"></plan1-modal>
+    <planAccomplish-modal ref="planAccomplishModal" @ok="modasFormOk"></planAccomplish-modal>   <!-- 完单 modal -->
     <planSendOrders-modal ref="planSendOrdersModal" @ok="modasFormOk"></planSendOrders-modal> <!-- 派单 modal -->
-    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
-    <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
-    <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
-    <complete-plan ref="CompletePlan" @ok="CompletePlan"></complete-plan>
-    <complete-plan1-model ref="CompletePlan1Model" @ok="CompletePlan"></complete-plan1-model>
-    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="mergePlan"></merge-plan-model-plan1>
+    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal" @ok="modasFormOk"></plan-send-orders-the-same-day-modal><!-- 今日派单 -->
+    <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal><!-- 计划完成状态 -->
+    <complete-plan1-model ref="CompletePlan1Model" @ok="modasFormOk"></complete-plan1-model><!-- 合并完单 -->
+    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="modasFormOk"></merge-plan-model-plan1><!-- 合并派单 -->
+    <plan-send-orders-j-l-modal ref="planSendOrdersJLModal" @ok="modasFormOk"></plan-send-orders-j-l-modal><!-- 派单记录 modal -->
+    <plan-send-orders-wd-modal ref="planSendOrdersWdModal" @ok="modasFormOk"></plan-send-orders-wd-modal><!-- 完单记录 modal -->
   </a-card>
 </template>
 
@@ -244,12 +244,16 @@
   import CompletePlan from "./modules/CompletePlanModel";
   import MergePlanModelPlan1 from "./modules/MergePlanModelPlan1";
   import CompletePlan1Model from "./modules/CompletePlan1Model";
+  import PlanSendOrdersJLModal from "./modules/PlanSendOrdersJLModal";
+  import PlanSendOrdersWdModal from './modules/PlanSendOrdersWdModal'
 
 
   export default {
     name: 'Plan1List',
     mixins: [JeecgListMixin, mixinDevice],
     components: {
+      PlanSendOrdersWdModal,
+      PlanSendOrdersJLModal,
       CompletePlan1Model,
       MergePlanModelPlan1,
       CompletePlan,
@@ -300,21 +304,27 @@
             scopedSlots: {customRender: 'factoryText'}
           },
           {
+            title: '项目编号',
+            align: 'center',
+            dataIndex: 'projectNo',
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
             title: '项目名称',
             align: 'center',
             dataIndex: 'projectName',
             scopedSlots: {customRender: 'factoryText'}
           },
           {
-            title: '项目编码',
-            align: 'center',
-            dataIndex: 'projectNo',
-            scopedSlots: {customRender: 'factoryText'}
-          },
-          {
             title: '废旧物料描述',
             align: 'center',
             dataIndex: 'wasteMaterialText',
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
+            title: '计划完成时间',
+            align: 'center',
+            dataIndex: 'plansCompleteTime',
             scopedSlots: {customRender: 'factoryText'}
           },
           {
@@ -326,8 +336,8 @@
             title: '入库状态',
             align: 'center',
             dataIndex: '',
-            customRender: (text, record) => {
-              if (record.alreadyDeliverStorage === null) return '未入库'
+            customRender: (text,record) => {
+              if (record.alreadyDeliverStorage === null || record.alreadyDeliverStorage === undefined || record.alreadyDeliverStorage === 0 ) return '未入库'
               else return '已入库'
             }
           },
@@ -336,7 +346,7 @@
             align: 'center',
             dataIndex: 'alreadyDeliverStorage',
             customRender: (value, row, index) => {
-              if (value === null) return 0
+              if (value === null || value === undefined) return 0
               else return value
             }
           },
@@ -344,8 +354,8 @@
             title: '出库状态',
             align: 'center',
             dataIndex: '',
-            customRender: (text, record) => {
-              if (record.alreadyReceivingStorage === null) return '未出库'
+            customRender: (text,record) => {
+              if (record.alreadyReceivingStorage === null || record.alreadyReceivingStorage === undefined || record.alreadyReceivingStorage === 0) return '未出库'
               else return '已出库'
             }
           },
@@ -354,7 +364,7 @@
             align: 'center',
             dataIndex: 'alreadyReceivingStorage',
             customRender: (value, row, index) => {
-              if (value === null) return 0
+              if (value === null || value === undefined) return 0
               else return value
             }
           },
@@ -376,7 +386,7 @@
             title: '操作',
             dataIndex: 'action',
             align: 'center',
-            fixed: "right",
+            fixed:"right",
             width: 110,
             scopedSlots: {customRender: 'action'}
           }
@@ -406,8 +416,31 @@
        * 今日派单
        */
       TheSameDay() {
+        console.log("今日派单")
         this.$refs.planSendOrdersTheSameDayModal.theSameDays()
-        this.$refs.planSendOrdersTheSameDayModal.title = ''
+        this.$refs.planSendOrdersTheSameDayModal.title = '今日派单'
+      },
+      /**
+       * 派单记录
+       */
+      assignsJL() {
+        let ids = this.selectedRowKeys
+        if(ids.length == 0)
+          return this.$message.warning('请选择查看派单记录的计划!')
+        console.log('派单记录1', ids)
+        this.$refs.planSendOrdersJLModal.dakpd(ids.toString(), 1)
+        this.$refs.planSendOrdersJLModal.title = '派单记录'
+      },
+      /**
+       * 完单记录
+       */
+      assignsWD(val) {
+        let ids = this.selectedRowKeys
+        if(ids.length == 0)
+          return this.$message.warning('请选择派单项目!')
+        console.log('完单记录1', ids)
+        this.$refs.planSendOrdersWdModal.dakpd(ids.toString(), 1)
+        this.$refs.planSendOrdersWdModal.title = '完单记录'
       },
       /* 导出 */
       handleExportXls(fileName) {
@@ -542,12 +575,13 @@
         })
       },
       /**
-       * 计划1合并完单
+       * 合并完单
        */
       completePlan() {
         var ids = this.selectedRowKeys
-        if (ids.length == 0)
+        if(ids.length == 0)
           return this.$message.warning('请选择合并完单项目!')
+        console.log("点击了合并完单", ids)
         //TODO 打开合并完单页面
         this.$refs.CompletePlan1Model.completePlanModelShow(ids)
         this.$refs.CompletePlan1Model.title = '合并完单'
@@ -557,25 +591,29 @@
        */
       mergePlan() {
         let ids = this.selectedRowKeys
-        if (ids.length == 0)
+        if(ids.length == 0)
           return this.$message.warning('请选择合并派单项目!')
 
         console.log("点击了合并派单", ids)
         //TODO 打开合并派单页面
-        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids, 1)
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids,1)
         this.$refs.MergePlanModelPlan1.title = '合并派单'
       },
       /* 派单操作 */
       assigns(val) {
         console.log('计划1派单', val)
-        this.$refs.planSendOrdersModal.dakpd(val, 1)
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(val.id,1)
+        // this.$refs.planSendOrdersModal.dakpd(val, 1)
         this.$refs.planSendOrdersModal.title = ''
       },
       /* 完单操作 */
       accomplish(val) {
         console.log('完单')
-        this.$refs.planAccomplishModal.dakwd(val, 1, null, null)
-        this.$refs.planAccomplishModal.title = ''
+        //TODO 打开合并完单页面
+        this.$refs.CompletePlan1Model.completePlanModelShow(val.id)
+        this.$refs.CompletePlan1Model.title = '完单操作'
+        // this.$refs.planAccomplishModal.dakwd(val, 1, null, null)
+        // this.$refs.planAccomplishModal.title = ''
       }
     },
     created() {

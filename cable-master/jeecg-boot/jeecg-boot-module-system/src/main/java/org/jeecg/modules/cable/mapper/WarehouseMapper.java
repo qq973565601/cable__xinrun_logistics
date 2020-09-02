@@ -43,6 +43,7 @@ public interface WarehouseMapper extends BaseMapper<Warehouse> {
             "FROM " +
             "inventory i " +
             "LEFT JOIN storage_location s ON i.storage_location_id = s.id " +
-            "WHERE i.project_no = #{projectNo}")
-    List<KuweiVo> queryInventory(@Param("projectNo") Serializable projectNo);
+            "WHERE i.project_no = #{projectNo}" +
+            "AND i.material_id = #{materialId}")
+    List<KuweiVo> queryInventory(@Param("projectNo") Serializable projectNo,@Param("materialId") Serializable materialId);
 }

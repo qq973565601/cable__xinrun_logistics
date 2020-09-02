@@ -7,7 +7,6 @@ import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan3;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
-import org.jeecg.modules.cable.vo.Plan1Vo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
 
 import java.io.Serializable;
@@ -59,15 +58,13 @@ public interface IPlan3Service extends IService<Plan3> {
      *  liu
      * @Date 2020/7/21
      */
-    IPage<Plan3> idsqueryPageList3(List<String> ids, Page<Plan3> page);
-
+    List<Plan3> idsqueryPageList3(List<String> ids);
     /**
      * 分页展示计划表3数据
      * @param plan3
      * @return
      */
     IPage<Plan3> pageList(Plan3 plan3, Page<Plan3> page);
-
     /**
      * 导出计划表3数据
      * bai

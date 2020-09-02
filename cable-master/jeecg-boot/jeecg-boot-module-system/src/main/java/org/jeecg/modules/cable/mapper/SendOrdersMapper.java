@@ -53,9 +53,12 @@ public interface SendOrdersMapper extends BaseMapper<SendOrders> {
     */
     void saveSendOrders(@Param("sendOrdersVo")SendOrdersVo sendOrdersVo,@Param("date")Date date,@Param("name")String name);
 
-    List<SendOrdersVo> selectSendOrdersController(@Param("planId")String planId,@Param("planType") String planType,@Param("page")Page<SendOrdersVo> page);
+    List<SendOrdersVo> selectSendOrdersController(@Param("planId")List<String> planId,@Param("planType") String planType,@Param("page")Page<SendOrdersVo> page);
 
     void updatePlanState(@Param("planId")Integer planId,@Param("planType") String planType);
 
     List<SendOrdersVo> selectPlanSendOrdersTheSameDay(@Param("page") Page<SendOrdersVo> page);
+
+
+    List<SendOrdersVo> selectSendOrdersWD(@Param("planId")List<String> planId,@Param("planType") String planType,@Param("page") Page<SendOrdersVo> page);
 }

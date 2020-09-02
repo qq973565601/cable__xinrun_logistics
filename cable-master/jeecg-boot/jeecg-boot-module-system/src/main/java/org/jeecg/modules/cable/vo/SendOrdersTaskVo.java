@@ -36,4 +36,9 @@ public class SendOrdersTaskVo implements Serializable {
     private String projectName;
     /**项目地址*/
     private String engineeringAddress;
+
+    /**
+     * 车辆数量
+     */
+    private java.lang.Integer number;
 }

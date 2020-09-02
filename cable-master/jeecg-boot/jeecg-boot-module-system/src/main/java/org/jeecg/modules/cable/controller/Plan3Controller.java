@@ -23,7 +23,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.cable.vo.Plan1Vo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
@@ -55,8 +54,10 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
     @Autowired
     private IPlan3Service plan3Service;
+
     @Autowired
     private IMaterialService materialService;
+
     @Autowired
     private ISysDictItemService sysDictItemService;
 
@@ -145,13 +146,21 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        //截取得到ids数组
-        String[] split = ids.split(",");
-        //数组转集合
-        List<String> idlist = Arrays.asList(split);
-        Page<Plan3> page = new Page<>(pageNo, pageSize);
-        IPage<Plan3> pageList = plan3Service.idsqueryPageList3(idlist, page);
-        return Result.ok(pageList);
+        List<Plan1> list = new ArrayList<>();
+        Plan1 plan ;
+        List<Plan3> pageList = plan3Service.idsqueryPageList3(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+            plan = new Plan1();
+            plan.setId(pageList.get(i).getId());                                //计划id
+            plan.setProjectNo(pageList.get(i).getProjectNo());                  //工程账号
+            plan.setProjectName(pageList.get(i).getEngName());                  //项目名称
+            plan.setWasteMaterialText(pageList.get(i).getMaterialDescribe());   //物料描述
+            plan.setWasteMaterialCode(pageList.get(i).getMaterialCode());       //物料代码
+            list.add(plan);
+        }
+        return Result.ok(list);
     }
 
     /**
@@ -206,7 +215,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-    //	/**
+//	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -245,7 +254,8 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      * @return
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan3 plan3, @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan3 plan3,
+                                  @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集

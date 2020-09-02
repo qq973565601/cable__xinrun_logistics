@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -186,7 +187,7 @@ public class StorageLocationController extends JeecgController<StorageLocation, 
         inventoryVo.setStorageLocationId(Integer.parseInt(id));
         IPage<InventoryListsVo> list = inventoryService.InsurancePageList(inventoryVo, page);
         if (list.getRecords().size() > 0) {
-            return Result.error("该库位存放了东西，不能删除!");
+            return Result.error("该库位有库存，请先清空物料再进行删除!");
         } else {
             storageLocationService.removeById(id);
             return Result.ok("删除成功!");
@@ -253,15 +254,16 @@ public class StorageLocationController extends JeecgController<StorageLocation, 
      * @param //materialStorageLocationVo
      * @return
      */
+    @Transactional
     @PostMapping(value = "/MaterialStorageLocationEdit")
     public Result<?> MaterialStorageLocationEdit(@RequestBody JSONObject jsonObject) {
         //所有库存信息
         String id = jsonObject.getString("id");
         //数量
         BigDecimal amount = jsonObject.getBigDecimal("amount");
-        //要转移的库位
+        //要转移的 库位
         Integer storageLocationCId = jsonObject.getInteger("storageLocationCId");
-        //要转移到的库位
+        //要转移到的 目标库位
         Integer storageLocationRId = jsonObject.getInteger("storageLocationRId");
         //单位
         Integer unit = jsonObject.getInteger("unit");

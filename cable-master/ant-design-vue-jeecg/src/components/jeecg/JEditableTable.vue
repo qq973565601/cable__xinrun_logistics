@@ -797,7 +797,7 @@
         type: Boolean,
         default: false
       },
-      // 是否显示操作按钮
+      // 是否显示新增操作按钮
       addButton: {
         type: Boolean,
         default: false

@@ -94,7 +94,7 @@
 
         },
         url: {
-          edit: "/cable/plan1/planTheSameDayEdit",
+          edit: "/cable/sendOrders/edit",
         },
       }
     },
@@ -126,10 +126,10 @@
       theSames(record){
         this.visible = true;
         this.edit(record);
-        if(record.planType=='4'){
-          this.phones =false;
-          this.phon = true;
-        }
+        // if(record.planType=='4'){
+        //   this.phones =false;
+        //   this.phon = true;
+        // }
       },
       edit (record) {
         console.log("修改信息页面：》》》：",record)

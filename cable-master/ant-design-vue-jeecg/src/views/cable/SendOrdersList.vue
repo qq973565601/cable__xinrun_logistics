@@ -88,7 +88,7 @@
   import {httpAction, getAction} from '@/api/manage'
 
   export default {
-    name: "VehicleTaskList",
+    name: "SendOrdersList",
     mixins:[JeecgListMixin, mixinDevice],
     components: {
       SendOrdersModal
@@ -142,7 +142,7 @@
         }
         let date = this.year+'-'+months+'-'+value;
         this.$refs.sendOrdersModal.agentSettings(date);
-        this.$refs.sendOrdersModal.title = "";
+        this.$refs.sendOrdersModal.title = "作业车辆";
       },
       //根据年份与月份查询这个月每日任务数
       selectTask() {
@@ -346,8 +346,10 @@
   /*  border-right: 1px solid #777777*/
   /*}*/
   .now{
-    background: #f2f8fe;
-    color:#2f54eb;
+    background: #d5e7f8;
+    color: #0030fa;
+    /*background: #f2f8fe;*/
+    /*color: #2f54eb;*/
   }
 
 </style>

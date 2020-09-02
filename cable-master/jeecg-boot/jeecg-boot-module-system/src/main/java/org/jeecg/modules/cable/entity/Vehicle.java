@@ -127,4 +127,6 @@ public class Vehicle implements Serializable {
   @Excel(name = "backup5", width = 15)
   @ApiModelProperty(value = "backup5")
   private java.lang.String backup5;
+
+
 }

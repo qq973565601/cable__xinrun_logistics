@@ -6,42 +6,9 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
 
-          <a-col :md="4" :sm="7">
-            <a-form-item label="计划类型">
-              <a-select v-model="queryParam.planType" placeholder="请选择计划类型">
-                <a-select-option value="配变电">配变电</a-select-option>
-                <a-select-option value="其他">其他</a-select-option>
-                <a-select-option value="电缆">电缆</a-select-option>
-                <a-select-option value="线路">线路</a-select-option>
-                <a-select-option value="备品">备品</a-select-option>
-                <a-select-option value="正常">正常</a-select-option>
-                <a-select-option value="抢修">抢修</a-select-option>
-                <a-select-option value="临措">临措</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="4" :sm="7">
-            <a-form-item label="物料编号">
-              <a-input v-model="queryParam.serial" placeholder="请输入物料编号"></a-input>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="4" :sm="7">
-            <a-form-item label="物料名称">
-              <a-input v-model="queryParam.name" placeholder="请输入物料名称"></a-input>
-            </a-form-item>
-          </a-col>
-
-          <!--<a-col :md="4" :sm="7">
-            <a-form-item label="项目编号">
-              <a-input v-model="queryParam.projectNo" placeholder="请输入项目编号"></a-input>
-            </a-form-item>
-          </a-col>-->
-
-          <a-col :md="4" :sm="7">
+          <a-col :md="4" :sm="24">
             <a-form-item label="计划年份">
-              <a-select v-model="queryParam.dateTime" placeholder="请选择计划年份">
+              <a-select v-model="queryParam.dateTime" placeholder="请选择计划年份" @change="searchQuery">
                 <a-select-option :value="year">{{year}}</a-select-option>
                 <a-select-option :value="year-1">{{year-1}}</a-select-option>
                 <a-select-option :value="year-2">{{year-2}}</a-select-option>
@@ -50,8 +17,46 @@
               </a-select>
             </a-form-item>
           </a-col>
+          <a-col :md="4" :sm="24">
+            <a-form-item label="计划类型">
+              <a-select v-model="queryParam.planType" placeholder="请选择计划类型" @change="searchQuery">
+                <a-select-option value="配变电">配变电</a-select-option>
+                <a-select-option value="其他">其他</a-select-option>
+                <a-select-option value="电缆">电缆</a-select-option>
+                <a-select-option value="线路">线路</a-select-option>
+                <a-select-option value="备品">备品</a-select-option>
+                <a-select-option value="新品">新品</a-select-option>
+                <a-select-option value="抢修">抢修</a-select-option>
+                <a-select-option value="临措">临措</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
 
-          <a-col :md="6" :sm="10">
+          <a-col :md="4" :sm="24">
+            <a-form-item label="物料编号">
+              <a-input v-model="queryParam.serial" placeholder="请输入物料编号"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="4" :sm="24">
+            <a-form-item label="物料名称">
+              <a-input v-model="queryParam.name" placeholder="请输入物料名称"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="4" :sm="24">
+            <a-form-item label="资产编号">
+              <a-input v-model="queryParam.assetNo" placeholder="请输入物料编号"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <!--<a-col :md="4" :sm="24">
+            <a-form-item label="项目编号">
+              <a-input v-model="queryParam.projectNo"  placeholder="请输入项目编号"></a-input>
+            </a-form-item>
+          </a-col>-->
+
+          <a-col :md="4" :sm="24">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -77,26 +82,26 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{
         selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+      rowKey="id"
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
                   <span slot="factoryText" slot-scope="text">
-          <j-ellipsis :value="text" :length="7"/>
+          <j-ellipsis :value="text" :length="12"/>
         </span>
 
       </a-table>
@@ -109,8 +114,8 @@
 <script>
 
   import '@/assets/less/TableExpand.less'
-  import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {mixinDevice} from '@/utils/mixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from 'ant-design-vue/es/form/FormItem'
   import ACol from 'ant-design-vue/es/grid/Col'
   import JEllipsis from '../../components/jeecg/JEllipsis'
@@ -123,31 +128,39 @@
       AFormItem,
       JEllipsis
     },
-    data () {
+    data() {
       return {
         description: '物料年度出入台账',
         // 计划年份
         year: '',
         // 查询条件
-        queryParam: {},
+        queryParam: {dateTime:''},
         // 表头
         columns: [
           {
             title: '计划类型',
             align: 'center',
             dataIndex: 'planType',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           }, {
             title: '物料编号',
             align: 'center',
             dataIndex: 'serial',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
             title: '物料名称',
             align: 'center',
             dataIndex: 'name',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
+            title: '资产编号',
+            align: 'center',
+            dataIndex: 'assetNo',
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
             title: '1月',
             align: 'center',
             children: [
@@ -336,16 +349,18 @@
         }
       }
     },
+    created() {
+      // 调用计划年份
+      this.getCurrentYear();
+    },
     methods: {
       // 计划年份
-      getCurrentYear () {
-        let date = new Date()
-        this.year = date.getFullYear()
+      getCurrentYear() {
+        let date = new Date();
+        this.year = date.getFullYear();
+        this.queryParam.dateTime = this.year
+        console.log("当前年份", this.year)
       }
-    },
-    mounted () {
-      // 调用计划年份
-      this.getCurrentYear()
     }
   }
 </script>

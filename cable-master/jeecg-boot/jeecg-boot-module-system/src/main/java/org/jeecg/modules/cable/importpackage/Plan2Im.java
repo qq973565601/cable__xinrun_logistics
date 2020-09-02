@@ -152,10 +152,12 @@ public class Plan2Im implements Serializable {
     private String endWarehouse;
     @Excel(name = "施工队", width = 15)
     private String team;
+
     @Excel(name = "联系人", width = 15)
     private String contacts;
     @Excel(name = "联系电话", width = 15)
     private String contactsPhone;
+
     //
     @Excel(name = "反馈日期", width = 15, format = "yyyy-MM-dd")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
@@ -164,5 +166,15 @@ public class Plan2Im implements Serializable {
     @Excel(name = "情况说明", width = 15)
     private String annotation;
 
+
+    /**
+     * liu
+     * 8-25
+     * 客户备品导入操作时，提供物料代码，物料描述
+     */
+    @Excel(name = "物料描述", width = 15)
+    private String backup2;
+    @Excel(name = "物料代码", width = 15)
+    private String backup3;
 
 }

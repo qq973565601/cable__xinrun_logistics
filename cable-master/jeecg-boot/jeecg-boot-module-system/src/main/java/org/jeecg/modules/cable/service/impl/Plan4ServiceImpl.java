@@ -66,18 +66,20 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     deliverStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     deliverStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
                     deliverStorage.setAccomplishWeight(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                    deliverStorage.setAccomplishWeightUnit(Integer.parseInt(map.get("weightUnit").toString()));
+                    deliverStorage.setAccomplishWeightUnit(2);//电缆重量默认吨
+//                    deliverStorage.setAccomplishWeightUnit(Integer.parseInt(map.get("weightUnit").toString()));
                     deliverStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     deliverStorage.setRecyclingSpecifications(map.get("recyclingSpecifications").toString());
                     deliverStorage.setTexture(map.get("texture").toString());
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString()));
-                    deliverStorage.setAnomalousCause(map.get("anomalousCause").toString()); // 异常原因
-                    if (map.get("scenePhotos1") != null) {
+                    if(null != map.get("anomalousCause").toString())
+                        deliverStorage.setAnomalousCause(map.get("anomalousCause").toString()); // 异常原因
+                    if (map.get("scenePhotos1") != null) { // 判断是否上传了多张异常图片
                         LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
-                        deliverStorage.setScenePhotos(photos1.get("path").toString());
+                        deliverStorage.setScenePhotos(photos1.get("path").toString()); // 添加异常图片1
                         if (map.get("scenePhotos2") != null) {
                             LinkedHashMap<String, Object> photos2 = (LinkedHashMap<String, Object>) map.get("scenePhotos2");
-                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString());
+                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString()); // 添加异常图片2
                         }
                     }
                     deliverStorage.setReceiptNo(receiptNo);
@@ -153,7 +155,8 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
                     receivingStorage.setAccomplishWeight(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                    receivingStorage.setAccomplishWeightUnit(Integer.parseInt(map.get("weightUnit").toString()));
+                    receivingStorage.setAccomplishWeightUnit(2);//电缆重量默认吨
+//                    receivingStorage.setAccomplishWeightUnit(Integer.parseInt(map.get("weightUnit").toString()));
                     receivingStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     receivingStorage.setRecyclingSpecifications(map.get("recyclingSpecifications").toString());
                     receivingStorage.setTexture(map.get("texture").toString());
@@ -237,10 +240,10 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     }
 
     @Override
-    public IPage<Plan4> idsqueryPageList4(List<String> ids, Page<Plan4> page) {
+    public List<Plan4> idsqueryPageList4(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan4> list = baseMapper.selectBatchIds(ids);
-        return page.setRecords(list);
+        return list;
     }
 
     @Override
@@ -260,7 +263,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     }
 
     @Override
-    public List<Plan4Vo> exportFeedbackSummary() {
-        return baseMapper.exportFeedbackSummary();
+    public List<Plan4Vo> exportFeedbackSummary(Plan4Vo plan4Vo) {
+        return baseMapper.exportFeedbackSummary(plan4Vo);
     }
 }

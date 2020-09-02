@@ -214,6 +214,7 @@
     created() {
     },
     methods: {
+
       // 获取所有的editableTable实例
       getAllTable() {
         return Promise.all([
@@ -222,7 +223,7 @@
         ])
       },
 
-      completePlanModelShow() {
+      add() {
         // 默认新增一条数据
         this.getAllTable().then(editableTables => {
           editableTables[0].add()
@@ -318,6 +319,7 @@
           method = 'put'
         }
         this.confirmLoading = true
+
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)

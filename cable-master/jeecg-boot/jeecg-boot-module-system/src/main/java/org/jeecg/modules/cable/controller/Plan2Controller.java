@@ -1,10 +1,7 @@
 package org.jeecg.modules.cable.controller;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import cn.hutool.core.util.StrUtil;
@@ -24,9 +21,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.cable.vo.Plan1Vo;
 import org.jeecg.modules.cable.vo.Plan2Vo;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -56,10 +53,15 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @Autowired
     private IPlan2Service plan2Service;
+
     @Autowired
     private ISysUserService sysUserService;
+
     @Autowired
     private IMaterialService materialService;
+
+    @Autowired
+    private ISysDictItemService sysDictItemService;
 
     /**
      * 计划2合并完单
@@ -151,25 +153,33 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         return Result.ok(pageList);
     }
 
+
     /**
-     * 根据ids集合
-     * 实现分页列表查询
+     *  根据ids集合
+     *  实现分页列表查询
      *
      * @return
      */
     @AutoLog(value = "计划表1-分页列表查询")
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
     @GetMapping(value = "/idslist")
-    public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        //截取得到ids数组
-        String[] split = ids.split(",");
-        //转型得到ids集合
-        List<String> idlist = Arrays.asList(split);
-        Page<Plan2> page = new Page<>(pageNo, pageSize);
-        IPage<Plan2> pageList = plan2Service.idsqueryPageList2(idlist, page);
-        return Result.ok(pageList);
+    public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids) {
+        List<Plan1> list = new ArrayList<>();
+        Plan1 plan ;
+        List<Plan2> pageList = plan2Service.idsqueryPageList2(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+            plan = new Plan1();
+            plan.setId(pageList.get(i).getId());                     //计划id
+            plan.setProjectNo(pageList.get(i).getReceiptNo());       //工程账号
+            plan.setProjectName(pageList.get(i).getSite());          //项目名称
+            plan.setWasteMaterialText(pageList.get(i).getBackup2()); //物料描述
+            plan.setWasteMaterialCode(pageList.get(i).getBackup3()); //物料代码
+            list.add(plan);
+        }
+
+        return Result.ok(list);
     }
 
     /**
@@ -224,7 +234,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         return Result.error("该计划已派过单，暂时不能删除");
     }
 
-    //	/**
+//	/**
 //	 *  批量删除
 //	 *
 //	 * @param ids
@@ -261,7 +271,8 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
      * 2020/5/29
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan2 plan2, @RequestParam(name = "explain", required = false) String explain) {
+    public ModelAndView exportXls(Plan2 plan2,
+                                  @RequestParam(name = "explain", required = false) String explain) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "备品计划";
         // 获取导出数据
@@ -365,4 +376,5 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         List<SysUser> list = sysUserService.list(queryWrapper);
         return Result.ok(list);
     }
+
 }

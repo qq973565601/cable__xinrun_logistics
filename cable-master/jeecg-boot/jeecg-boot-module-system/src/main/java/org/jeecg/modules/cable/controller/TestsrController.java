@@ -156,11 +156,21 @@ public class TestsrController {
     @Autowired
     private IWarehouseService warehouseService;
 
-    /*@GetMapping(value = "/keweiQuery")
+    //
+//  @GetMapping(value = "/keweiQuery")
+//  public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id,
+//                              @RequestParam(value = "type", required = false) String type,
+//                              @RequestParam(value = "warehouseId", required = false) String warehouseId) {
+//    List<KuweiVo> list = warehouseService.keweiQuery(id, type, warehouseId);
+//    return Result.ok(list);
+//  }
+    @GetMapping(value = "/keweiQuery")
     public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id) {
+
+
         List<KuweiVo> list = warehouseService.kewei(id);
         return Result.ok(list);
-    }*/
+    }
 
     /**
      * 根据项目编号查询对应的库存库位存储数量
@@ -170,7 +180,7 @@ public class TestsrController {
      * @return 库存库位信息
      */
     @GetMapping(value = "/queryInventory")
-    public Result<?> queryInventory(@RequestParam(value = "projectNo", required = true) Serializable projectNo) {
-        return Result.ok(warehouseService.queryInventory(projectNo));
+    public Result<?> queryInventory(@RequestParam(value = "projectNo", required = true) Serializable projectNo,@RequestParam(value = "materialId", required = true) Serializable materialId) {
+        return Result.ok(warehouseService.queryInventory(projectNo,materialId));
     }
 }

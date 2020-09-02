@@ -112,16 +112,20 @@
         getAction('/cable/statisticalReport/getDepartureStatisticsDetailsList', {
           license: this.license,
           month: this.month,
-          taskTime: this.year
+          taskTime: this.year,
+          pageNo:this.ipagination.current,
+          pageSize:this.ipagination.pageSize,
         }).then((resp) => {
           if (resp.success) {
             this.dataSource = resp.result.records
+            this.ipagination.total = resp.result.total;
           }
         })
       },
       handleCancel () {
         // 隐藏弹出框 modal
         this.visible = false;
+        this.ipagination.current = 1;
       },
       onSelectChange(selectedRowKeys, selectionRows) {
         this.selectedRowKeys = selectedRowKeys;

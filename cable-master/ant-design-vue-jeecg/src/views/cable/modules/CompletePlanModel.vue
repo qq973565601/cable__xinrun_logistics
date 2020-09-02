@@ -430,7 +430,7 @@
         })
       },
       usersList() {
-        this.users = ''
+        this.users = {}
         getAction('/cable/plan2/queryUserList').then((res) => {
           if (res.success) {
             this.users = res.result
@@ -478,7 +478,7 @@
         console.log(paln,"进入了合并派单页面》》》", ids.toString(),"url地址",url)
           getAction(url, {ids: ids.toString()}).then((res) => {
           if (res.success) {
-            this.dataSource = res.result.records
+            this.dataSource = res.result
             console.log(res.result)
           }
         })

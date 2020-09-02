@@ -227,7 +227,8 @@
         })
       },
       warehouses(val) {
-        this.storageLocations.length = 0
+        this.storageLocations.length = []
+        this.queryParam.name2 = undefined
         this.storageLocationList(val)
       },
       //重新加载数据

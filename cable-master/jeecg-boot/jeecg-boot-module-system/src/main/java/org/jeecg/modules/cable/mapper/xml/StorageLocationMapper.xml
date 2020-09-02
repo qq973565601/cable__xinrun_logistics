@@ -8,7 +8,7 @@
         s.storage_location_name,
         s.storage_location_volume,
         s.the_current_volume,
-        ROUND(s.the_current_volume / s.storage_location_volume * 100, 2) as percentage
+        IFNULL(ROUND(s.the_current_volume / s.storage_location_volume * 100, 2),0) as percentage
         FROM
         storage_location s
         ${ew.customSqlSegment}

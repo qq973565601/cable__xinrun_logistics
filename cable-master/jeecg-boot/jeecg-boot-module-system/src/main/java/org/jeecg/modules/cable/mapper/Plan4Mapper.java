@@ -2,11 +2,9 @@ package org.jeecg.modules.cable.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.cable.entity.Plan3;
 import org.jeecg.modules.cable.entity.Plan4;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
-import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.cable.vo.Plan4Vo;
 
 import java.io.Serializable;
@@ -62,5 +60,5 @@ public interface Plan4Mapper extends BaseMapper<Plan4> {
      * 2020/5/28
      * @return
      */
-    List<Plan4Vo> exportFeedbackSummary();
+    List<Plan4Vo> exportFeedbackSummary(@Param("plan4Vo") Plan4Vo plan4Vo);
 }

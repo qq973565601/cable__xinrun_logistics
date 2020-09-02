@@ -45,11 +45,11 @@ public class SendOrdersSubtabulation implements Serializable {
     @ApiModelProperty(value = "车辆号码/员工id（根据distribution_type变化）")
     private java.lang.String typeId;
 
-  /**任务时间*/
-  @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-  @DateTimeFormat(pattern="yyyy-MM-dd")
-  @ApiModelProperty(value = "任务时间")
-  private java.util.Date taskTime;
+    /**任务时间*/
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @ApiModelProperty(value = "任务时间")
+    private java.util.Date taskTime;
 
 	/**创建时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")

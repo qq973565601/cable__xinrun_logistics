@@ -1,13 +1,17 @@
 package org.jeecg.modules.cable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Warehouse;
+import org.jeecg.modules.cable.mapper.MaterialMapper;
 import org.jeecg.modules.cable.mapper.WarehouseMapper;
 import org.jeecg.modules.cable.service.IWarehouseService;
 import org.jeecg.modules.cable.vo.InventoryIocationListVo;
 import org.jeecg.modules.cable.vo.InventoryVo;
 import org.jeecg.modules.cable.vo.KuweiVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,6 +27,9 @@ import java.util.List;
  */
 @Service
 public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse> implements IWarehouseService {
+
+    @Autowired
+    MaterialMapper materialMapper;
 
     @Override
     public IPage<InventoryIocationListVo> InventoryIocationListVoPage(InventoryIocationListVo inventoryIocationListVo, Page<InventoryIocationListVo> page) {
@@ -54,7 +61,8 @@ public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse
     }
 
     @Override
-    public List<KuweiVo> queryInventory(Serializable projectNo) {
-        return baseMapper.queryInventory(projectNo);
+    public List<KuweiVo> queryInventory(Serializable projectNo,Serializable materialId) {
+        Material serial = materialMapper.selectOne(new QueryWrapper<Material>().eq("serial", materialId));
+        return baseMapper.queryInventory(projectNo, serial.getId());
     }
 }

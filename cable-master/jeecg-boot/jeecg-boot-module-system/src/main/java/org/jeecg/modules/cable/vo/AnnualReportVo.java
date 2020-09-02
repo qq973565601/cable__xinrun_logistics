@@ -14,6 +14,7 @@ public class AnnualReportVo implements Serializable {
   private String projectName;
   private String serial;
   private String name;
+  private String assetNo;
   private BigDecimal m10;
   private BigDecimal m11;
   private BigDecimal m20;

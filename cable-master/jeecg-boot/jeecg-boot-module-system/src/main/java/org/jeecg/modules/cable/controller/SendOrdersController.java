@@ -23,6 +23,8 @@ import org.jeecg.modules.cable.vo.PlanVo;
 import org.jeecg.modules.cable.vo.SendOrdersTaskVo;
 import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecg.modules.cable.vo.TaskVo;
+import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
+import org.jeecg.modules.demo.test.vo.JeecgOrderMainPage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +106,22 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
     @AutoLog(value = "派单表-合并添加")
     @ApiOperation(value = "派单表-合并添加", notes = "派单表-合并添加")
     @PostMapping(value = "/mergePlanadd")
+    public Result<?> MergePlan(@RequestBody SendOrdersVo sendOrdersVo) {
+        sendOrdersService.saveMain(sendOrdersVo, sendOrdersVo.getJeecgOrderCustomerList(), sendOrdersVo.getJeecgOrderTicketList());
+        return Result.ok("派单成功！");
+    }
+
+    /**
+     * 合并派单添加
+     * jsonObject 派单信息
+     * ids 计划id的集合（字符串类型）
+     * liu
+     * @return
+     */
+    /*@Transactional
+    @AutoLog(value = "派单表-合并添加")
+    @ApiOperation(value = "派单表-合并添加", notes = "派单表-合并添加")
+    @PostMapping(value = "/mergePlanadd")
     public Result<?> MergePlan(@RequestBody JSONObject jsonObject,
                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                @RequestParam(name = "pageSize", defaultValue = "100") Integer pageSize) {
@@ -126,9 +144,9 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         SendOrdersVo sov;
 
         if(ordersVo.getPlanType().equals("1")) {
-            Page<Plan1> page1 = new Page<Plan1>(pageNo, pageSize);
+//            Page<Plan1> page1 = new Page<Plan1>(pageNo, pageSize);
             //TODO 根据 ids 查询计划详情
-            List<Plan1> planList = plan1Service.idsqueryPageList(idlist,page1).getRecords();
+            List<Plan1> planList = plan1Service.idsqueryPageList(idlist);
             for (int i = 0; i < planList.size(); i++) {
                 sov = new SendOrdersVo();
                 //TODO 将共有部分派单参数赋值给该计划派单参数
@@ -200,7 +218,7 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
                 ReceivingStorage receivingStorage = new ReceivingStorage();
                 receivingStorage.setWarehouseId(sendOrdersVo.getWarehouseId());
                 receivingStorage.setStorageLocationId(sendOrdersVo.getStorageLocationId());
-//                receivingStorage.setSendOrdersId(id);
+                receivingStorage.setSendOrdersId(id);
                 receivingStorage.setState(0);
                 receivingStorage.setMaterialId(materialList.get(0).getId());
                 //TODO 出库/完单表添加数据
@@ -252,7 +270,7 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
             }
         }
         return Result.ok("派单成功！");
-    }
+    }*/
     /*for (Plan2 plan2 : planList) {
             sendOrdersVo.setId(plan2.getId());//计划id
             sendOrdersVo.setSerial(plan2.getWarehouseContact());//物料编码
@@ -350,14 +368,20 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
 
     /**
      * 编辑
-     *
+     * zhu
+     * 2020-08-28
      * @return
      */
     @AutoLog(value = "派单表-编辑")
     @ApiOperation(value = "派单表-编辑", notes = "派单表-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody SendOrdersVo sendOrdersVo) {
-        sendOrdersService.updateSendOrders(sendOrdersVo);
+        SendOrders sendOrders = new SendOrders();
+        sendOrders.setId(sendOrdersVo.getId());
+        sendOrders.setBackup3(sendOrdersVo.getLinkman());
+        sendOrders.setBackup2(sendOrdersVo.getAddress());
+        sendOrders.setBackup4(sendOrdersVo.getPhone());
+        sendOrdersService.updateById(sendOrders);
         return Result.ok("编辑成功!");
     }
 
@@ -367,10 +391,12 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * @param id
      * @return
      */
+    @Transactional
     @AutoLog(value = "派单表-通过id删除")
     @ApiOperation(value = "派单表-通过id删除", notes = "派单表-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        //删除派单表信息
         sendOrdersService.removeSendOrders(id);
         return Result.ok("删除成功!");
     }
@@ -491,7 +517,6 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         }
         Page<PlanVo> page = new Page<>(pageNo, pageSize);
         List<PlanVo> list = sendOrdersService.selectPlan2Accomplish(projectNo, planId, planType, sendOrdersId, page);
-
         return Result.ok(list);
     }
 
@@ -501,34 +526,40 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * @Author Xm
      * @Date 2020/5/27 10:52
      */
-    /*@PutMapping(value = "/planedit")
+    @PutMapping(value = "/planedit")
     public Result<?> planedit(@RequestBody JSONObject jsonObject) {
         PlanVo planVo = JSON.parseObject(jsonObject.toJSONString(), PlanVo.class);
         Result<?> planedit = sendOrdersService.planedit(planVo);
         if(planedit.getCode() == 200) return Result.ok(planedit.getMessage());
         if(planedit.getCode() == 500) return Result.error(planedit.getMessage());
         return Result.ok(planedit);
-    }*/
+    }
 
     /**
+     * 派单记录
      * 根据计划id和计划类型查询历史派单信息
+     * zhu
+     * 2020-08-28
      *
-     * @param planId
+     * @param ids
      * @param planType
      * @return
      */
     @GetMapping(value = "/selectSendOrdersController")
-    public Result<?> selectSendOrdersController(@RequestParam(name = "planId", required = true) String planId,
+    public Result<?> selectSendOrdersController(@RequestParam(name = "ids", required = true) String ids,
                                                 @RequestParam(name = "planType", required = true) String planType,
                                                 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<SendOrdersVo> page = new Page<>(pageNo, pageSize);
-        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersController(planId, planType, page);
+        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersController(ids, planType, page);
         return Result.ok(iPage);
     }
 
     /**
+     * 今日派单
      * 查询当天所有的派单
+     * zhu
+     * 2020-08-28
      *
      * @return
      */
@@ -539,5 +570,46 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         IPage<SendOrdersVo> iPage = sendOrdersService.selectPlanSendOrdersTheSameDay(page);
         return Result.ok(iPage);
     }
+
+    /**
+     * 完单记录
+     * 查询完单记录
+     * zhu
+     * 2020-08-28
+     *
+     * @return
+     */
+    @GetMapping(value = "/selectSendOrdersWD")
+    public Result<?> selectSendOrdersWD(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                        @RequestParam(name = "ids", required = true) String ids,
+                                        @RequestParam(name = "planType", required = true) String planType,
+                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<SendOrdersVo> page = new Page<>(pageNo, pageSize);
+        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersWD(ids, planType,page);
+        return Result.ok(iPage);
+    }
+
+
+    /**
+     * 通过id删除完单记录
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    @AutoLog(value = "删除完单记录")
+    @ApiOperation(value = "删除完单记录", notes = "删除完单记录")
+    @DeleteMapping(value = "/wddelete")
+    public Result<?> wdDelete(@RequestParam(name = "id", required = true) String id,@RequestParam(name = "type",required = true) String type) {
+        if(type.equals("出库")){
+            //删除出库完单记录
+            receivingStorageService.removeById(id);
+        }else if(type.equals("入库")){
+            //删除入库完单记录
+            deliverStorageService.removeById(id);
+        }
+        return Result.ok("删除成功!");
+    }
+
 
 }

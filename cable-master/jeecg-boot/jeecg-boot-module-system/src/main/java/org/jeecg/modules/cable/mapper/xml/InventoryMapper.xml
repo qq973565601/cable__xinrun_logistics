@@ -94,7 +94,8 @@
         inventory.backup1,
         inventory.backup2,
         inventory.backup3,
-        material_id
+        material_id,
+        asset_no
     </select>
     <select id="yikuVoPage" resultType="org.jeecg.modules.cable.vo.YikuVo">
         SELECT

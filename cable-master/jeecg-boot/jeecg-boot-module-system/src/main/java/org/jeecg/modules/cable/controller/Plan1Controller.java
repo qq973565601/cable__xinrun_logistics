@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.StrUtil;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
@@ -53,14 +52,19 @@ import static org.jeecgframework.poi.excel.ExcelExportUtil.exportExcel;
 public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @Autowired
     private IPlan1Service plan1Service;
+
     @Autowired
     private IPlan2Service plan2Service;
+
     @Autowired
     private IPlan3Service plan3Service;
+
     @Autowired
     private IPlan4Service plan4Service;
+
     @Autowired
     private IMaterialService materialService;
+
     @Autowired
     private ISysDictItemService sysDictItemService;
 
@@ -158,8 +162,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     }
 
     /**
-     * 根据ids集合
-     * 实现分页列表查询
+     *  根据ids集合
+     *  实现分页列表查询
      *
      * @return
      */
@@ -167,23 +171,14 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
     @GetMapping(value = "/idslist")
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        //截取得到ids数组
-        String[] split = ids.split(",");
-        //转型得到ids集合
-        List<String> idlist = Arrays.asList(split);
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
-        Page<Plan1> page = new Page<>(pageNo, pageSize);
-        IPage<Plan1> pageList = plan1Service.idsqueryPageList(idlist, page);
-
-        // 检验工程账号是否一致 Begin
-        for (Plan1 plan : pageList.getRecords()) {
-            if (!pageList.getRecords().get(0).getProjectNo().equals(plan.getProjectNo()))
-                return Result.error("工程账号必须一致");
+        List<Plan1> pageList = plan1Service.idsqueryPageList(Arrays.asList(ids.split(",")));
+        for (Plan1 plan : pageList) {
+            if (!pageList.get(0).getProjectNo().equals(plan.getProjectNo()))
+            return Result.error("工程账号必须一致");
         }
-        // 检验工程账号是否一致 End
-
         return Result.ok(pageList);
     }
 
@@ -319,7 +314,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null != sysUser) {
+        if(null != sysUser) {
             material.setCreateBy(sysUser.getUsername());
             material.setUpdateBy(sysUser.getUsername());
         }
@@ -400,7 +395,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         if (sendOrdersVo.getPlanType().equals("1")) {
             Plan1 plan1 = plan1Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-                plan1.setUpdateBy(sysUser.getUsername());
+            plan1.setUpdateBy(sysUser.getUsername());
             plan1.setUpdateTime(new Date());
             plan1.setTheContact(sendOrdersVo.getLinkman());
             plan1.setThePhone(sendOrdersVo.getPhone());
@@ -411,7 +406,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("2")) {
             Plan2 plan2 = plan2Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-                plan2.setUpdateBy(sysUser.getUsername());
+            plan2.setUpdateBy(sysUser.getUsername());
             plan2.setUpdateTime(new Date());
             plan2.setEquipmentOwners(sendOrdersVo.getLinkman());
 
@@ -421,7 +416,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("3")) {
             Plan3 plan3 = plan3Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-                plan3.setUpdateBy(sysUser.getUsername());
+            plan3.setUpdateBy(sysUser.getUsername());
             plan3.setUpdateTime(new Date());
             plan3.setFieldConsignee(sendOrdersVo.getLinkman());
             plan3.setCPhone(sendOrdersVo.getLinkman());
@@ -432,7 +427,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("4")) {
             Plan4 plan4 = plan4Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-                plan4.setUpdateBy(sysUser.getUsername());
+            plan4.setUpdateBy(sysUser.getUsername());
             plan4.setUpdateTime(new Date());
             plan4.setTeamContact(sendOrdersVo.getLinkman());
 
@@ -469,40 +464,32 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
      * @return
      */
     @GetMapping(value = "/selectSettleAccountsDetails")
-    public Result<?> selectSettleAccountsDetails(@RequestParam(name = "planId", required = false) Integer planId,
-                                                 @RequestParam(name = "planName", required = false) Integer planName,
+    public Result<?> selectSettleAccountsDetails(@RequestParam(name = "projectNo", required = false) String projectNo,
                                                  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<SettleAccountsDetailsVo> page = new Page<>(pageNo, pageSize);
-        IPage<SettleAccountsDetailsVo> pageList = plan1Service.selectSettleAccountsDetails(planId, planName, page);
+        IPage<SettleAccountsDetailsVo> pageList = plan1Service.selectSettleAccountsDetails(projectNo, page);
         return Result.ok(pageList);
     }
 
-    @PutMapping(value = "/updateSettleAccounts")
-    public Result<?> updateSettleAccounts(@RequestBody SettleAccountsVo settleAccountsVo) {
-        if (settleAccountsVo.getBackup1().equals("1")) {
-            return Result.ok("该计划已结算!");
-        }
-        if (settleAccountsVo.getPlanName().equals("1")) {
-            Plan1 plan1 = plan1Service.getById(settleAccountsVo.getPlanId());
-            plan1.setBackup1("1");
-            plan1Service.updateById(plan1);
-        }
-        if (settleAccountsVo.getPlanName().equals("2")) {
-            Plan2 plan2 = plan2Service.getById(settleAccountsVo.getPlanId());
-            plan2.setBackup1("1");
-            plan2Service.updateById(plan2);
-        }
-        if (settleAccountsVo.getPlanName().equals("3")) {
-            Plan3 plan3 = plan3Service.getById(settleAccountsVo.getPlanId());
-            plan3.setBackup1("1");
-            plan3Service.updateById(plan3);
-        }
-        if (settleAccountsVo.getPlanName().equals("4")) {
-            Plan4 plan4 = plan4Service.getById(settleAccountsVo.getPlanId());
-            plan4.setBackup1("1");
-            plan4Service.updateById(plan4);
-        }
+    @GetMapping(value = "/updateSettleAccounts")
+    public Result<?> updateSettleAccounts(@RequestParam(name = "projectNo", required = false) String projectNo) {
+
+        Plan1 plan1 = new Plan1();
+        plan1.setBackup1("1");
+        plan1Service.update(plan1,new QueryWrapper<Plan1>().eq("project_no",projectNo));
+        Plan2 plan2 = new Plan2();
+        plan2.setBackup1("1");
+        plan2Service.update(plan2,new QueryWrapper<Plan2>().eq("project_no",projectNo));
+        Plan3 plan3 = new Plan3();
+        plan1.setBackup1("1");
+        plan3Service.update(plan3,new QueryWrapper<Plan3>().eq("project_no",projectNo));
+        Plan4 plan4 = new Plan4();
+        plan4.setBackup1("1");
+        plan4Service.update(plan4,new QueryWrapper<Plan4>().eq("project_no",projectNo));
+
         return Result.ok("结算成功!");
     }
+
+
 }

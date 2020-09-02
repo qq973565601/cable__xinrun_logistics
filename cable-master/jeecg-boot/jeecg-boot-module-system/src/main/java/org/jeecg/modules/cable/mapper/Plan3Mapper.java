@@ -2,11 +2,9 @@ package org.jeecg.modules.cable.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan3;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
-import org.jeecg.modules.cable.vo.Plan1Vo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
 
 import java.io.Serializable;

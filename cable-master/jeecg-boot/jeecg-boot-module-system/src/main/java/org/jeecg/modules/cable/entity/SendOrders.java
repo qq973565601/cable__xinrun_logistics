@@ -116,18 +116,21 @@ public class SendOrders implements Serializable {
     private java.lang.String backup1;
     /**
      * backup2
+     * 任务地址
      */
     @Excel(name = "backup2", width = 15)
     @ApiModelProperty(value = "backup2")
     private java.lang.String backup2;
     /**
      * backup3
+     * 联系人
      */
     @Excel(name = "backup3", width = 15)
     @ApiModelProperty(value = "backup3")
     private java.lang.String backup3;
     /**
      * backup4
+     * 电话
      */
     @Excel(name = "backup4", width = 15)
     @ApiModelProperty(value = "backup4")

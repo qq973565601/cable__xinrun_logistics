@@ -249,8 +249,9 @@
         deleteAction(this.url.delete, {id: val}).then((res) => {
           if (res.success) {
             that.storageLocationList()
-          } else {
-            window.confirm('该库位存放了东西，不能删除!')
+            this.$message.success(res.message)
+          }else{
+            this.$message.warning(res.message)
           }
         })
       },

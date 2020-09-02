@@ -3,6 +3,7 @@ package org.jeecg.modules.cable.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan2;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan2Im;
@@ -57,8 +58,7 @@ public interface IPlan2Service extends IService<Plan2> {
      *  liu
      * @Date 2020/7/21
      */
-    IPage<Plan2> idsqueryPageList2(List<String> ids, Page<Plan2> page);
-
+    List<Plan2> idsqueryPageList2(List<String> ids );
     /**
      * 分页展示计划表2数据
      *  bai
@@ -66,7 +66,6 @@ public interface IPlan2Service extends IService<Plan2> {
      * @return
      */
     IPage<Plan2> pageList(Plan2 plan2, Page<Plan2> page);
-
     /**
      * 导出 plan2
      * bai

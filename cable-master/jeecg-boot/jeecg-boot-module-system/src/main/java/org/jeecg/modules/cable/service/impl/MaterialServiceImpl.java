@@ -38,37 +38,37 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         List<MaterialRemainingAccountVo> list = baseMapper.getMaterialRemainingAccountList(serial, name, projectNo, page);
         for (MaterialRemainingAccountVo materialRemainingAccountVo : list) {
             BigDecimal bigDecimal = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow00() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow00());
+            if (materialRemainingAccountVo.getNow_0_0() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow_0_0());
             }
-            if (materialRemainingAccountVo.getNow10() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow10());
+            if (materialRemainingAccountVo.getNow_1_0() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow_1_0());
             }
-            if (materialRemainingAccountVo.getNow20() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow20());
+            if (materialRemainingAccountVo.getNow_2_0() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow_2_0());
             }
-            if (materialRemainingAccountVo.getNow30() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow30());
+            if (materialRemainingAccountVo.getNow_3_0() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow_3_0());
             }
-            if (materialRemainingAccountVo.getNow40() != null) {
-                bigDecimal.add(materialRemainingAccountVo.getNow40());
+            if (materialRemainingAccountVo.getNow_4_0() != null) {
+                bigDecimal.add(materialRemainingAccountVo.getNow_4_0());
             }
             materialRemainingAccountVo.setYlckNums(bigDecimal);
             BigDecimal bigDecimal1 = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow01() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow01());
+            if (materialRemainingAccountVo.getNow_0_1() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow_0_1());
             }
-            if (materialRemainingAccountVo.getNow11() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow11());
+            if (materialRemainingAccountVo.getNow_1_1() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow_1_1());
             }
-            if (materialRemainingAccountVo.getNow21() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow21());
+            if (materialRemainingAccountVo.getNow_2_1() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow_2_1());
             }
-            if (materialRemainingAccountVo.getNow31() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow31());
+            if (materialRemainingAccountVo.getNow_3_1() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow_3_1());
             }
-            if (materialRemainingAccountVo.getNow41() != null) {
-                bigDecimal1.add(materialRemainingAccountVo.getNow41());
+            if (materialRemainingAccountVo.getNow_4_1() != null) {
+                bigDecimal1.add(materialRemainingAccountVo.getNow_4_1());
             }
             materialRemainingAccountVo.setYlrkNums(bigDecimal1);
         }
@@ -76,8 +76,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
-    public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, Page<AnnualReportVo> page) {
-        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo, page);
+    public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, String assetNo, Page<AnnualReportVo> page) {
+        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo,assetNo, page);
         for (AnnualReportVo annualReportVo : list) {
             BigDecimal m10 = annualReportVo.getM10();
             BigDecimal m20 = annualReportVo.getM20();

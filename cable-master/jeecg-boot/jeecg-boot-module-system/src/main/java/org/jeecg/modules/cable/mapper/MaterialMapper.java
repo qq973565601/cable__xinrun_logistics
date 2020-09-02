@@ -39,7 +39,7 @@ public interface MaterialMapper extends BaseMapper<Material> {
      * @Author bai
      * @Date 2020/5/20
      */
-    List<AnnualReportVo> getAnnualAccountList(@Param("planType") String planType, @Param("dateTime") String dateTime, @Param("serial") String serial, @Param("name") String name, @Param("projectNo") String projectNo, @Param("page") Page<AnnualReportVo> page);
+    List<AnnualReportVo> getAnnualAccountList(@Param("planType") String planType, @Param("dateTime") String dateTime, @Param("serial") String serial, @Param("name") String name, @Param("projectNo") String projectNo, @Param("assetNo") String assetNo, @Param("page") Page<AnnualReportVo> page);
 
     /**
      * 分页查询物料信息

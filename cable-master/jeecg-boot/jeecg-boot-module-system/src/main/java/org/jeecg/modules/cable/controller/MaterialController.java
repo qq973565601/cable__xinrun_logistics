@@ -90,8 +90,8 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
          * 2020-08-20
          * liu 改
          */
-        int count = materialService.count(new QueryWrapper<Material>().eq("serial", material.getSerial()).ne("id", material.getId()));
-        if (count > 0) return false;
+        int count = materialService.count(new QueryWrapper<Material>().eq("serial",material.getSerial()).ne("id",material.getId()));
+        if( count > 0) return false;
         return true;
     }
 
@@ -146,10 +146,11 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
                                           @RequestParam(name = "serial", required = false) String serial,
                                           @RequestParam(name = "name", required = false) String name,
                                           @RequestParam(name = "projectNo", required = false) String projectNo,
+                                          @RequestParam(name = "assetNo", required = false) String assetNo,
                                           @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<AnnualReportVo> page = new Page<AnnualReportVo>(pageNo, pageSize);
-        IPage<AnnualReportVo> pageList = materialService.getAnnualAccountList(planType, dateTime, serial, name, projectNo, page);
+        IPage<AnnualReportVo> pageList = materialService.getAnnualAccountList(planType, dateTime, serial, name, projectNo,assetNo, page);
         return Result.ok(pageList);
     }
 

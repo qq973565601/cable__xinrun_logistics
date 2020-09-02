@@ -18,56 +18,67 @@
             </a-form-item>
           </a-col>
 
-          <a-col :md="3" :sm="7">
-            <a-form-item label="周">
-              <a-select v-model="queryParam.week" placeholder="请选择周" @change="weeks">
-                <a-select-option value="1">本周</a-select-option>
-                <a-select-option value="2">上周</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :md="3" :sm="7">-->
+<!--            <a-form-item label="周">-->
+<!--              <a-select v-model="queryParam.week" placeholder="请选择周" @change="weeks">-->
+<!--                <a-select-option value="1">本周</a-select-option>-->
+<!--                <a-select-option value="2">上周</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
 
-          <a-col :md="3" :sm="7">
-            <a-form-item label="月">
-              <a-select v-model="queryParam.month" placeholder="请选择月份" @change="months">
-                <a-select-option value="1">1月</a-select-option>
-                <a-select-option value="2">2月</a-select-option>
-                <a-select-option value="3">3月</a-select-option>
-                <a-select-option value="4">4月</a-select-option>
-                <a-select-option value="5">5月</a-select-option>
-                <a-select-option value="6">6月</a-select-option>
-                <a-select-option value="7">7月</a-select-option>
-                <a-select-option value="8">8月</a-select-option>
-                <a-select-option value="9">9月</a-select-option>
-                <a-select-option value="10">10月</a-select-option>
-                <a-select-option value="11">11月</a-select-option>
-                <a-select-option value="12">12月</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :md="3" :sm="7">-->
+<!--            <a-form-item label="月">-->
+<!--              <a-select v-model="queryParam.month" placeholder="请选择月份" @change="months">-->
+<!--                <a-select-option value="1">1月</a-select-option>-->
+<!--                <a-select-option value="2">2月</a-select-option>-->
+<!--                <a-select-option value="3">3月</a-select-option>-->
+<!--                <a-select-option value="4">4月</a-select-option>-->
+<!--                <a-select-option value="5">5月</a-select-option>-->
+<!--                <a-select-option value="6">6月</a-select-option>-->
+<!--                <a-select-option value="7">7月</a-select-option>-->
+<!--                <a-select-option value="8">8月</a-select-option>-->
+<!--                <a-select-option value="9">9月</a-select-option>-->
+<!--                <a-select-option value="10">10月</a-select-option>-->
+<!--                <a-select-option value="11">11月</a-select-option>-->
+<!--                <a-select-option value="12">12月</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
 
-          <a-col :md="3" :sm="7">
-            <a-form-item label="季">
-              <a-select v-model="queryParam.quarter" placeholder="请选择季度" @change="quarters">
-                <a-select-option value="1">春</a-select-option>
-                <a-select-option value="2">夏</a-select-option>
-                <a-select-option value="3">秋</a-select-option>
-                <a-select-option value="4">冬</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+<!--          <a-col :md="3" :sm="7">-->
+<!--            <a-form-item label="季">-->
+<!--              <a-select v-model="queryParam.quarter" placeholder="请选择季度" @change="quarters">-->
+<!--                <a-select-option value="1">春</a-select-option>-->
+<!--                <a-select-option value="2">夏</a-select-option>-->
+<!--                <a-select-option value="3">秋</a-select-option>-->
+<!--                <a-select-option value="4">冬</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
 
-          <a-col :md="3" :sm="7">
-            <a-form-item label="年">
-              <a-select v-model="queryParam.year" placeholder="请选择年份" @change="yeare">
-                <a-select-option :value="year">{{year}}</a-select-option>
-                <a-select-option :value="year-1">{{year-1}}</a-select-option>
-                <a-select-option :value="year-2">{{year-2}}</a-select-option>
-                <a-select-option :value="year-3">{{year-3}}</a-select-option>
-                <a-select-option :value="year-4">{{year-4}}</a-select-option>
-              </a-select>
+<!--          <a-col :md="3" :sm="7">-->
+<!--            <a-form-item label="年">-->
+<!--              <a-select v-model="queryParam.year" placeholder="请选择年份" @change="yeare">-->
+<!--                <a-select-option :value="year">{{year}}</a-select-option>-->
+<!--                <a-select-option :value="year-1">{{year-1}}</a-select-option>-->
+<!--                <a-select-option :value="year-2">{{year-2}}</a-select-option>-->
+<!--                <a-select-option :value="year-3">{{year-3}}</a-select-option>-->
+<!--                <a-select-option :value="year-4">{{year-4}}</a-select-option>-->
+<!--              </a-select>-->
+<!--            </a-form-item>-->
+<!--          </a-col>-->
+          <!--<a-col :md="4" :sm="7">
+            <a-form-item label="开始时间">
+              <j-date v-model="queryParam.startTime" placeholder="请选择开始日期"></j-date>
+
             </a-form-item>
           </a-col>
+          <a-col :md="4" :sm="7">
+            <a-form-item label="结束时间">
+              <j-date v-model="queryParam.endTime" placeholder="请选择结束日期"></j-date>
+            </a-form-item>
+          </a-col>-->
 
           <a-col :md="4" :sm="10">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -83,11 +94,12 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{selectedRowKeys.length}}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
+      :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"-->
       <a-table
         ref="table"
         size="middle"
@@ -96,7 +108,6 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
         @change="handleTableChange">
 
@@ -122,15 +133,16 @@
 <script>
 
   import '@/assets/less/TableExpand.less'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import JEllipsis from '../../components/jeecg/JEllipsis'
   import MaterialOutPutAccountModal from './modules/MaterialOutPutAccountModal'
-  import { putAction, postAction, getAction } from '@/api/manage'
+  import {putAction, postAction, getAction} from '@/api/manage'
+  import JDate from '@/components/jeecg/JDate'
 
   export default {
     name: 'MaterialOutPutAccount',
     mixins: [JeecgListMixin],
-    components: { MaterialOutPutAccountModal, JEllipsis },
+    components: {MaterialOutPutAccountModal, JEllipsis,JDate},
     data() {
       return {
         description: '物料出入库台账',
@@ -139,7 +151,9 @@
           week: undefined,
           month: undefined,
           quarter: undefined,
-          year: undefined
+          year: undefined,
+          startTime:'',
+          endTime:'',
         },
         columns: [
           {
@@ -147,47 +161,51 @@
             align: 'center',
             width: 350,
             dataIndex: 'materialName',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           }, {
             title: '物料编号',
             align: 'center',
             width: 350,
             dataIndex: 'materialSerial',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           }, {
             title: '规格型号',
             align: 'center',
             dataIndex: 'materialAtions',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
-            title: '供应商',
-            align: 'center',
-            dataIndex: 'materialSupplier',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          // {
+          //   title: '供应商',
+          //   align: 'center',
+          //   dataIndex: 'materialSupplier',
+          //   scopedSlots: { customRender: 'factoryText' }
+          // },
+          {
             title: '单位',
             align: 'center',
             dataIndex: 'materialUnit_dictText',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
-            title: '出库数量',
-            align: 'center',
-            dataIndex: 'receivingNum'
+            scopedSlots: {customRender: 'factoryText'}
           }, {
             title: '入库数量',
             align: 'center',
             dataIndex: 'deliverNum'
           }, {
-            title: '余留数量',
+            title: '出库数量',
             align: 'center',
-            dataIndex: 'ylNum'
-          }, {
-            title: '操作',
-            dataIndex: 'action',
-            align: 'center',
-            width: 147,
-            scopedSlots: { customRender: 'action' }
-          }
+            dataIndex: 'receivingNum'
+          },
+          // {
+          //   title: '余留数量',
+          //   align: 'center',
+          //   dataIndex: 'ylNum'
+          // },
+          // {
+          //   title: '操作',
+          //   dataIndex: 'action',
+          //   align: 'center',
+          //   width: 147,
+          //   scopedSlots: { customRender: 'action' }
+          // }
         ],
         url: {}
       }
@@ -200,6 +218,7 @@
         this.queryParam = {}
         let date = new Date()
         let months = date.getMonth() + 1
+        this.queryParam.year = date.getFullYear()
         this.queryParam.month = months + ''
         this.loadData2(1)
       },
@@ -217,8 +236,8 @@
         params.materialSerial = this.queryParam.materialSerial
         params.week = this.queryParam.week
         params.month = this.queryParam.month
-        params.quarter = this.queryParam.quarter
-        params.year = this.queryParam.year
+        params.startTime = this.queryParam.startTime==undefined?'':this.queryParam.startTime
+        params.endTime = this.queryParam.endTime==undefined?'':this.queryParam.endTime
         this.loading = true
         getAction('/cable/material/getMaterialOutPutAccountList', params).then((res) => {
           if (res.success) {
@@ -231,18 +250,11 @@
           this.loading = false
         })
       },
-      searchReset() {
-        this.queryParam = {}
-        let date = new Date()
-        this.queryParam.year = date.getFullYear()
-        this.queryParam.month = date.getMonth() + 1
-        this.loadData2(1)
-      },
       months(val) {
         this.queryParam.month = val
         this.queryParam.quarter = undefined
         this.queryParam.week = undefined
-        if (this.queryParam.year==undefined||this.queryParam.year=='') {
+        if (this.queryParam.year == undefined || this.queryParam.year == '') {
           let date = new Date()
           this.queryParam.year = date.getFullYear()
         }
@@ -257,7 +269,7 @@
         this.queryParam.quarter = val
         this.queryParam.month = undefined
         this.queryParam.week = undefined
-        if (this.queryParam.year==undefined||this.queryParam.year=='') {
+        if (this.queryParam.year == undefined || this.queryParam.year == '') {
           let date = new Date()
           this.queryParam.year = date.getFullYear()
         }

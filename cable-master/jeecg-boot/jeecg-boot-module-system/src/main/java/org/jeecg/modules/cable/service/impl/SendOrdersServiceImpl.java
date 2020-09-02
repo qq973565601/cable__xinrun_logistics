@@ -1,17 +1,18 @@
 package org.jeecg.modules.cable.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.mapper.*;
 import org.jeecg.modules.cable.service.*;
-import org.jeecg.modules.cable.vo.PlanVo;
-import org.jeecg.modules.cable.vo.SendOrdersTaskVo;
-import org.jeecg.modules.cable.vo.SendOrdersVo;
-import org.jeecg.modules.cable.vo.TaskVo;
+import org.jeecg.modules.cable.vo.*;
+import org.jeecg.modules.demo.test.mapper.JeecgOrderCustomerMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,12 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
 
     @Autowired
     private SendOrdersMapper sendOrdersMapper;
+
+    @Autowired
+    private Plan1Mapper plan1Mapper;
+
+    @Autowired
+    private SendOrdersSubtabulationMapper sendOrdersSubtabulationMapper;
 
     @Autowired
     private ISendOrdersSubtabulationService sendOrdersSubtabulationService;
@@ -66,6 +73,63 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
     @Autowired
     private IPlan4Service plan4Service;
 
+
+    @Transactional
+    @Override
+    public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrders> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
+        //TODO 当前登陆对象
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //车辆派单表 关联第一条派单记录 id
+        Integer id = null;
+
+        //TODO 遍历所有派单信息，进行派单操作
+        for (SendOrders orders : sendOrdersMainPageVoList) {
+            SendOrders sendOrders = new SendOrders();
+
+            //TODO 将共有部分派单参数赋值给该计划派单参数
+            BeanUtils.copyProperties(sendOrdersVo,sendOrders);    // sendOrdersVo → sendOrders
+            sendOrders.setProjectNo(orders.getProjectNo());//工程账号
+            sendOrders.setBackup2(orders.getBackup2()); //任务地址
+            sendOrders.setBackup3(orders.getBackup3()); //联系人
+            sendOrders.setBackup4(orders.getBackup4()); //电话
+            sendOrders.setPlanId(orders.getId());       //计划id
+            sendOrders.setId(null);                     //派单id 设置为空
+            sendOrdersMapper.insert(sendOrders);
+
+            //TODO 派单成功之后，只获取第一次的派单id
+            if (id == null) id = sendOrders.getId();
+
+            //TODO 更新计划 1 表 的派单状态为“已派单”
+            Plan1 plan1 = new Plan1();
+            plan1.setId(sendOrders.getPlanId());
+            plan1.setSendOrdersState(1);
+            plan1Mapper.updateById(plan1);
+        }
+
+        //TODO 派单-车辆-员工关系表添加 “车辆” 数据
+        SendOrdersSubtabulation subtabulation = new SendOrdersSubtabulation();
+        subtabulation.setSendOrdersId(id);
+        subtabulation.setTaskTime(sendOrdersVo.getTaskTime());
+        if (vehicleList != null) {
+            for (SendOrdersTaskVo s : vehicleList) {
+                //根据车辆数量，新增车辆派单数据个数
+                for (int i = 0; i < s.getNumber(); i++) {
+                    subtabulation.setDistributionType(0);
+                    subtabulation.setTypeId(s.getLicense());
+                    sendOrdersSubtabulationMapper.insert(subtabulation);
+                }
+            }
+        }
+        if (sendOrdersVo.getRealname() != null) {
+            for (String s : sendOrdersVo.getRealname()) {
+                //TODO 派单-车辆-员工关系表添加 “员工” 数据
+                subtabulation.setDistributionType(1);
+                subtabulation.setTypeId(s);
+                sendOrdersSubtabulationMapper.insert(subtabulation);
+            }
+        }
+    }
+
     @Override
     public List<TaskVo> selectTheSameMonthSendOrders(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -91,20 +155,31 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
             ex.printStackTrace();
         }
         List<SendOrdersTaskVo> list = sendOrdersMapper.taskList(date1, page);
+        int count= 0;
         for (SendOrdersTaskVo sendOrdersTaskVo : list) {
             SendOrdersTaskVo sendOrdersTaskVo1 = sendOrdersMapper.getPlan(sendOrdersTaskVo.getPlanTypeName(), sendOrdersTaskVo.getPlanId());
-            if (sendOrdersTaskVo.getPlanTypeName().equals("4")) {
+            /*if(null == sendOrdersTaskVo1){
+                // 如果这条计划不存在，就删除这个派单，以及人员信息
+                list.remove(count);
+                // 根据派单 id 删除派单记录
+                sendOrdersMapper.deleteById(sendOrdersTaskVo.getId());
+                // 根据派单id 删除车辆-员工关系表 信息
+                sendOrdersSubtabulationMapper.delete(new QueryWrapper<SendOrdersSubtabulation>().eq("send_orders_id",sendOrdersTaskVo.getId()));
+                break;
+            }*/
+            sendOrdersTaskVo.setPlanType(sendOrdersTaskVo1.getPlanType());
+            sendOrdersTaskVo.setProjectName(sendOrdersTaskVo1.getProjectName());
+
+            /*if (sendOrdersTaskVo.getPlanType() == null) {
+                sendOrdersTaskVo.setPlanType(sendOrdersTaskVo1.getPlanType());
+            }else if (sendOrdersTaskVo.getPlanTypeName().equals("4")) {
                 sendOrdersTaskVo.setPlanType("电缆2");
-            }
-            if (sendOrdersTaskVo.getPlanTypeName().equals("2")) {
+            }else if (sendOrdersTaskVo.getPlanTypeName().equals("2")) {
                 sendOrdersTaskVo.setPlanType("备品");
             }
-            if (sendOrdersTaskVo.getPlanType() == null) {
-                sendOrdersTaskVo.setPlanType(sendOrdersTaskVo1.getPlanType());
-            }
             sendOrdersTaskVo.setProjectNo(sendOrdersTaskVo1.getProjectNo());
-            sendOrdersTaskVo.setProjectName(sendOrdersTaskVo1.getProjectName());
-            sendOrdersTaskVo.setEngineeringAddress(sendOrdersTaskVo1.getEngineeringAddress());
+            sendOrdersTaskVo.setEngineeringAddress(sendOrdersTaskVo1.getEngineeringAddress());*/
+            count ++;
         }
         return page.setRecords(list);
     }
@@ -148,7 +223,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
         return list;
     }
 
-    /*@Transactional
+    @Transactional
     @Override
     public Result<?> planedit(PlanVo planVo) {
         // 完单状态[0:未完单/1:已完单]
@@ -208,7 +283,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 if (planVo.getAccomplishWeight() != null && !planVo.getAccomplishWeight().equals(""))
                     // 转型做加法，存储加法后的重量
                     // 库存重量 = [ 库存重量 + 出库重量 ]
-                    inventory1.setBackup5(new BigDecimal(inventory1.getBackup5()).add(planVo.getAccomplishWeight()).toString());
+                    inventory1.setBackup5(inventory1.getBackup5().add(planVo.getAccomplishWeight()));
 
                 // 更新库存数据
                 inventoryService.updateById(inventory1);
@@ -226,17 +301,17 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 // 设置库存的库存数量为入库的完单数量
                 inventory.setInventoryQuantity(deliverStorage.getAccomplishNum());
                 // 设置库存的计划 id 为派单的计划 Id
-                inventory.setBackup1(sendOrders.getPlanId().toString());
+                inventory.setBackup1(sendOrders.getPlanId());
                 // 设置库存的计划表名为派单的计划类型
-                inventory.setBackup2(sendOrders.getPlanType());
+                inventory.setBackup2(Integer.parseInt(sendOrders.getPlanType()));
                 // 设置库存的单位为入库的完单数量单位
-                inventory.setBackup3(deliverStorage.getAccomplishNumUnit().toString());
+                inventory.setBackup3(deliverStorage.getAccomplishNumUnit());
                 //BigDecimal.ROUND_HALF_UP : 保留2位小数
                 // 待定[目前不知道什么意思?]
                 inventory.setBackup4(deliverStorage.getAccomplishVolume().divide(deliverStorage.getAccomplishNum(), BigDecimal.ROUND_HALF_UP));
                 // 设置库存的库存重量，为入库完单重量(电缆)
                 if (null != planVo.getAccomplishWeight())
-                inventory.setBackup5(planVo.getAccomplishWeight().toString());
+                inventory.setBackup5(planVo.getAccomplishWeight());
 
                 if(null != planVo.getRecyclingSpecifications())
                 //电缆规格  例：10KV 3*400 铜
@@ -309,10 +384,10 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
             // 只有 plan4 电缆2 有库存重量
             if (planVo.getAccomplishWeight() != null) {
                 // 当出库完单重量小于等于库存重量，可以进行出库
-                if (planVo.getAccomplishWeight().doubleValue() <= Double.parseDouble(inventory.getBackup5())) {
+                if (planVo.getAccomplishWeight().doubleValue() <= Double.parseDouble(inventory.getBackup5().toString())) {
                     // 转型做加法，存储加法后的重量
                     // 库存重量 = [ 库存重量 - 出库重量 ]
-                    inventory.setBackup5(new BigDecimal(inventory.getBackup5()).subtract(planVo.getAccomplishWeight()).toString());
+                    inventory.setBackup5(inventory.getBackup5().subtract(planVo.getAccomplishWeight()));
                 } else {
                     // 库存重量不足，不可以完成出库完单操作
                     // 回滚事务
@@ -350,10 +425,11 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
             storageLocationMapper.updateById(storageLocation);
             return Result.ok("出库完单成功!");
         }
-    }*/
+    }
 
     @Override
-    public IPage<SendOrdersVo> selectSendOrdersController(String planId, String planType, Page<SendOrdersVo> page) {
+    public IPage<SendOrdersVo> selectSendOrdersController(String ids, String planType, Page<SendOrdersVo> page) {
+        List<String> planId = Arrays.asList(ids.split(","));
         List<SendOrdersVo> list = baseMapper.selectSendOrdersController(planId, planType, page);
         if (list != null) {
             for (SendOrdersVo sendOrdersVo : list) {
@@ -414,6 +490,9 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 plan4Service.updateById(plan4);
             }
         }
+
+        //删除 派单-车辆-员工关系表 信息
+        sendOrdersSubtabulationMapper.delete(new QueryWrapper<SendOrdersSubtabulation>().eq("send_orders_id",id));
     }
 
 
@@ -605,4 +684,27 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
         List<SendOrdersVo> list = sendOrdersMapper.selectPlanSendOrdersTheSameDay(page);
         return page.setRecords(list);
     }
+    @Override
+    public IPage<SendOrdersVo> selectSendOrdersWD(String ids, String planType, Page<SendOrdersVo> page) {
+        List<String> planId = Arrays.asList(ids.split(","));
+        List<SendOrdersVo> list = sendOrdersMapper.selectSendOrdersWD(planId,planType,page);
+        for (SendOrdersVo sendOrdersVo : list) {
+
+            //回单照片显示第一张
+            if (sendOrdersVo.getReceiptPhotos() != null) {
+                String[] photos = sendOrdersVo.getReceiptPhotos().split(",");
+                sendOrdersVo.setReceiptPhotos(photos[0]);
+            }
+            //异常照片两张拆分展示
+            if (sendOrdersVo.getPhontos() != null) {
+                String[] photos2 = sendOrdersVo.getPhontos().split(",");
+                sendOrdersVo.setScenePhotos1(photos2[0]);//异常照片1
+                if (photos2.length > 1) {
+                    sendOrdersVo.setScenePhotos2(photos2[1]);//异常照片2
+                }
+            }
+        }
+        return page.setRecords(list);
+    }
+
 }

@@ -220,15 +220,17 @@ public class Plan2 implements Serializable {
     private java.lang.String backup1;
     /**
      * backup2
+     * 物料描述
      */
-    @Excel(name = "backup2", width = 15)
-    @ApiModelProperty(value = "backup2")
+    @Excel(name = "物料描述", width = 15)
+    @ApiModelProperty(value = "物料描述")
     private java.lang.String backup2;
     /**
      * backup3
+     * 物料代码
      */
-    @Excel(name = "backup3", width = 15)
-    @ApiModelProperty(value = "backup3")
+    @Excel(name = "物料代码", width = 15)
+    @ApiModelProperty(value = "物料代码")
     private java.lang.String backup3;
     /**
      * backup4

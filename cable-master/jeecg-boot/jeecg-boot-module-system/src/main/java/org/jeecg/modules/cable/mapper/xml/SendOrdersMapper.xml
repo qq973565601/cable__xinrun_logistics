@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.cable.mapper.SendOrdersMapper">
+    <!-- 根据年份和月份查询当月每日的车辆任务的数量 -->
     <select id="selectTheSameMonthSendOrders" resultType="org.jeecg.modules.cable.vo.TaskVo">
         SELECT
             DATE_FORMAT( so.task_time, '%d' ) as d,
-            COUNT( sos.type_id ) as cou
+            COUNT(DISTINCT sos.type_id ) as cou
         FROM
             send_orders_subtabulation sos
             LEFT JOIN send_orders so ON so.id = sos.send_orders_id
@@ -14,14 +15,19 @@
         GROUP BY
             DATE_FORMAT( so.task_time, '%d' )
     </select>
+
+    <!-- 根据日期查询作业车辆 -->
     <select id="taskList" resultType="org.jeecg.modules.cable.vo.SendOrdersTaskVo">
         SELECT
+        DISTINCT
             so.id,
             so.plan_id,
             so.plan_type as plan_type_name,
             sos.type_id as license,
             so.operator_schema,
-            wa.`name` AS warehouse_name
+            wa.`name` AS warehouse_name,
+            so.project_no,
+            so.backup2 AS engineeringAddress
         FROM
             send_orders so
             LEFT JOIN send_orders_subtabulation sos ON so.id = sos.send_orders_id
@@ -29,12 +35,11 @@
         WHERE
             sos.distribution_type = '0'
             AND DATE_FORMAT( so.task_time, '%Y%m%d' ) = DATE_FORMAT( #{date}, '%Y%m%d' )
+	    GROUP BY so.plan_type,sos.type_id,so.operator_schema,wa.`name`,so.project_no,so.backup2
     </select>
     <select id="getPlan" resultType="org.jeecg.modules.cable.vo.SendOrdersTaskVo">
         SELECT
-        <if test='name!="4"'>
-            plan_type,
-        </if>
+        plan_type,
         project_no
         <if test='name=="1"'>
             ,project_name
@@ -60,74 +65,23 @@
         INSERT INTO send_orders ( operator_schema, warehouse_id, end_warehouse_id, storage_location_id, plan_id, plan_type, task_time, project_no,create_time,create_by )
         VALUES(#{sendOrdersVo.operatorSchema},#{sendOrdersVo.warehouseId},#{sendOrdersVo.endWarehouseId},#{sendOrdersVo.storageLocationId},#{sendOrdersVo.planId},#{sendOrdersVo.planType},#{sendOrdersVo.taskTime},#{sendOrdersVo.projectNo},#{date},#{name})
     </insert>
-    <select id="selectSendOrdersController" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
-        SELECT
-        send_orders.id,
-        send_orders.operator_schema,
-        send_orders.warehouse_id,
-        send_orders.storage_location_id,
-        storage_location.storage_location_name,
-        send_orders.plan_id,
-        send_orders.plan_type,
-        send_orders.task_time,
-        send_orders.project_no,
-        send_orders.end_warehouse_id,
-        GROUP_CONCAT( IF ( send_orders_subtabulation.distribution_type = 0, send_orders_subtabulation.type_id, NULL ) )
-        AS a0,
-        GROUP_CONCAT( IF ( send_orders_subtabulation.distribution_type = 1, send_orders_subtabulation.type_id, NULL ) )
-        AS a1,
-        <if test='planType=="1"'>
-            p.project_name,
-            p.engineering_address AS address,
-            p.project_contact AS linkman,
-            p.project_phone AS phone
-        </if>
-        <if test='planType=="2"'>
-            p.address
-        </if>
-        <if test='planType=="3"'>
-            p.eng_name AS project_name,
-            p.c_phone AS phone,
-            p.field_consignee AS linkman,
-            p.address
-        </if>
-        <if test='planType=="4"'>
-            p.eng_name AS project_name,
-            p.construc_contact AS linkman,
-            p.sampling_addres AS address
-        </if>
-        FROM
-        send_orders
-        LEFT JOIN send_orders_subtabulation ON send_orders.id = send_orders_subtabulation.send_orders_id
-        LEFT JOIN storage_location ON storage_location.id =send_orders.storage_location_id
-        LEFT JOIN plan${planType} AS p ON p.id = ${planId}
-        <where>
-            <if test="planId!=null">
-                send_orders.plan_id =#{planId}
-            </if>
-            <if test="planType!=null">
-                AND send_orders.plan_type=#{planType}
-            </if>
-        </where>
-        GROUP BY
-        send_orders.id
-        ORDER BY send_orders.create_time DESC
-    </select>
+
     <update id="updatePlanState">
         UPDATE plan${planType} SET send_orders_state = 1 WHERE id = #{planId}
   </update>
 
     <!-- 今日派单 -->
     <select id="selectPlanSendOrdersTheSameDay" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
+        SELECT * FROM (
         SELECT
             so.id,
             p.id AS plan_id,
             p.plan_type AS p_plan_type,
             so.plan_type,
             p.project_name,
-            p.the_contact AS linkman,
-            p.the_phone AS phone,
-            p.engineering_address AS address,
+            so.backup3 AS linkman,
+	        so.backup4 AS phone,
+	        so.backup2 AS address,
             DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
@@ -148,9 +102,9 @@
             '备品' AS p_plan_type,
             so.plan_type,
             p.equipment_name AS project_name,
-            p.equipment_owners AS linkman,
-            '' AS phone,
-            p.address,
+            so.backup3 AS linkman,
+	        so.backup4 AS phone,
+	        so.backup2 AS address,
             DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
@@ -171,9 +125,9 @@
             p.plan_type AS p_plan_type,
             so.plan_type,
             p.eng_name AS project_name,
-            p.field_consignee AS linkman,
-            p.c_phone AS phone,
-            p.address,
+            so.backup3 AS linkman,
+	        so.backup4 AS phone,
+	        so.backup2 AS address,
             DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
@@ -194,9 +148,9 @@
             '电缆2' AS p_plan_type,
             so.plan_type,
             p.eng_name AS project_name,
-            p.team_contact AS linkman,
-            '' AS phone,
-            p.sampling_addres AS address,
+            so.backup3 AS linkman,
+	        so.backup4 AS phone,
+	        so.backup2 AS address,
             DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
@@ -211,8 +165,138 @@
             AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
         GROUP BY
             so.id
+            ) a
+            ORDER BY a.task_time DESC
     </select>
 
+    <!-- 派单记录 -->
+    <select id="selectSendOrdersController" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
+        SELECT
+        send_orders.id,
+        send_orders.operator_schema,
+        send_orders.warehouse_id,
+        send_orders.storage_location_id,
+        storage_location.storage_location_name,
+        send_orders.plan_id,
+        send_orders.plan_type,
+        DATE_FORMAT( send_orders.task_time, '%Y-%m-%d' ) AS task_time,
+        send_orders.project_no,
+        send_orders.end_warehouse_id,
+        GROUP_CONCAT( IF ( send_orders_subtabulation.distribution_type = 0, send_orders_subtabulation.type_id, NULL ) )
+        AS a0,
+        GROUP_CONCAT( IF ( send_orders_subtabulation.distribution_type = 1, send_orders_subtabulation.type_id, NULL ) )
+        AS a1,
+        <if test='planType=="1"'>
+            p.project_name,
+            --             p.engineering_address AS address,
+            --             p.project_contact AS linkman,
+            --             p.project_phone AS phone
+            send_orders.backup3 AS linkman,
+            send_orders.backup4 AS phone,
+            send_orders.backup2 AS address
+        </if>
+        <if test='planType=="2"'>
+            p.address
+        </if>
+        <if test='planType=="3"'>
+            p.eng_name AS project_name,
+            p.c_phone AS phone,
+            p.field_consignee AS linkman,
+            p.address
+        </if>
+        <if test='planType=="4"'>
+            p.eng_name AS project_name,
+            p.construc_contact AS linkman,
+            p.sampling_addres AS address
+        </if>
+        FROM
+        send_orders
+        LEFT JOIN send_orders_subtabulation ON send_orders.id = send_orders_subtabulation.send_orders_id
+        LEFT JOIN storage_location ON storage_location.id =send_orders.storage_location_id
+        LEFT JOIN plan${planType} AS p ON p.id = send_orders.plan_id
+        <where>
+            <if test="planId!=null">
+                send_orders.plan_id in
+                <foreach collection="planId" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="planType!=null">
+                AND send_orders.plan_type=#{planType}
+            </if>
+        </where>
+        GROUP BY
+        send_orders.id
+        ORDER BY send_orders.task_time DESC
+    </select>
+
+    <!-- 完单记录 -->
+    <select id="selectSendOrdersWD" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
+        SELECT * FROM (
+        select
+        rs.id,
+        p.id as planid,
+        '出库' plan_type,
+        w.name as wname,
+        sl.storage_location_name as storagename,
+        DATE_FORMAT( rs.receiving_time, '%Y-%m-%d' ) as tasktime,
+        rs.accomplish_num as accomplishnum,
+        rs.accomplish_num_unit as accomplishnumunit,
+        rs.scene_situation as scenesituation,
+        rs.scene_abnormal_photos as phontos,
+        rs.anomalous_cause as anomalousCause,
+        rs.receipt_photos as receiptPhotos,
+        rs.create_time
+        from
+        receiving_storage rs
+        left join
+        storage_location sl
+        on rs.storage_location_id=sl.id
+        left join
+        warehouse w
+        on w.id=rs.warehouse_id
+        left join
+        plan${planType} p on rs.plan_id=p.id
+        <where>
+            p.id in
+            <foreach collection="planId" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+        union all
+        select
+        ds.id,
+        p.id as planid,
+        '入库' plan_type,
+        w.name as wname,
+        sl.storage_location_name as storagename,
+        DATE_FORMAT( ds.deliver_time, '%Y-%m-%d' ) as tasktime,
+        ds.accomplish_num as accomplishnum,
+        ds.accomplish_num_unit as accomplishnumunit,
+        ds.scene_situation as scenesituation,
+        ds.scene_photos as phontos,
+        ds.anomalous_cause as anomalousCause,
+        ds.receipt_photos as receiptPhotos,
+        ds.create_time
+        from
+        deliver_storage ds
+        left join
+        storage_location sl
+        on ds.storage_location_id=sl.id
+        left join
+        warehouse w
+        on w.id=ds.warehouse_id
+        left join
+        plan${planType} p on ds.plan_id=p.id
+        <where>
+            p.id in
+            <foreach collection="planId" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+        ) AS a
+        ORDER BY a.tasktime DESC
+    </select>
     <!--<select id="selectPlanSendOrdersTheSameDay" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
         SELECT
             so.id,

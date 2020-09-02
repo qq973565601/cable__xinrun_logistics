@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @Description: 计划表2
  * @Author: jeecg-boot
- * @Date: 2020-05-22
+ * @Date:   2020-05-22
  * @Version: V1.0
  */
 @Service
@@ -66,12 +66,12 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     deliverStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString()));
                     deliverStorage.setAnomalousCause(map.get("anomalousCause").toString());
-                    if (map.get("scenePhotos1") != null) {
+                    if (map.get("scenePhotos1") != null) { // 判断是否上传了多张异常图片
                         LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
-                        deliverStorage.setScenePhotos(photos1.get("path").toString());
+                        deliverStorage.setScenePhotos(photos1.get("path").toString()); // 添加异常图片1
                         if (map.get("scenePhotos2") != null) {
                             LinkedHashMap<String, Object> photos2 = (LinkedHashMap<String, Object>) map.get("scenePhotos2");
-                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString());
+                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString()); // 添加异常图片2
                         }
                     }
                     deliverStorage.setReceiptNo(receiptNo);
@@ -91,10 +91,10 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     Plan2 plan2 = this.getOne(new QueryWrapper<Plan2>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan2.getProjectNo());
                     wrapper.eq("material_id", material == null ? null : material.getId());
-                    wrapper.eq("asset_no", plan2.getAssetNo());
+                    wrapper.eq("asset_no", plan2.getRetiredAssetNo());
                     // 向计划表2中添加积累的已入库数量
                     if (plan2.getAlreadyDeliverStorage() == null) {
-                        plan2.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("backup2").toString())));
+                        plan2.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     } else {
                         plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }
@@ -113,7 +113,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                         System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
-                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null, map.get("assetNo").toString());
+                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null, map.get("retiredAssetNo").toString());
                         boolean flag = inventoryService.save(entity);
                         System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");
                     }
@@ -137,7 +137,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     ReceivingStorage receivingStorage = new ReceivingStorage();
                     receivingStorage.setPlanId(Integer.parseInt(ids.get(i).toString()));
                     receivingStorage.setPlanType(2);
-                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("equipmentName").toString()));
+                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("backup2").toString()));
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
                     receivingStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString()));
                     receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString()));
@@ -160,7 +160,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     Plan2 plan2 = this.getOne(new QueryWrapper<Plan2>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan2.getProjectNo());
                     wrapper.eq("material_id", material.getId());
-                    wrapper.eq("asset_no", plan2.getAssetNo());
+                    wrapper.eq("asset_no", plan2.getRetiredAssetNo());
                     // 向计划表2中添加积累的已出库数量
                     if (plan2.getAlreadyReceivingStorage() == null) {
                         plan2.setAlreadyReceivingStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
@@ -226,10 +226,10 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
     }
 
     @Override
-    public IPage<Plan2> idsqueryPageList2(List<String> ids, Page<Plan2> page) {
+    public List<Plan2> idsqueryPageList2(List<String> ids ) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan2> list = baseMapper.selectBatchIds(ids);
-        return page.setRecords(list);
+        return list;
     }
 
     @Override
@@ -240,13 +240,13 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
 
     @Override
     public List<Plan2Im> exportPlan2(Plan2 plan2, String explain) {
-        List<Plan2Im> list = baseMapper.exportPlan2(plan2);
-        for (Plan2Im plan2Im : list) {
-            // 设置反馈日期
-            plan2Im.setFeedbackDateTime(new Date());
-            // 设置反馈说明
-            plan2Im.setAnnotation(explain);
-        }
-        return list;
+      List<Plan2Im> list = baseMapper.exportPlan2(plan2);
+      for (Plan2Im plan2Im : list) {
+        // 设置反馈日期
+        plan2Im.setFeedbackDateTime(new Date());
+        // 设置反馈说明
+        plan2Im.setAnnotation(explain);
+      }
+      return list;
     }
 }

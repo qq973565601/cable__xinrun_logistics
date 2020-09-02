@@ -12,6 +12,29 @@
       <a-spin :spinning="confirmLoading">
         <a-form :form="form" style="padding-left: 40px;margin-top: 15px">
 
+          <a-form-item label="转移数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input-number v-decorator="['amount', validatorRules.amount]" style="width: 475px"
+                            placeholder="请输入转移数量"></a-input-number>
+          </a-form-item>
+
+          <a-form-item label="存放仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]" @change="warehouses"
+                      placeholder="请选择存放仓库">
+              <template v-for="(warehouse,index) in warehouseLists">
+                <a-select-option v-bind:value="warehouse.id">{{warehouse.name}}</a-select-option>
+              </template>
+            </a-select>
+          </a-form-item>
+
+          <a-form-item label="存放库位" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-select v-decorator="['storageLocationRId', validatorRules.storageLocationRId]" placeholder="请选择存放库位">
+              <template v-for="(storageLocation,index) in storageLocations">
+                <a-select-option v-bind:value="storageLocation.id">{{storageLocation.storageLocationName}}
+                </a-select-option>
+              </template>
+            </a-select>
+          </a-form-item>
+
           <!--<a-form-item label="新旧/物料" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-select v-decorator="['oldAndNew',validatorRules.oldAndNew]" placeholder="请选择新旧物料"
                       @change="oldAndNewSelect" style="">
@@ -48,29 +71,6 @@
               </a-input>
             </a-form-item>
           </template>-->
-
-          <a-form-item label="转移数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input-number v-decorator="['amount', validatorRules.amount]" style="width: 475px"
-                            placeholder="请输入转移数量"></a-input-number>
-          </a-form-item>
-
-          <a-form-item label="存放仓库" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-select v-decorator="['warehouseId', validatorRules.warehouseId]" @change="warehouses"
-                      placeholder="请选择存放仓库">
-              <template v-for="(warehouse,index) in warehouseLists">
-                <a-select-option v-bind:value="warehouse.id">{{warehouse.name}}</a-select-option>
-              </template>
-            </a-select>
-          </a-form-item>
-
-          <a-form-item label="存放库位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-select v-decorator="['storageLocationRId', validatorRules.storageLocationRId]" placeholder="请选择存放库位">
-              <template v-for="(storageLocation,index) in storageLocations">
-                <a-select-option v-bind:value="storageLocation.id">{{storageLocation.storageLocationName}}
-                </a-select-option>
-              </template>
-            </a-select>
-          </a-form-item>
 
         </a-form>
       </a-spin>

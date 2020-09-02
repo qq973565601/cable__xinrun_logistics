@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="4" :sm="6">
             <a-form-item label="操作类型">
-              <a-select v-model="queryParam.operatorSchema" placeholder="请选择操作类型">
+              <a-select v-model="queryParam.operatorSchema" placeholder="请选择操作类型" @change="searchQuery">
                 <a-select-option v-for="(item,index) in operatorSchema" :value="item.itemValue">{{item.itemText}}
                 </a-select-option>
               </a-select>
@@ -19,11 +19,27 @@
               <j-date v-model="queryParam.endTime" placeholder="结束时间"></j-date>
             </a-form-item>
           </a-col>
-          <a-col :md="4" :sm="6">
+
+          <a-col :md="4" :sm="24">
+            <a-form-item label="计划类型">
+              <a-select v-model="queryParam.planType" placeholder="请选择计划类型" @change="searchQuery">
+                <a-select-option value="配变电">配变电</a-select-option>
+                <a-select-option value="其他">其他</a-select-option>
+                <a-select-option value="电缆">电缆</a-select-option>
+                <a-select-option value="线路">线路</a-select-option>
+                <a-select-option value="备品">备品</a-select-option>
+                <a-select-option value="新品">新品</a-select-option>
+                <a-select-option value="抢修">抢修</a-select-option>
+                <a-select-option value="临措">临措</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :md="4" :sm="6">
             <a-form-item label="计划类型">
               <a-input v-model="queryParam.planType" placeholder="模糊搜索计划类型"></a-input>
             </a-form-item>
-          </a-col>
+          </a-col>-->
+
           <template v-if="toggleSearchStatus">
             <a-col :md="4" :sm="6">
               <a-form-item label="项目名称">

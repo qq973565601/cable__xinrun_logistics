@@ -71,12 +71,12 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                     deliverStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                     deliverStorage.setSceneSituation(Integer.parseInt(map.get("sceneSituation").toString()));
                     deliverStorage.setAnomalousCause(map.get("anomalousCause").toString()); // 异常原因
-                    if (map.get("scenePhotos1") != null) {
+                    if (map.get("scenePhotos1") != null) { // 判断是否上传了多张异常图片
                         LinkedHashMap<String, Object> photos1 = (LinkedHashMap<String, Object>) map.get("scenePhotos1");
-                        deliverStorage.setScenePhotos(photos1.get("path").toString());
+                        deliverStorage.setScenePhotos(photos1.get("path").toString()); // 添加异常图片1
                         if (map.get("scenePhotos2") != null) {
                             LinkedHashMap<String, Object> photos2 = (LinkedHashMap<String, Object>) map.get("scenePhotos2");
-                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString());
+                            deliverStorage.setScenePhotos(photos1.get("path").toString() + "," + photos2.get("path").toString()); // 添加异常图片2
                         }
                     }
                     deliverStorage.setReceiptNo(receiptNo);
@@ -228,10 +228,10 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
     }
 
     @Override
-    public IPage<Plan3> idsqueryPageList3(List<String> ids, Page<Plan3> page) {
+    public List<Plan3> idsqueryPageList3(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan3> list = baseMapper.selectBatchIds(ids);
-        return page.setRecords(list);
+        return list;
     }
 
     @Override

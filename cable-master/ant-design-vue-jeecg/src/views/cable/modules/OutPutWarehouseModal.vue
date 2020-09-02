@@ -5,13 +5,15 @@
     :visible="visible"
     :confirmLoading="confirmLoading"
     cancelText="关闭"
+    @ok="handleCancel"
     @cancel="handleCancel"
-    :footer="null">
+    >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <div style="width: 1000px;">
           <div style="margin-top: 10px;">
-            <div style="border: 0.5px solid #cacaca;margin-top: -10px;">
+            <div style="margin-top: -10px;">
+<!--            <div style="border: 0.5px solid #cacaca;margin-top: -10px;">-->
               <a-table
                 ref="table"
                 bordered
@@ -69,13 +71,13 @@
     },
     methods: {
       outshwo (record) {
-        console.log('查看库位所传项目编号为>>>>>>', record.projectNo)
-        if (record.projectNo == null) {
-          this.$message.warning('此条信息项目编号不存在')
+        console.log('查看库位所传项目编号为>>>>>>', record)
+        if (record.projectNo == null || record.serial == null) {
+          this.$message.warning('此条信息项目编号或物料编号不存在')
           return
         }
         this.visible = true
-        getAction(this.url.list, { 'projectNo': record.projectNo }).then((res) => {
+        getAction(this.url.list, { 'projectNo': record.projectNo ,'materialId': record.serial }).then((res) => {
           if (res.success) {
             this.dataSource = res.result
           } else {

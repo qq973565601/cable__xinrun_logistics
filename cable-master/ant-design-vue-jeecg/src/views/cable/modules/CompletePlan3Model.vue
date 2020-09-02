@@ -114,7 +114,7 @@
         // 计划3页面打开合并完单获取到的计划id集
         plan3Ids: '',
         activeKey: '1',
-        tabTitle: '出库完单信息',
+        tabTitle: '入库完单信息',
         defaultTable: {
           loading: false,
           dataSource: [],
@@ -144,7 +144,7 @@
               title: '可出库数量',
               key: 'inventoryQuantity',
               width: '8%',
-              type: FormTypes.inputNumber,
+              type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
@@ -158,7 +158,7 @@
             {
               title: '单位',
               key: 'unit',
-              width: '10%',
+              width: '5%',
               type: FormTypes.select,
               dictCode: 'unit',
               placeholder: '请选择${title}',
@@ -210,35 +210,35 @@
             {
               title: '项目名称',
               key: 'engName',
-              width: '20%',
+              width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '物料描述',
               key: 'materialDescribe',
-              width: '16%',
+              width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '采购订单号',
               key: 'proTheorderNo',
-              width: '15%',
+              width: '10%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '可出库数量',
               key: 'inventoryQuantity',
-              width: '10%',
-              type: FormTypes.inputNumber,
+              width: '8%',
+              type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '完单数量',
               key: 'accomplishNum',
-              width: '10%',
+              width: '8%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
@@ -246,7 +246,7 @@
             {
               title: '单位',
               key: 'unit',
-              width: '10%',
+              width: '5%',
               type: FormTypes.select,
               dictCode: 'unit',
               placeholder: '请选择${title}',
@@ -255,7 +255,7 @@
             {
               title: '自家仓库',
               key: 'warehouseId',
-              width: '15%',
+              width: '10%',
               type: FormTypes.select,
               dictCode: 'warehouse,name,id,type=\'1\'',
               placeholder: '请选择${title}',
@@ -265,7 +265,7 @@
             {
               title: '自家库位',
               key: 'storageLocationId',
-              width: '15%',
+              width: '10%',
               type: FormTypes.select,
               validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
@@ -273,7 +273,7 @@
             {
               title: '完单容积',
               key: 'accomplishVolume',
-              width: '15%',
+              width: '8%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
@@ -281,7 +281,7 @@
             {
               title: '终点仓库',
               key: 'endWarehouseId',
-              width: '15%',
+              width: '10%',
               type: FormTypes.select,
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
@@ -297,7 +297,7 @@
             {
               title: '项目名称',
               key: 'engName',
-              width: '20%',
+              width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
@@ -311,21 +311,21 @@
             {
               title: '采购订单号',
               key: 'proTheorderNo',
-              width: '15%',
+              width: '10%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '物料数量',
               key: 'num',
-              width: '10%',
-              type: FormTypes.inputNumber,
+              width: '8%',
+              type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
               title: '完单数量',
               key: 'accomplishNum',
-              width: '10%',
+              width: '8%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
@@ -333,7 +333,7 @@
             {
               title: '单位',
               key: 'unit',
-              width: '10%',
+              width: '5%',
               type: FormTypes.select,
               dictCode: 'unit',
               placeholder: '请选择${title}',
@@ -342,7 +342,7 @@
             {
               title: '目标仓库',
               key: 'warehouseId',
-              width: '15%',
+              width: '10%',
               type: FormTypes.select,
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
@@ -352,7 +352,7 @@
             {
               title: '库位',
               key: 'storageLocationId',
-              width: '15%',
+              width: '10%',
               type: FormTypes.select,
               validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
@@ -360,7 +360,7 @@
             {
               title: '完单容积',
               key: 'accomplishVolume',
-              width: '15%',
+              width: '8%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
@@ -368,7 +368,7 @@
             {
               title: '是否异常',
               key: 'sceneSituation',
-              width: '15%',
+              width: '8%',
               type: FormTypes.select,
               placeholder: '请选择${title}',
               options: [ // 下拉选项
@@ -380,8 +380,8 @@
             {
               title: '异常原因',
               key: 'anomalousCause',
-              width: '15%',
-              type: FormTypes.input,
+              width: '10%',
+              type: FormTypes.input_pop,
               placeholder: '请输入${title}'
             },
             {
@@ -407,8 +407,8 @@
             {
               title: '说明',
               key: 'annotation',
-              width: '15%',
-              type: FormTypes.input,
+              width: '10%',
+              type: FormTypes.input_pop,
               placeholder: '请输入${title}'
             }
           ]
@@ -469,6 +469,7 @@
         this.activeKey = '1'
         this.form.resetFields()
         this.model = Object.assign({}, record)
+        this.defaultTable = this.table2 //默认加载第二个 table2
         // 加载子表数据
         if (record) {
           this.plan3Ids = { ids: record.toString() }
@@ -492,8 +493,10 @@
         getAction(url, params).then(res => {
           if (res.success) {
             this.visible = true
-            this.defaultTable.dataSource = res.result // 刚开始查询给默认的 table 数据库进行赋值操作
-            tab.dataSource = res.result
+            tab.dataSource = res.result || []
+            if (this.url.getPlan3DeliverStorage == url) {
+              this.defaultTable.dataSource = tab.dataSource // 刚开始查询给默认 入库 的 table 数据库进行赋值操作
+            }
           } else {
             this.visible = false
             if (this.url.getPlan3ReceivingStorageList == url) {
@@ -503,6 +506,7 @@
           }
         }).finally(() => {
           tab.loading = false
+          this.form.setFieldsValue({operatorSchema:'1'})
         })
       },
       handleOk() {

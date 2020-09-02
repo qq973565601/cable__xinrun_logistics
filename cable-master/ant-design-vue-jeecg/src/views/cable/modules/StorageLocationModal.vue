@@ -14,22 +14,19 @@
           <a-row :gutter="12">
             <a-col :md="6" :sm="24">
               <a-form-item label="工程名称">
-                <a-input v-model="queryParam.projectName" placeholder="请输入工程名称"
-                         class="inupt_b_a"></a-input>
+                <a-input v-model="queryParam.projectName" placeholder="请输入工程名称" ></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :md="6" :sm="24">
               <a-form-item label="资产编码">
-                <a-input v-model="queryParam.assetNo" placeholder="请输入资产编码"
-                         class="inupt_b_a"></a-input>
+                <a-input v-model="queryParam.assetNo" placeholder="请输入资产编码" ></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :md="6" :sm="24">
               <a-form-item label="采购订单号">
-                <a-input v-model="queryParam.proTheorderNo" placeholder="请输入采购订单号"
-                         class="inupt_b_a"></a-input>
+                <a-input v-model="queryParam.proTheorderNo" placeholder="请输入采购订单号" ></a-input>
               </a-form-item>
             </a-col>
 

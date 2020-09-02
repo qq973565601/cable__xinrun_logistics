@@ -10,7 +10,6 @@
       ref="table"
       size="middle"
       bordered
-      rowKey="id"
       :columns="columns"
       :dataSource="dataSource"
       :pagination="ipagination"
@@ -71,23 +70,34 @@
         },
         // 表头
         columns: [
+          // {
+          //   title: '任务车辆',
+          //   align: 'center',
+          //   dataIndex: 'a0',
+          //   scopedSlots: { customRender: 'factoryText' }
+          // },
           {
-            title: '任务车辆',
-            align: 'center',
-            dataIndex: 'a0',
-            scopedSlots: { customRender: 'factoryText' }
-          }, {
             title: '物料名称',
             align: 'center',
+            width: 200,
             dataIndex: 'rawMaterialText'
-          }, {
-            title: '数量',
+          },
+          {
+            title: '入库数量',
             align: 'center',
-            dataIndex: 'numReceipts',
-            scopedSlots: { customRender: 'numReceiptsText' }
-          }, {
+            width: 100,
+            dataIndex: 'receivingNum'
+          },
+          {
+            title: '出库数量',
+            align: 'center',
+            width: 100,
+            dataIndex: 'deliverNum'
+          },
+          {
             title: '采购订单号',
             align: 'center',
+            width: 200,
             dataIndex: 'proTheorderNo'
           },
           /*{
@@ -163,8 +173,7 @@
         this.usersList()
         this.visible = true
         getAction('/cable/plan1/selectSettleAccountsDetails', {
-          planId: record.planid,
-          planName: record.planName
+          projectNo: record.projectNo
         }).then((resp) => {
           if (resp.success) {
             this.dataSource = resp.result.records
