@@ -9,16 +9,17 @@
         p.eng_name,
         p.material_describe,
         p.pro_theorder_no,
-        sum(i.inventory_quantity) as inventory_quantity,
+        iy.inventory_quantity,
         w.id as warehouseId,
         w.`name` as warehouseName,
         s.id as storageLocationId,
         s.storage_location_name
         FROM
         plan3 p
-        LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 3
-        LEFT JOIN warehouse w ON i.warehouse_id = w.id
-        LEFT JOIN storage_location s ON i.storage_location_id = s.id
+        LEFT JOIN material ml ON p.material_code = ml.serial
+        LEFT JOIN inventory iy ON ( p.project_no = iy.project_no AND ml.id = iy.material_id AND p.pro_theorder_no = iy.asset_no )
+        LEFT JOIN warehouse w ON iy.warehouse_id = w.id
+        LEFT JOIN storage_location s ON iy.storage_location_id = s.id
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}

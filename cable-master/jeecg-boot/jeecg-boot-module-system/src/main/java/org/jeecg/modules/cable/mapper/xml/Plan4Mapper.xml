@@ -9,16 +9,17 @@
         p.eng_name,
         CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
         p.cable_name,
-        sum(i.inventory_quantity) as inventory_quantity,
+        iy.inventory_quantity,
         w.id as warehouseId,
         w.`name` as warehouseName,
         s.id as storageLocationId,
         s.storage_location_name
         FROM
         plan4 p
-        LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 4
-        LEFT JOIN warehouse w ON i.warehouse_id = w.id
-        LEFT JOIN storage_location s ON i.storage_location_id = s.id
+        LEFT JOIN material ml ON CONCAT(p.voltage_grade,' ',p.cable_cross) = ml.serial
+        LEFT JOIN inventory iy ON ( p.project_no = iy.project_no AND ml.id = iy.material_id)
+        LEFT JOIN warehouse w ON iy.warehouse_id = w.id
+        LEFT JOIN storage_location s ON iy.storage_location_id = s.id
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}

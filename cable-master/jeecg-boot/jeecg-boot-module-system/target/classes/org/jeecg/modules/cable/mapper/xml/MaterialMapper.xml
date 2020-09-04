@@ -567,7 +567,7 @@
         '备品' AS planType,
         project_no,
         site AS project_name,
-        asset_no,
+        retired_asset_no AS asset_no,
         NULL AS pro_theorder_no,
         2 AS type
         FROM
@@ -612,10 +612,13 @@
                 AND storages.taskTime &gt;= #{vo.startTime}
             </if>
             <if test="vo.endTime != null">
-                AND storages.taskTime &lt;= '2020-09-01'
+                AND storages.taskTime &lt;= #{vo.endTime}
             </if>
             <if test="vo.planType != null and vo.planType != ''">
                 AND p.planType LIKE CONCAT('%',#{vo.planType},'%')
+            </if>
+            <if test="vo.projectNo != null and vo.projectNo != ''">
+                AND p.project_no = #{vo.projectNo}
             </if>
             <if test="vo.projectName != null and vo.projectName != ''">
                 AND p.project_name LIKE CONCAT('%',#{vo.projectName},'%')

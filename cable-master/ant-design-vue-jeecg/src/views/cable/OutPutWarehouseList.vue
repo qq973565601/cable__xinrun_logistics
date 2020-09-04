@@ -42,6 +42,11 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="4" :sm="6">
+              <a-form-item label="项目编号">
+                <a-input v-model="queryParam.projectNo" placeholder="精准查询项目编号"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="4" :sm="6">
               <a-form-item label="项目名称">
                 <a-input v-model="queryParam.projectName" placeholder="模糊搜索项目名称"></a-input>
               </a-form-item>
