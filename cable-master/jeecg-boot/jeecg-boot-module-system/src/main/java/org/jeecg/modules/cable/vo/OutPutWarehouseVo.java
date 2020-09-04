@@ -75,6 +75,23 @@ public class OutPutWarehouseVo implements Serializable {
      */
     private BigDecimal accomplishNum;
     /**
+     * 操作数量单位
+     */
+    @Dict(dicCode = "unit")
+    private Integer accomplishNumUnit;
+    /**
+     * 操作数量拼接上操作单位返回给前端展示 2020/9/4
+     */
+    private String accomplishNumConcatUnit;
+    /**
+     * 操作重量
+     */
+    private BigDecimal accomplishWeight;
+    /**
+     * 操作重量拼接上操作单位返回给前端展示 2020/9/4
+     */
+    private String accomplishWeightConcatUnit;
+    /**
      * 仓库名称
      */
     private String warehouseName;

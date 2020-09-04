@@ -206,7 +206,13 @@
           {
             title: '操作数量',
             align: 'center',
-            dataIndex: 'accomplishNum',
+            dataIndex: 'accomplishNumConcatUnit',
+            scopedSlots: { customRender: 'factoryText' }
+          },
+          {
+            title: '操作重量',
+            align: 'center',
+            dataIndex: 'accomplishWeightConcatUnit',
             scopedSlots: { customRender: 'factoryText' }
           },
           {

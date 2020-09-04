@@ -509,7 +509,9 @@
         m.`name`,
         p.asset_no,
         p.pro_theorder_no,
-        sum( storages.accomplish_num ) AS accomplish_num,
+        storages.accomplish_num,
+        storages.accomplish_num_unit,
+        storages.accomplish_weight,
         w.`name` AS warehouseName,
         s.storage_location_name,
         storages.receipt_no
@@ -523,6 +525,8 @@
         warehouse_id,
         storage_location_id,
         accomplish_num,
+        accomplish_num_unit,
+        accomplish_weight,
         deliver_time AS taskTime,
         receipt_no,
         1 AS operator_schema
@@ -536,6 +540,8 @@
         warehouse_id,
         storage_location_id,
         accomplish_num,
+        accomplish_num_unit,
+        accomplish_weight,
         receiving_time AS taskTime,
         receipt_no,
         0 AS operator_schema
@@ -634,14 +640,8 @@
                 AND storages.receipt_no LIKE CONCAT('%',#{vo.receiptNo},'%')
             </if>
         </where>
-        GROUP BY
-        storages.operator_schema,
-        p.project_no,
-        m.serial,
-        p.asset_no,
-        p.pro_theorder_no
-        ORDER BY
-        storages.taskTime DESC
+        GROUP BY storages.id
+        ORDER BY storages.taskTime DESC
     </select>
 
     <select id="materialOutPutDayRList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">

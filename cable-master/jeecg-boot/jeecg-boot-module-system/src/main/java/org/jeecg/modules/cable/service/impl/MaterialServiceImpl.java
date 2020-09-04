@@ -11,6 +11,9 @@ import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.mapper.MaterialMapper;
 import org.jeecg.modules.cable.service.IMaterialService;
 import org.jeecg.modules.cable.vo.*;
+import org.jeecg.modules.system.entity.SysDictItem;
+import org.jeecg.modules.system.service.ISysDictItemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -27,6 +30,8 @@ import java.util.*;
  */
 @Service
 public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
+    @Autowired
+    private ISysDictItemService sysDictItemService;
 
     @Override
     public IPage<MaterialOutPutAccountVo> getMaterialOutPutAccountList(MaterialOutPutAccountVo materialOutPutAccountVo, Page<MaterialOutPutAccountVo> page) {
@@ -77,7 +82,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, String assetNo, Page<AnnualReportVo> page) {
-        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo,assetNo, page);
+        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo, assetNo, page);
         for (AnnualReportVo annualReportVo : list) {
             BigDecimal m10 = annualReportVo.getM10();
             BigDecimal m20 = annualReportVo.getM20();
@@ -155,7 +160,21 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public IPage<OutPutWarehouseVo> getOutPutWarehouseList(OutPutWarehouseVo vo, Page<OutPutWarehouseVo> page) {
-        return page.setRecords(baseMapper.getOutPutWarehouseList(vo, page));
+        List<SysDictItem> units = sysDictItemService.selectType("unit");
+        List<OutPutWarehouseVo> list = baseMapper.getOutPutWarehouseList(vo, page);
+        for (OutPutWarehouseVo item : list) {
+            for (SysDictItem u : units) {
+                if (u.getItemValue().equals(item.getAccomplishNumUnit().toString())) {
+                    // 以 / 拼接操作数量和单位
+                    item.setAccomplishNumConcatUnit(item.getAccomplishNum().toString().concat("/").concat(u.getItemText()));
+                }
+            }
+            // 以 / 拼接操作重量和单位
+            if (item.getAccomplishWeight() != null) {
+                item.setAccomplishWeightConcatUnit(item.getAccomplishWeight().toString().concat("/").concat("吨"));
+            }
+        }
+        return page.setRecords(list);
     }
 
     @Override
