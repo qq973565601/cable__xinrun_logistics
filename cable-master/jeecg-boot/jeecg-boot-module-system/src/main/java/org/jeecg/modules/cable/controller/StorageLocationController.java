@@ -145,15 +145,20 @@ public class StorageLocationController extends JeecgController<StorageLocation, 
     }
 
     /**
-     * 添加
+     * 添加库位
+     * bai 2020/9/4
      *
-     * @param storageLocation
-     * @return
+     * @param storageLocation 要添加的库位信息
+     * @return 受影响的行数
      */
     @AutoLog(value = "库位表-添加")
     @ApiOperation(value = "库位表-添加", notes = "库位表-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody StorageLocation storageLocation) {
+        StorageLocation obj = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", storageLocation.getStorageLocationName()));
+        if (obj != null) {
+            return Result.error("库位已经存在,不能重复添加");
+        }
         storageLocationService.save(storageLocation);
         return Result.ok("添加成功！");
     }
