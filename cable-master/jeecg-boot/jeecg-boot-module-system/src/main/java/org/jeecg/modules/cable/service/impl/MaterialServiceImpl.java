@@ -109,6 +109,19 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             BigDecimal deliverNum = new BigDecimal(0);
             deliverNum = deliverNum.add(m11).add(m21).add(m31).add(m41).add(m51).add(m61).add(m71).add(m81).add(m91).add(m101).add(m111).add(m121);
             annualReportVo.setMh1(deliverNum); // 统计一年中的总入库数量
+            annualReportVo.setRemain1(m11.subtract(m10)); // 1月剩余数量
+            annualReportVo.setRemain2(m21.subtract(m20)); // 2月剩余数量
+            annualReportVo.setRemain3(m31.subtract(m30)); // 3月剩余数量
+            annualReportVo.setRemain4(m41.subtract(m40)); // 4月剩余数量
+            annualReportVo.setRemain5(m51.subtract(m50)); // 5月剩余数量
+            annualReportVo.setRemain6(m61.subtract(m60)); // 6月剩余数量
+            annualReportVo.setRemain7(m71.subtract(m70)); // 7月剩余数量
+            annualReportVo.setRemain8(m81.subtract(m80)); // 8月剩余数量
+            annualReportVo.setRemain9(m91.subtract(m90)); // 9月剩余数量
+            annualReportVo.setRemain10(m101.subtract(m100)); // 10月剩余数量
+            annualReportVo.setRemain11(m111.subtract(m110)); // 11月剩余数量
+            annualReportVo.setRemain12(m121.subtract(m120)); // 12月剩余数量
+            annualReportVo.setMhRemain(annualReportVo.getMh1().subtract(annualReportVo.getMh0())); // 全年剩余数量
         }
         return page.setRecords(list);
     }

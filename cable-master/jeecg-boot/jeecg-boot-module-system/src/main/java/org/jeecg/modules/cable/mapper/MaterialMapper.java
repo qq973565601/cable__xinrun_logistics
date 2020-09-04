@@ -34,10 +34,7 @@ public interface MaterialMapper extends BaseMapper<Material> {
 
     /**
      * 物料年度出入台账
-     *
-     * @return
-     * @Author bai
-     * @Date 2020/5/20
+     * 2020/9/4 bai
      */
     List<AnnualReportVo> getAnnualAccountList(@Param("planType") String planType, @Param("dateTime") String dateTime, @Param("serial") String serial, @Param("name") String name, @Param("projectNo") String projectNo, @Param("assetNo") String assetNo, @Param("page") Page<AnnualReportVo> page);
 

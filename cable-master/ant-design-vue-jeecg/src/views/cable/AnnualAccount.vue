@@ -114,8 +114,8 @@
 <script>
 
   import '@/assets/less/TableExpand.less'
-  import {mixinDevice} from '@/utils/mixin'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { mixinDevice } from '@/utils/mixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import AFormItem from 'ant-design-vue/es/form/FormItem'
   import ACol from 'ant-design-vue/es/grid/Col'
   import JEllipsis from '../../components/jeecg/JEllipsis'
@@ -128,38 +128,36 @@
       AFormItem,
       JEllipsis
     },
-    data() {
+    data () {
       return {
         description: '物料年度出入台账',
         // 计划年份
         year: '',
-        // 查询条件
-        queryParam: {dateTime:''},
         // 表头
         columns: [
           {
             title: '计划类型',
             align: 'center',
             dataIndex: 'planType',
-            scopedSlots: {customRender: 'factoryText'}
+            scopedSlots: { customRender: 'factoryText' }
           }, {
             title: '物料编号',
             align: 'center',
             dataIndex: 'serial',
-            scopedSlots: {customRender: 'factoryText'}
+            scopedSlots: { customRender: 'factoryText' }
           },
           {
             title: '物料名称',
             align: 'center',
             dataIndex: 'name',
-            scopedSlots: {customRender: 'factoryText'}
+            scopedSlots: { customRender: 'factoryText' }
           },
-          {
-            title: '资产编号',
-            align: 'center',
-            dataIndex: 'assetNo',
-            scopedSlots: {customRender: 'factoryText'}
-          },
+          // {
+          //   title: '资产编号',
+          //   align: 'center',
+          //   dataIndex: 'assetNo',
+          //   scopedSlots: {customRender: 'factoryText'}
+          // },
           {
             title: '1月',
             align: 'center',
@@ -172,6 +170,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm10'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain1'
               }
             ]
           }, {
@@ -186,6 +188,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm20'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain2'
               }
             ]
           }, {
@@ -200,6 +206,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm30'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain3'
               }
             ]
           }, {
@@ -214,6 +224,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm40'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain4'
               }
             ]
           }, {
@@ -228,6 +242,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm50'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain5'
               }
             ]
           }, {
@@ -242,6 +260,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm60'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain6'
               }
             ]
           }, {
@@ -256,6 +278,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm70'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain7'
               }
             ]
           }, {
@@ -270,6 +296,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm80'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain8'
               }
             ]
           }, {
@@ -284,6 +314,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm90'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain9'
               }
             ]
           }, {
@@ -298,6 +332,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm100'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain10'
               }
             ]
           }, {
@@ -312,6 +350,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm110'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain11'
               }
             ]
           }, {
@@ -326,6 +368,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'm120'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'remain12'
               }
             ]
           }, {
@@ -340,6 +386,10 @@
                 title: '出库',
                 align: 'center',
                 dataIndex: 'mh0'
+              }, {
+                title: '剩余',
+                align: 'center',
+                dataIndex: 'mhRemain'
               }
             ]
           }
@@ -349,17 +399,17 @@
         }
       }
     },
-    created() {
+    created () {
       // 调用计划年份
-      this.getCurrentYear();
+      this.getCurrentYear()
     },
     methods: {
       // 计划年份
-      getCurrentYear() {
-        let date = new Date();
-        this.year = date.getFullYear();
+      getCurrentYear () {
+        let date = new Date()
+        this.year = date.getFullYear()
         this.queryParam.dateTime = this.year
-        console.log("当前年份", this.year)
+        console.log('当前年份', this.year)
       }
     }
   }

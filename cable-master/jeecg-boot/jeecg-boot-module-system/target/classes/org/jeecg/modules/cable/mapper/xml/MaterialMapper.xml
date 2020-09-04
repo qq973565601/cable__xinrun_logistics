@@ -276,6 +276,7 @@
         ORDER BY p.project_no,m.serial
     </select>
 
+    <!-- 物料年度出入台账 2020/9/4 bai -->
     <select id="getAnnualAccountList" resultType="org.jeecg.modules.cable.vo.AnnualReportVo">
         SELECT
         p.planType,
