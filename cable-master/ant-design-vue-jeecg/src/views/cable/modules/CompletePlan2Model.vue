@@ -141,6 +141,24 @@
               placeholder: '请输入${title}'
             },
             {
+              title: '自家仓库',
+              key: 'warehouseName',
+              width: '15%',
+              type: FormTypes.normal,
+              // dictCode: 'warehouse,name,id,type=\'1\'',
+              placeholder: '请选择${title}',
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              // onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationName',
+              width: '15%',
+              type: FormTypes.normal,
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
               title: '可出库数量',
               key: 'inventoryQuantity',
               width: '8%',
@@ -171,24 +189,6 @@
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
-            },
-            {
-              title: '自家仓库',
-              key: 'warehouseId',
-              width: '15%',
-              type: FormTypes.select,
-              dictCode: 'warehouse,name,id,type=\'1\'',
-              placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              onchange: 'onchange'
-            },
-            {
-              title: '自家库位',
-              key: 'storageLocationId',
-              width: '15%',
-              type: FormTypes.select,
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              placeholder: '请选择${title}'
             },
             {
               title: '终点仓库',
@@ -228,6 +228,24 @@
               placeholder: '请输入${title}'
             },
             {
+              title: '自家仓库',
+              key: 'warehouseName',
+              width: '10%',
+              type: FormTypes.normal,
+              // dictCode: 'warehouse,name,id,type=\'1\'',
+              placeholder: '请选择${title}',
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              // onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationName',
+              width: '10%',
+              type: FormTypes.normal,
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
               title: '可出库数量',
               key: 'inventoryQuantity',
               width: '8%',
@@ -258,24 +276,6 @@
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
-            },
-            {
-              title: '自家仓库',
-              key: 'warehouseId',
-              width: '10%',
-              type: FormTypes.select,
-              dictCode: 'warehouse,name,id,type=\'1\'',
-              placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              onchange: 'onchange'
-            },
-            {
-              title: '自家库位',
-              key: 'storageLocationId',
-              width: '10%',
-              type: FormTypes.select,
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              placeholder: '请选择${title}'
             },
             {
               title: '终点仓库',

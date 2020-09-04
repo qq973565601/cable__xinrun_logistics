@@ -43,6 +43,10 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
     private IInventoryService inventoryService;
     @Autowired
     private IStorageLocationService storageLocationService;
+    @Autowired
+    private IWarehouseService warehouseService;
+    @Autowired
+    private IPlan2Service plan2Service;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -139,8 +143,11 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     receivingStorage.setPlanType(2);
                     Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("backup2").toString()));
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
-                    receivingStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString()));
-                    receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString()));
+                    Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
+                    receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
+                    receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
                     receivingStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
@@ -155,8 +162,8 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     // 向库存表中存数据
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
-                    wrapper.eq("warehouse_id", Integer.parseInt(map.get("warehouseId").toString()));
-                    wrapper.eq("storage_location_id", Integer.parseInt(map.get("storageLocationId").toString()));
+                    wrapper.eq("warehouse_id", warehouse == null ? null : warehouse.getId()); // 仓库id
+                    wrapper.eq("storage_location_id", storageLocation == null ? null : storageLocation.getId()); // 库位id
                     Plan2 plan2 = this.getOne(new QueryWrapper<Plan2>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan2.getProjectNo());
                     wrapper.eq("material_id", material != null ? material.getId() : null);
@@ -167,7 +174,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     } else {
                         plan2.setAlreadyReceivingStorage(plan2.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }
-                    boolean res = this.updateById(plan2);
+                    boolean res = plan2Service.updateById(plan2);
                     System.err.println("计划2更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -196,7 +203,6 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     } else {
                         return Result.error("此库存并不存在, 无法进行出库完单操作");
                     }
-                    StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
                     if (storageLocation != null) {
                         int result = storageLocation.getTheCurrentVolume().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         if (result == 0 || result > 0) {

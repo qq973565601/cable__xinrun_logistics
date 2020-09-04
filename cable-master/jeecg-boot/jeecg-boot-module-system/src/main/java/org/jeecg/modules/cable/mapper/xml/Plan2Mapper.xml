@@ -9,10 +9,16 @@
         p.site,
         p.backup2,
         p.retired_asset_no,
-        sum(i.inventory_quantity) AS inventory_quantity
+        sum(i.inventory_quantity) AS inventory_quantity,
+        w.id as warehouseId,
+        w.`name` as warehouseName,
+        s.id as storageLocationId,
+        s.storage_location_name
         FROM
         plan2 p
         LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 2
+        LEFT JOIN warehouse w ON i.warehouse_id = w.id
+        LEFT JOIN storage_location s ON i.storage_location_id = s.id
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}

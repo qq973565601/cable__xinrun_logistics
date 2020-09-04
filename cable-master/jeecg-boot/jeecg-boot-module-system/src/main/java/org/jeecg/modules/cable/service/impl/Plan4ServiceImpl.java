@@ -43,6 +43,10 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     private IInventoryService inventoryService;
     @Autowired
     private IStorageLocationService storageLocationService;
+    @Autowired
+    private IWarehouseService warehouseService;
+    @Autowired
+    private IPlan4Service plan4Service;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -154,8 +158,11 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     String plan4MaterialName = map.get("recyclingSpecifications").toString().concat(" ").concat(map.get("texture").toString());
                     Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", plan4MaterialName));
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
-                    receivingStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString()));
-                    receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString()));
+                    Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
+                    receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
+                    receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
                     receivingStorage.setAccomplishWeight(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
@@ -173,8 +180,8 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     receivingStorageList.add(receivingStorage);
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询此库存是否存在
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
-                    wrapper.eq("warehouse_id", Integer.parseInt(map.get("warehouseId").toString()));
-                    wrapper.eq("storage_location_id", Integer.parseInt(map.get("storageLocationId").toString()));
+                    wrapper.eq("warehouse_id", warehouse == null ? null : warehouse.getId()); // 仓库id
+                    wrapper.eq("storage_location_id", storageLocation == null ? null : storageLocation.getId()); // 库位id
                     Plan4 plan4 = this.getOne(new QueryWrapper<Plan4>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan4.getProjectNo());
                     wrapper.eq("material_id", material != null ? material.getId() : null);
@@ -184,7 +191,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     } else {
                         plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }
-                    boolean res = this.updateById(plan4);
+                    boolean res = plan4Service.updateById(plan4);
                     System.err.println("计划4更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -219,7 +226,6 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     } else {
                         return Result.error("此库存并不存在, 无法进行出库完单操作");
                     }
-                    StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
                     if (storageLocation != null) {
                         int result = storageLocation.getTheCurrentVolume().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         if (result == 0 || result > 0) {

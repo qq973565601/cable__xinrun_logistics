@@ -9,10 +9,16 @@
         p.project_name,
         p.waste_material_text,
         p.asset_no,
-        sum(i.inventory_quantity) as inventory_quantity
+        sum( i.inventory_quantity ) AS inventory_quantity,
+        w.id as warehouseId,
+        w.`name` as warehouseName,
+        s.id as storageLocationId,
+        s.storage_location_name
         FROM
         plan1 p
         LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 1
+        LEFT JOIN warehouse w ON i.warehouse_id = w.id
+        LEFT JOIN storage_location s ON i.storage_location_id = s.id
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -235,7 +241,7 @@
 
     <!-- 计划结算 -->
     <select id="selectSettleAccounts" resultType="org.jeecg.modules.cable.vo.SettleAccountsVo">
-       SELECT * FROM (
+        SELECT * FROM (
         SELECT plan_type,project_no,project_name,complete_state,backup1 FROM `plan1` p1
         WHERE p1.project_no NOT IN (
         SELECT project_no FROM plan1 WHERE complete_state = 0 GROUP BY project_no
@@ -271,7 +277,7 @@
                 AND se.project_no LIKE CONCAT('%',#{projectNo},'%')
             </if>
         </where>
-         GROUP BY se.project_no
+        GROUP BY se.project_no
 
     </select>
 
@@ -359,35 +365,44 @@
     <!-- 计划结算详情 -->
     <select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
         SELECT * from(
-            SELECT waste_material_text,rs1.accomplish_num as receivingNum,ds1.accomplish_num as deliverNum,'' AS pro_theorder_no,project_no
-            from plan1 p1
-            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p1.id=rs1.plan_id
-            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p1.id=ds1.plan_id
-            GROUP BY  project_no
-            UNION All
-            SELECT backup2,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
-            from plan2 p2
-            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p2.id=rs1.plan_id
-            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p2.id=ds1.plan_id
-            GROUP BY  project_no
-            UNION All
-            SELECT material_describe,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
-            from plan3 p3
-            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p3.id=rs1.plan_id
-            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p3.id=ds1.plan_id
-            GROUP BY  pro_theorder_no
-            UNION All
-            SELECT cable_name,rs1.accomplish_num as ra,ds1.accomplish_num as da,'' AS pro_theorder_no,project_no
-            from plan4 p4
-            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p4.id=rs1.plan_id
-            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p4.id=ds1.plan_id
-            GROUP BY  project_no
-             ) as p
-                <where>
-                    <if test="null != projectNo">
-                        AND p.project_no = #{projectNo}
-                    </if>
-                </where>
+        SELECT waste_material_text,rs1.accomplish_num as receivingNum,ds1.accomplish_num as deliverNum,'' AS
+        pro_theorder_no,project_no
+        from plan1 p1
+        INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1
+        on p1.id=rs1.plan_id
+        INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as ds1 on
+        p1.id=ds1.plan_id
+        GROUP BY project_no
+        UNION All
+        SELECT backup2,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
+        from plan2 p2
+        INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1
+        on p2.id=rs1.plan_id
+        INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as ds1 on
+        p2.id=ds1.plan_id
+        GROUP BY project_no
+        UNION All
+        SELECT material_describe,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
+        from plan3 p3
+        INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1
+        on p3.id=rs1.plan_id
+        INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as ds1 on
+        p3.id=ds1.plan_id
+        GROUP BY pro_theorder_no
+        UNION All
+        SELECT cable_name,rs1.accomplish_num as ra,ds1.accomplish_num as da,'' AS pro_theorder_no,project_no
+        from plan4 p4
+        INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1
+        on p4.id=rs1.plan_id
+        INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as ds1 on
+        p4.id=ds1.plan_id
+        GROUP BY project_no
+        ) as p
+        <where>
+            <if test="null != projectNo">
+                AND p.project_no = #{projectNo}
+            </if>
+        </where>
     </select>
 
     <!-- 计划结算详情 -->

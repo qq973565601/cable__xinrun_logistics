@@ -90,7 +90,7 @@
       JUpload,
       JSearchSelectTag
     },
-    data() {
+    data () {
       return {
         title: '操作',
         visible: false,
@@ -141,6 +141,24 @@
               placeholder: '请输入${title}'
             },
             {
+              title: '自家仓库',
+              key: 'warehouseName',
+              width: '15%',
+              type: FormTypes.normal,
+              // dictCode: 'warehouse,name,id,type=\'1\'',
+              placeholder: '请选择${title}',
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              // onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationName',
+              width: '15%',
+              type: FormTypes.normal,
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
               title: '可出库数量',
               key: 'inventoryQuantity',
               width: '8%',
@@ -171,25 +189,6 @@
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
-            },
-            {
-              title: '自家仓库',
-              key: 'warehouseId',
-              width: '15%',
-              type: FormTypes.select,
-              dictCode: 'warehouse,name,id,type=\'1\'',
-              placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              // 当 FormTypes 为 select 时的 change 事件
-              onchange: 'onchange'
-            },
-            {
-              title: '自家库位',
-              key: 'storageLocationId',
-              width: '15%',
-              type: FormTypes.select,
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              placeholder: '请选择${title}'
             },
             {
               title: '终点仓库',
@@ -229,6 +228,24 @@
               placeholder: '请输入${title}'
             },
             {
+              title: '自家仓库',
+              key: 'warehouseName',
+              width: '10%',
+              type: FormTypes.normal,
+              // dictCode: 'warehouse,name,id,type=\'1\'',
+              placeholder: '请选择${title}',
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              // onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationName',
+              width: '10%',
+              type: FormTypes.normal,
+              // validateRules: [{ required: true, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
               title: '可出库数量',
               key: 'inventoryQuantity',
               width: '8%',
@@ -259,24 +276,6 @@
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
               validateRules: [{ required: true, message: '请输入${title}' }]
-            },
-            {
-              title: '自家仓库',
-              key: 'warehouseId',
-              width: '10%',
-              type: FormTypes.select,
-              dictCode: 'warehouse,name,id,type=\'1\'',
-              placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              onchange: 'onchange'
-            },
-            {
-              title: '自家库位',
-              key: 'storageLocationId',
-              width: '10%',
-              type: FormTypes.select,
-              validateRules: [{ required: true, message: '请选择${title}' }],
-              placeholder: '请选择${title}'
             },
             {
               title: '终点仓库',
@@ -425,7 +424,7 @@
        * 完单类型 change 事件
        * 2020/8/27 bai
        */
-      switchOperatorSchema(type) {
+      switchOperatorSchema (type) {
         if (type == 0) {    // 通过改变完单类型来切换不同的 table 信息
           this.tabTitle = '出库完单信息'
           this.defaultTable = this.table1
@@ -437,7 +436,7 @@
       /**
        * 自家仓库
        */
-      types(val) {
+      types (val) {
         this.storageLocations = []
         this.form.setFieldsValue(pick({ storageLocationId: undefined }, 'storageLocationId'))
         let va = val
@@ -449,14 +448,14 @@
         })
       },
       // 获取所有的editableTable实例
-      getAllTable() {
+      getAllTable () {
         return Promise.all([
           getRefPromise(this, 'defaultTable') // 默认 table
           //getRefPromise(this, 'editableTable1'), // 出库时 table 格式
           //getRefPromise(this, 'editableTable2') // 入库时 table 格式
         ])
       },
-      add() {
+      add () {
         // 默认新增一条数据
         this.getAllTable().then(editableTables => {
           editableTables[0].add()
@@ -464,7 +463,7 @@
         })
         this.edit({})
       },
-      completePlanModelShow(record) {
+      completePlanModelShow (record) {
         console.log('进入了合并完单页面>>>', record)
         this.activeKey = '1'
         this.form.resetFields()
@@ -477,7 +476,7 @@
           this.requestTableData(this.url.getPlan3DeliverStorage, this.plan3Ids, this.table2)
         }
       },
-      close() {
+      close () {
         this.storageLocations = []
         this.vehicles = {}
         this.visible = false
@@ -488,7 +487,7 @@
         this.$emit('close')
       },
       /** 查询某个tab的数据 */
-      requestTableData(url, params, tab) {
+      requestTableData (url, params, tab) {
         tab.loading = true
         getAction(url, params).then(res => {
           if (res.success) {
@@ -506,13 +505,13 @@
           }
         }).finally(() => {
           tab.loading = false
-          this.form.setFieldsValue({operatorSchema:'1'})
+          this.form.setFieldsValue({ operatorSchema: '1' })
         })
       },
-      handleOk() {
+      handleOk () {
         this.validateFields()
       },
-      handleCancel() {
+      handleCancel () {
         this.close()
       },
       /** ATab 选项卡切换事件 */
@@ -527,7 +526,7 @@
         })
       },*/
       /** 触发表单验证 */
-      validateFields() {
+      validateFields () {
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
           return validateFormAndTables(this.form, tables)
@@ -545,7 +544,7 @@
         })
       },
       /** 整理成formData */
-      classifyIntoFormData(allValues) {
+      classifyIntoFormData (allValues) {
         let orderMain = Object.assign(this.model, allValues.formValue)
         //时间格式化
         orderMain.orderDate = orderMain.orderDate ? orderMain.orderDate.format('YYYY-MM-DD HH:mm:ss') : null
@@ -556,7 +555,7 @@
         }
       },
       /** 发起新增或修改的请求 */
-      requestAddOrEdit(formData) {
+      requestAddOrEdit (formData) {
         formData['plan3Ids'] = this.plan3Ids.ids
         console.log('发起合并完单的操作方法, 请求参数为>>>>>>', formData)
         if (this.url.add == null) {

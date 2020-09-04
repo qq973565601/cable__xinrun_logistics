@@ -115,6 +115,22 @@ public class Plan4Vo implements Serializable {
      */
     private String engName;
     /**
+     * 仓库id
+     */
+    private Integer warehouseId;
+    /**
+     * 仓库名称
+     */
+    private String warehouseName;
+    /**
+     * 库位id
+     */
+    private Integer storageLocationId;
+    /**
+     * 库位名称
+     */
+    private String storageLocationName;
+    /**
      * 可出库数量[批量完单操作时使用此属性] ----2020/8/26 bai
      */
     private int inventoryQuantity;

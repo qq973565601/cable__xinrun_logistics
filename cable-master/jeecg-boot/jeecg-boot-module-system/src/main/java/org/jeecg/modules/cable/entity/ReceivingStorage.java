@@ -182,10 +182,10 @@ public class ReceivingStorage implements Serializable {
     @ApiModelProperty(value = "更新人")
     private String updateBy;
 
-	/**backup1*/
-	@Excel(name = "backup1", width = 15)
-    @ApiModelProperty(value = "backup1")
-    private String backup1;
+	/**终点仓库id*/
+	@Excel(name = "终点仓库id", width = 15)
+    @ApiModelProperty(value = "终点仓库id")
+    private Integer backup1;
 	/**backup2*/
 	@Excel(name = "backup2", width = 15)
     @ApiModelProperty(value = "backup2")
@@ -202,85 +202,4 @@ public class ReceivingStorage implements Serializable {
 	@Excel(name = "backup5", width = 15)
     @ApiModelProperty(value = "backup5")
     private String backup5;
-
-
-    //==============================物料年度出入台账查询———映射所需属性
-
-    // 1月份出库数量
-    @Excel(name = "m1CK", width = 15)
-    @ApiModelProperty(value = "m1CK")
-    @TableField(exist = false)
-    private Integer m1CK;
-
-    // 2月份出库数量
-    @Excel(name = "m2CK", width = 15)
-    @ApiModelProperty(value = "m2CK")
-    @TableField(exist = false)
-    private Integer m2CK;
-
-    // 3月份出库数量
-    @Excel(name = "m3CK", width = 15)
-    @ApiModelProperty(value = "m3CK")
-    @TableField(exist = false)
-    private Integer m3CK;
-
-    // 4月份出库数量
-    @Excel(name = "m4CK", width = 15)
-    @ApiModelProperty(value = "m4CK")
-    @TableField(exist = false)
-    private Integer m4CK;
-
-    // 5月份出库数量
-    @Excel(name = "m5CK", width = 15)
-    @ApiModelProperty(value = "m5CK")
-    @TableField(exist = false)
-    private Integer m5CK;
-
-    // 6月份出库数量
-    @Excel(name = "m6CK", width = 15)
-    @ApiModelProperty(value = "m6CK")
-    @TableField(exist = false)
-    private Integer m6CK;
-
-    // 7月份出库数量
-    @Excel(name = "m7CK", width = 15)
-    @ApiModelProperty(value = "m7CK")
-    @TableField(exist = false)
-    private Integer m7CK;
-
-    // 8月份出库数量
-    @Excel(name = "m8CK", width = 15)
-    @ApiModelProperty(value = "m8CK")
-    @TableField(exist = false)
-    private Integer m8CK;
-
-    // 9月份出库数量
-    @Excel(name = "m9CK", width = 15)
-    @ApiModelProperty(value = "m9CK")
-    @TableField(exist = false)
-    private Integer m9CK;
-
-    // 10月份出库数量
-    @Excel(name = "m10CK", width = 15)
-    @ApiModelProperty(value = "m10CK")
-    @TableField(exist = false)
-    private Integer m10CK;
-
-    // 11月份出库数量
-    @Excel(name = "m11CK", width = 15)
-    @ApiModelProperty(value = "m11CK")
-    @TableField(exist = false)
-    private Integer m11CK;
-
-    // 12月份出库数量
-    @Excel(name = "m12CK", width = 15)
-    @ApiModelProperty(value = "m12CK")
-    @TableField(exist = false)
-    private Integer m12CK;
-
-    // 全年出库总数量
-    @Excel(name = "CKnums", width = 15)
-    @ApiModelProperty(value = "CKnums")
-    @TableField(exist = false)
-    private Integer CKnums;
 }
