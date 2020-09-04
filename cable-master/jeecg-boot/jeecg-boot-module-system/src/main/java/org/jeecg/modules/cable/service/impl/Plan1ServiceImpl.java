@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -184,6 +185,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         if (inventory.getInventoryQuantity() == null || inventory.getBackup4() == null) {
+                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("该库存数量或该库存容积不存在,无法进行出库操作");
                         }
                         int result = inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
@@ -200,12 +202,15 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                                     System.err.println("删除库存记录成功");
                                 }
                             } else {
+                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                                 return Result.error("库存容积不足,无法进行出库操作");
                             }
                         } else {
+                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("库存数量不足,无法进行出库操作");
                         }
                     } else {
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                         return Result.error("此库存并不存在, 无法进行出库完单操作");
                     }
                     if (storageLocation != null) {
@@ -215,9 +220,11 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                             boolean flag = storageLocationService.updateById(storageLocation);
                             System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
                         } else {
+                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("当前库存容积不足, 无法进行出库完单操作");
                         }
                     } else {
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                         return Result.error("此库存容积并不存在, 无法进行出库完单操作");
                     }
                 }
