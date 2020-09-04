@@ -131,6 +131,10 @@ spring:
           username: root
           password: 123456
           driver-class-name: com.mysql.jdbc.Driver
+          #          url: jdbc:mysql://111.231.51.198:3306/cable?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false
+          #          username: root
+          #          password: utool587Eerk
+          #          driver-class-name: com.mysql.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
           #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true

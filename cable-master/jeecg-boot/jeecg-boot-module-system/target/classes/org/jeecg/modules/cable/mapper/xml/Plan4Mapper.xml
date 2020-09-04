@@ -4,14 +4,14 @@
     <!-- 查询计划4批量出库完单的数据 -->
     <select id="getPlan4ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan4Vo">
         SELECT
-            p.id,
-            p.project_no,
-            p.eng_name,
-            CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
-            p.cable_name,
-            sum(i.inventory_quantity) as inventory_quantity
+        p.id,
+        p.project_no,
+        p.eng_name,
+        CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
+        p.cable_name,
+        sum(i.inventory_quantity) as inventory_quantity
         FROM
-            plan4 p
+        plan4 p
         LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 4
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
@@ -23,14 +23,14 @@
     <!-- 查询计划4批量入库完单的数据 -->
     <select id="getPlan4DeliverStorage" resultType="org.jeecg.modules.cable.entity.Plan4">
         SELECT
-            p.id,
-            p.project_no,
-            p.eng_name,
-            CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
-            p.cable_name,
-            p.sampling_length
+        p.id,
+        p.project_no,
+        p.eng_name,
+        CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,
+        p.cable_name,
+        p.sampling_length
         FROM
-            plan4 p
+        plan4 p
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -117,17 +117,24 @@
     <!-- 导出计划表4汇总 -->
     <select id="exportFeedbackSummary" resultType="org.jeecg.modules.cable.vo.Plan4Vo">
         SELECT
-         plan4.id,
-         plan4.project_no,
-         plan4.cable_cross,
-         deliver_storage.texture,
-         SUM(plan4.sampling_length) as samplingLen,
-         SUM(deliver_storage.accomplish_weight) as accomplistWeight
-        FROM
-         plan4
-         LEFT JOIN send_orders AS send_orders1 ON ( send_orders1.plan_id = plan4.id AND send_orders1.plan_type = 4 )
-         LEFT JOIN deliver_storage ON deliver_storage.send_orders_id = send_orders1.id
-        GROUP BY
-         plan4.project_no,cable_cross
+		 plan4.id,
+		 plan4.project_no,
+		 plan4.cable_name,
+         ds.recycling_specifications,
+		 ds.texture,
+		 IFNULL(SUM(ds.accomplish_num),0) as length,
+		 IFNULL(SUM(ds.accomplish_weight),0) as weight
+		FROM
+		 plan4
+		 LEFT JOIN deliver_storage ds ON ( plan4.id = ds.plan_id AND ds.plan_type = 4 )
+		 <where>
+             <if test="null != plan4Vo.beginTime and '' != plan4Vo.beginTime">
+                 AND ds.deliver_time <![CDATA[>=]]> #{plan4Vo.beginTime}
+             </if>
+             <if test="null != plan4Vo.endTime and '' != plan4Vo.endTime">
+                 AND ds.deliver_time <![CDATA[<=]]> #{plan4Vo.endTime}
+             </if>
+         </where>
+        GROUP BY plan4.project_no,ds.recycling_specifications,ds.texture
     </select>
 </mapper>

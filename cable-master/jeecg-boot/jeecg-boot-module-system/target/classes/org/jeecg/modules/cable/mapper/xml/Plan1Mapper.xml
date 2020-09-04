@@ -4,15 +4,15 @@
     <!-- 查询计划1批量出库完单的数据 -->
     <select id="getPlan1ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan1Vo">
         SELECT
-            p.id,
-            p.project_no,
-            p.project_name,
-            p.raw_material_text,
-            p.asset_no,
-            sum(i.inventory_quantity) as inventory_quantity
+        p.id,
+        p.project_no,
+        p.project_name,
+        p.waste_material_text,
+        p.asset_no,
+        sum(i.inventory_quantity) as inventory_quantity
         FROM
-            plan1 p
-            LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 1
+        plan1 p
+        LEFT JOIN inventory i ON p.id = i.backup1 AND i.backup2 = 1
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -23,14 +23,14 @@
     <!-- 查询计划1批量入库完单的数据 -->
     <select id="getPlan1DeliverStorage" resultType="org.jeecg.modules.cable.entity.Plan1">
         SELECT
-            p.id,
-            p.project_no,
-            p.project_name,
-            p.raw_material_text,
-            p.asset_no,
-            p.num_receipts
+        p.id,
+        p.project_no,
+        p.project_name,
+        p.waste_material_text,
+        p.asset_no,
+        p.num_receipts
         FROM
-            plan1 p
+        plan1 p
         WHERE p.id IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
@@ -233,7 +233,50 @@
         plan1.id
     </select>
 
+    <!-- 计划结算 -->
     <select id="selectSettleAccounts" resultType="org.jeecg.modules.cable.vo.SettleAccountsVo">
+       SELECT * FROM (
+        SELECT plan_type,project_no,project_name,complete_state,backup1 FROM `plan1` p1
+        WHERE p1.project_no NOT IN (
+        SELECT project_no FROM plan1 WHERE complete_state = 0 GROUP BY project_no
+        )
+        GROUP BY project_no
+        UNION ALL
+        SELECT plan_type,project_no,equipment_name,complete_state,backup1 FROM `plan2` p2
+        WHERE p2.project_no NOT IN (
+        SELECT project_no FROM plan2 WHERE complete_state = 0 GROUP BY project_no
+        )
+        GROUP BY project_no
+        UNION ALL
+        SELECT plan_type,project_no,eng_name,complete_state,backup1 FROM `plan3` p3
+        WHERE p3.project_no NOT IN (
+        SELECT project_no FROM plan3 WHERE complete_state = 0 GROUP BY project_no
+        )
+        GROUP BY project_no
+        UNION ALL
+        SELECT plan_type,project_no,eng_name,complete_state,backup1 FROM `plan4` p4
+        WHERE p4.project_no NOT IN (
+        SELECT project_no FROM plan4 WHERE complete_state = 0 GROUP BY project_no
+        )
+        GROUP BY project_no
+        ) AS se
+        <where>
+            <if test="backup1!=null and backup1!=''">
+                AND se.backup1 = #{backup1}
+            </if>
+            <if test="planType!=null and planType!=''">
+                AND se.plan_type = #{planType}
+            </if>
+            <if test="projectNo!=null and projectNo!=''">
+                AND se.project_no LIKE CONCAT('%',#{projectNo},'%')
+            </if>
+        </where>
+         GROUP BY se.project_no
+
+    </select>
+
+    <!-- 计划结算 -->
+    <!--<select id="selectSettleAccounts" resultType="org.jeecg.modules.cable.vo.SettleAccountsVo">
         SELECT * FROM (
         SELECT
         id AS plan_id,
@@ -311,10 +354,44 @@
                 AND project_no LIKE CONCAT('%',#{projectNo},'%')
             </if>
         </where>
-    </select>
+    </select>-->
 
     <!-- 计划结算详情 -->
     <select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
+        SELECT * from(
+            SELECT waste_material_text,rs1.accomplish_num as receivingNum,ds1.accomplish_num as deliverNum,'' AS pro_theorder_no,project_no
+            from plan1 p1
+            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p1.id=rs1.plan_id
+            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p1.id=ds1.plan_id
+            GROUP BY  project_no
+            UNION All
+            SELECT backup2,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
+            from plan2 p2
+            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p2.id=rs1.plan_id
+            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p2.id=ds1.plan_id
+            GROUP BY  project_no
+            UNION All
+            SELECT material_describe,rs1.accomplish_num as ra,Sum(ds1.accomplish_num) as da,'' AS pro_theorder_no,project_no
+            from plan3 p3
+            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p3.id=rs1.plan_id
+            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p3.id=ds1.plan_id
+            GROUP BY  pro_theorder_no
+            UNION All
+            SELECT cable_name,rs1.accomplish_num as ra,ds1.accomplish_num as da,'' AS pro_theorder_no,project_no
+            from plan4 p4
+            INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p4.id=rs1.plan_id
+            INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p4.id=ds1.plan_id
+            GROUP BY  project_no
+             ) as p
+                <where>
+                    <if test="null != projectNo">
+                        AND p.project_no = #{projectNo}
+                    </if>
+                </where>
+    </select>
+
+    <!-- 计划结算详情 -->
+    <!--<select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
         SELECT
         *
         FROM
@@ -424,5 +501,106 @@
                 AND p.plan_type = #{planName}
             </if>
         </where>
-    </select>
+    </select>-->
+
+
+    <!--<select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        p.plan_type AS p_plan_type,
+        so.plan_type,
+        p.project_name,
+        p.the_contact AS linkman,
+        p.the_phone AS phone,
+        p.engineering_address AS address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan1 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 1
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        '备品' AS p_plan_type,
+        so.plan_type,
+        p.equipment_name AS project_name,
+        p.equipment_owners AS linkman,
+        '' AS phone,
+        p.address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan2 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 2
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        p.plan_type AS p_plan_type,
+        so.plan_type,
+        p.eng_name AS project_name,
+        p.field_consignee AS linkman,
+        p.c_phone AS phone,
+        p.address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan3 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 3
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id UNION ALL
+        SELECT
+        so.id,
+        p.id AS plan_id,
+        '电缆2' AS p_plan_type,
+        so.plan_type,
+        p.eng_name AS project_name,
+        p.team_contact AS linkman,
+        '' AS phone,
+        p.sampling_addres AS address,
+        DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
+        GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
+        GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
+        FROM
+        send_orders so
+        LEFT JOIN plan4 AS p ON p.id = so.plan_id
+        LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
+        WHERE
+        so.plan_type = 4
+        AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
+        GROUP BY
+        so.id
+        ) AS p
+        <where>
+            <if test="null != planId">
+                AND p.plan_id = #{planId}
+            </if>
+            <if test="null != planName">
+                AND p.plan_type = #{planName}
+            </if>
+        </where>
+    </select>-->
 </mapper>
