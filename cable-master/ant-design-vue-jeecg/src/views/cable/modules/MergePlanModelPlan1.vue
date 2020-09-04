@@ -23,7 +23,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="12">
+          <!--<a-col :md="6" :sm="12">
             <a-form-item label="自家仓库">
               <j-dict-select-tag v-decorator="['warehouseId',validatorRules.warehouseId]" :triggerChange="true" @change="types"
                                  placeholder="请选择自家仓库" dictCode="warehouse,name,id,type='1'"/>
@@ -41,18 +41,16 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <!-- 出库才选择终点仓库,入库不需要选择终点仓库[根据 this.sendOrderType 做判断是否显示] -->
+          &lt;!&ndash; 出库才选择终点仓库,入库不需要选择终点仓库[根据 this.sendOrderType 做判断是否显示] &ndash;&gt;
           <a-col :md="6" :sm="12" v-if="this.sendOrderType">
             <a-form-item label="终点仓库">
-
               <j-dict-select-tag v-decorator="['endWarehouseId',validatorRules.endWarehouseId]" :triggerChange="true"
                                  placeholder="请选择终点仓库" dictCode="warehouse,name,id"/>
-
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <a-col :md="6" :sm="12">
             <a-form-item label="任务日期">
-              <j-date v-decorator="['taskTime',validatorRules.taskTime]" :showTime="true" date-format="YYYY-MM-DD HH:mm"
+              <j-date v-decorator="['taskTime',validatorRules.taskTime]" :showTime="true" date-format="YYYY-MM-DD"
                       placeholder="请选择任务时间" style="width: 80%">
               </j-date>
             </a-form-item>
@@ -69,9 +67,32 @@
             </a-form-item>
           </a-col>
 
-
         </a-row>
 
+        <a-row :gutter="24">
+
+          <a-col :md="6" :sm="12">
+            <a-form-item label="联系人">
+              <a-input placeholder="请输入联系人"
+                       v-decorator="['backup3',validatorRules.backup3]"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="6" :sm="12">
+            <a-form-item label="联系电话">
+              <a-input placeholder="请输入联系电话"
+                       v-decorator="['backup4',validatorRules.backup4]"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="6" :sm="12">
+            <a-form-item label="任务地址">
+              <a-input placeholder="请输入任务地址"
+                       v-decorator="['backup2',validatorRules.backup2]"></a-input>
+            </a-form-item>
+          </a-col>
+
+        </a-row>
         <!--<a-row :gutter="24">
           &lt;!&ndash;<a-row :gutter="24">
             <a-col :span="12">
@@ -241,8 +262,8 @@
               validateRules: [{ required: false, message: '${title}不能为空' }]
             },
             {
-              title: '物料数量',
-              key: 'numMaterial',
+              title: '派单数量',
+              key: 'backup1',
               width: '8%',
               type: FormTypes.inputNumber,
               defaultValue: '1',
@@ -250,6 +271,33 @@
               validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             {
+              title: '自家仓库',
+              key: 'warehouseId',
+              width: '10%',
+              type: FormTypes.select,
+              dictCode:"warehouse,name,id,type='1'",
+              placeholder: '请选择${title}',
+              validateRules: [{ required: true, message: '请选择${title}' }],
+              onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storageLocationId',
+              width: '10%',
+              type: FormTypes.select,
+              validateRules: [{ required: false, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '终点仓库',
+              key: 'endWarehouseId',
+              width: '10%',
+              type: FormTypes.select,
+              dictCode: 'warehouse,name,id',
+              placeholder: '请选择${title}',
+              validateRules: [{ required: false, message: '请选择${title}' }]
+            }
+            /*{
               title: '联系人',
               key: 'backup3',
               width: '12%',
@@ -275,7 +323,7 @@
               defaultValue: '长江南路电力仓库',
               placeholder: '请输入${title}',
               validateRules: [{ required: false, message: '${title}不能为空' }]
-            },
+            },*/
           ],
         },
         // 派单车辆信息

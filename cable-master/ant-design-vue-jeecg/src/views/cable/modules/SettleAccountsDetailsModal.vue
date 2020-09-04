@@ -80,7 +80,8 @@
             title: '物料名称',
             align: 'center',
             width: 200,
-            dataIndex: 'rawMaterialText'
+            dataIndex: 'wasteMaterialText'
+            // rawMaterialText
           },
           {
             title: '入库数量',

@@ -144,6 +144,18 @@
             dataIndex: 'taskTime'
           },
           {
+            title: '项目名称',
+            align: 'center',
+            dataIndex: 'projectName',
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
+            title: '物料描述',
+            align: 'center',
+            dataIndex: 'rawMaterialText',
+            scopedSlots: {customRender: 'factoryText'}
+          },
+          {
             title: '完单数量',
             align: 'center',
             dataIndex: 'accomplishnum'
@@ -194,7 +206,7 @@
           {
               title: '操作',
               dataIndex: 'action',
-              width: 100,
+              width: 50,
               align: 'center',
               scopedSlots: {customRender: 'action'}
           }

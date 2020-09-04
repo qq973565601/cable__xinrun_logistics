@@ -110,10 +110,11 @@ public class SendOrders implements Serializable {
     private java.lang.String updateBy;
     /**
      * backup1
+     * 派单数量
      */
     @Excel(name = "backup1", width = 15)
     @ApiModelProperty(value = "backup1")
-    private java.lang.String backup1;
+    private Integer backup1;
     /**
      * backup2
      * 任务地址

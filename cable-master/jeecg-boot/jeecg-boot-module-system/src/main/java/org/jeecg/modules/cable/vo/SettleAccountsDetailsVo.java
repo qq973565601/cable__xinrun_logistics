@@ -41,6 +41,13 @@ public class SettleAccountsDetailsVo implements Serializable {
     private String a1;
 
     /**
+     * 废旧物料名称
+     * liu
+     * 2020/7/15
+     */
+    private String wasteMaterialText;
+
+    /**
      * 物料名称
      * liu
      * 2020/7/15

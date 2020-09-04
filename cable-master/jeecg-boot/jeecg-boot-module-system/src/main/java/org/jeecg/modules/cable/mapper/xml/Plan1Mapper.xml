@@ -7,7 +7,7 @@
         p.id,
         p.project_no,
         p.project_name,
-        p.raw_material_text,
+        p.waste_material_text,
         p.asset_no,
         sum(i.inventory_quantity) as inventory_quantity
         FROM
@@ -26,7 +26,7 @@
         p.id,
         p.project_no,
         p.project_name,
-        p.raw_material_text,
+        p.waste_material_text,
         p.asset_no,
         p.num_receipts
         FROM
@@ -359,7 +359,7 @@
     <!-- 计划结算详情 -->
     <select id="selectSettleAccountsDetails" resultType="org.jeecg.modules.cable.vo.SettleAccountsDetailsVo">
         SELECT * from(
-            SELECT raw_material_text,rs1.accomplish_num as receivingNum,ds1.accomplish_num as deliverNum,'' AS pro_theorder_no,project_no
+            SELECT waste_material_text,rs1.accomplish_num as receivingNum,ds1.accomplish_num as deliverNum,'' AS pro_theorder_no,project_no
             from plan1 p1
             INNER JOIN (select plan_id,Sum(accomplish_num) as accomplish_num from receiving_storage GROUP BY plan_id) as rs1 on p1.id=rs1.plan_id
             INNER join (select plan_id,Sum(accomplish_num) as accomplish_num from deliver_storage GROUP BY plan_id)as  ds1 on p1.id=ds1.plan_id

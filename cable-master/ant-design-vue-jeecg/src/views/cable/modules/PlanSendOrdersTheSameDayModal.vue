@@ -17,7 +17,7 @@
       @change="handleTableChange" style="margin-top: 20px">
 
       <span slot="factoryText" slot-scope="text">
-        <j-ellipsis :value="text" :length="15"/>
+        <j-ellipsis :value="text" :length="11"/>
       </span>
 
       <span slot="action" slot-scope="text, record">
@@ -84,7 +84,14 @@
             title: '物料描述',
             align: 'center',
             dataIndex: 'rawMaterialText',
-            width: 200,
+            width: 180,
+            scopedSlots: { customRender: 'factoryText' }
+          },
+          {
+            title: '物料数量',
+            align: 'center',
+            dataIndex: 'backup1',
+            width: 80,
             scopedSlots: { customRender: 'factoryText' }
           },
           {
@@ -97,14 +104,14 @@
             title: '任务名称',
             align: 'center',
             dataIndex: 'projectName',
-            width:250,
+            width:200,
             scopedSlots: { customRender: 'factoryText' }
           },
           {
             title: '任务地址',
             align: 'center',
             dataIndex: 'address',
-            width:250,
+            width:200,
             scopedSlots: { customRender: 'factoryText' }
           },
           {

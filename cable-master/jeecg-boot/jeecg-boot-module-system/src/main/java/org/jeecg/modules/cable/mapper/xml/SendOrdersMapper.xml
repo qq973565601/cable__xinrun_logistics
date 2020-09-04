@@ -86,7 +86,8 @@
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
             so.operator_schema,
-            IFNULL( p.raw_material_text, p.waste_material_text ) AS raw_material_text
+            p.waste_material_text AS raw_material_text,
+						SUM(so.backup1) AS backup1
         FROM
             send_orders so
             LEFT JOIN plan1 AS p ON p.id = so.plan_id
@@ -95,7 +96,8 @@
             so.plan_type = 1
             AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
         GROUP BY
-            so.id UNION ALL
+            p.project_no,p.waste_material_code
+						UNION ALL
         SELECT
             so.id,
             p.id AS plan_id,
@@ -109,7 +111,8 @@
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
             so.operator_schema,
-            p.equipment_name AS raw_material_text
+            p.equipment_name AS raw_material_text,
+						SUM(so.backup1) AS backup1
         FROM
             send_orders so
             LEFT JOIN plan2 AS p ON p.id = so.plan_id
@@ -118,7 +121,8 @@
             so.plan_type = 2
             AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
         GROUP BY
-            so.id UNION ALL
+            p.project_no,p.equipment_name
+						UNION ALL
         SELECT
             so.id,
             p.id AS plan_id,
@@ -132,7 +136,8 @@
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
             so.operator_schema,
-            p.material_describe AS raw_material_text
+            p.material_describe AS raw_material_text,
+						SUM(so.backup1) AS backup1
         FROM
             send_orders so
             LEFT JOIN plan3 AS p ON p.id = so.plan_id
@@ -141,7 +146,8 @@
             so.plan_type = 3
             AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
         GROUP BY
-            so.id UNION ALL
+            p.project_no,p.material_describe
+						UNION ALL
         SELECT
             so.id,
             p.id AS plan_id,
@@ -155,7 +161,8 @@
             GROUP_CONCAT( IF ( sos.distribution_type = 0, type_id, NULL ) ) AS a0,
             GROUP_CONCAT( IF ( sos.distribution_type = 1, type_id, NULL ) ) AS a1,
             so.operator_schema,
-            p.cable_name AS raw_material_text
+            CONCAT(p.voltage_grade,' ',p.cable_cross) AS raw_material_text,
+						SUM(so.backup1) AS backup1
         FROM
             send_orders so
             LEFT JOIN plan4 AS p ON p.id = so.plan_id
@@ -164,7 +171,7 @@
             so.plan_type = 4
             AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW( ), '%Y-%m-%d' )
         GROUP BY
-            so.id
+            p.project_no,p.voltage_grade,p.cable_cross
             ) a
             ORDER BY a.task_time DESC
     </select>
@@ -172,6 +179,7 @@
     <!-- 派单记录 -->
     <select id="selectSendOrdersController" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
         SELECT
+        send_orders.backup1,
         send_orders.id,
         send_orders.operator_schema,
         send_orders.warehouse_id,
@@ -186,28 +194,24 @@
         AS a0,
         GROUP_CONCAT( IF ( send_orders_subtabulation.distribution_type = 1, send_orders_subtabulation.type_id, NULL ) )
         AS a1,
+        send_orders.backup3 AS linkman,
+        send_orders.backup4 AS phone,
+        send_orders.backup2 AS address,
         <if test='planType=="1"'>
             p.project_name,
-            --             p.engineering_address AS address,
-            --             p.project_contact AS linkman,
-            --             p.project_phone AS phone
-            send_orders.backup3 AS linkman,
-            send_orders.backup4 AS phone,
-            send_orders.backup2 AS address
+            p.waste_material_text AS rawMaterialText
         </if>
         <if test='planType=="2"'>
-            p.address
+            p.site AS project_name,
+            p.backup2 AS rawMaterialText
         </if>
         <if test='planType=="3"'>
             p.eng_name AS project_name,
-            p.c_phone AS phone,
-            p.field_consignee AS linkman,
-            p.address
+            p.material_describe AS rawMaterialText
         </if>
         <if test='planType=="4"'>
             p.eng_name AS project_name,
-            p.construc_contact AS linkman,
-            p.sampling_addres AS address
+            CONCAT(p.voltage_grade,' ',p.cable_cross) AS rawMaterialText
         </if>
         FROM
         send_orders
@@ -230,6 +234,30 @@
         ORDER BY send_orders.task_time DESC
     </select>
 
+    <!--send_orders.backup3 AS linkman,
+    send_orders.backup4 AS phone,
+    send_orders.backup2 AS address
+    <if test='planType=="1"'>
+        p.project_name,
+        p.engineering_address AS address,
+        p.project_contact AS linkman,
+        p.project_phone AS phone
+    </if>
+    <if test='planType=="2"'>
+        p.address
+    </if>
+    <if test='planType=="3"'>
+        p.eng_name AS project_name,
+        p.c_phone AS phone,
+        p.field_consignee AS linkman,
+        p.address
+    </if>
+    <if test='planType=="4"'>
+        p.eng_name AS project_name,
+        p.construc_contact AS linkman,
+        p.sampling_addres AS address
+    </if>-->
+
     <!-- 完单记录 -->
     <select id="selectSendOrdersWD" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
         SELECT * FROM (
@@ -246,7 +274,23 @@
         rs.scene_abnormal_photos as phontos,
         rs.anomalous_cause as anomalousCause,
         rs.receipt_photos as receiptPhotos,
-        rs.create_time
+        rs.create_time,
+        <if test='planType=="1"'>
+            p.project_name,
+            p.waste_material_text AS rawMaterialText
+        </if>
+        <if test='planType=="2"'>
+            p.site AS project_name,
+            p.backup2 AS rawMaterialText
+        </if>
+        <if test='planType=="3"'>
+            p.eng_name AS project_name,
+            p.material_describe AS rawMaterialText
+        </if>
+        <if test='planType=="4"'>
+            p.eng_name AS project_name,
+            CONCAT(p.voltage_grade,' ',p.cable_cross) AS rawMaterialText
+        </if>
         from
         receiving_storage rs
         left join
@@ -277,7 +321,23 @@
         ds.scene_photos as phontos,
         ds.anomalous_cause as anomalousCause,
         ds.receipt_photos as receiptPhotos,
-        ds.create_time
+        ds.create_time,
+        <if test='planType=="1"'>
+            p.project_name,
+            p.waste_material_text AS rawMaterialText
+        </if>
+        <if test='planType=="2"'>
+            p.site AS project_name,
+            p.backup2 AS rawMaterialText
+        </if>
+        <if test='planType=="3"'>
+            p.eng_name AS project_name,
+            p.material_describe AS rawMaterialText
+        </if>
+        <if test='planType=="4"'>
+            p.eng_name AS project_name,
+            CONCAT(p.voltage_grade,' ',p.cable_cross) AS rawMaterialText
+        </if>
         from
         deliver_storage ds
         left join

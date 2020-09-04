@@ -165,6 +165,14 @@
               validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '15%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{ required: true, message: '请输入${title}' }]
+            },
+            {
               title: '自家仓库',
               key: 'warehouseId',
               width: '15%',
@@ -182,14 +190,6 @@
               type: FormTypes.select,
               validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
-            },
-            {
-              title: '完单容积',
-              key: 'accomplishVolume',
-              width: '15%',
-              type: FormTypes.inputNumber,
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '终点仓库',
@@ -253,6 +253,14 @@
               validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '8%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{ required: true, message: '请输入${title}' }]
+            },
+            {
               title: '自家仓库',
               key: 'warehouseId',
               width: '10%',
@@ -269,14 +277,6 @@
               type: FormTypes.select,
               validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
-            },
-            {
-              title: '完单容积',
-              key: 'accomplishVolume',
-              width: '8%',
-              type: FormTypes.inputNumber,
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '终点仓库',
@@ -340,6 +340,14 @@
               validateRules: [{ required: true, message: '请选择${title}' }]
             },
             {
+              title: '完单容积',
+              key: 'accomplishVolume',
+              width: '8%',
+              type: FormTypes.inputNumber,
+              placeholder: '请输入${title}',
+              validateRules: [{ required: true, message: '请输入${title}' }]
+            },
+            {
               title: '目标仓库',
               key: 'warehouseId',
               width: '10%',
@@ -356,14 +364,6 @@
               type: FormTypes.select,
               validateRules: [{ required: true, message: '请选择${title}' }],
               placeholder: '请选择${title}'
-            },
-            {
-              title: '完单容积',
-              key: 'accomplishVolume',
-              width: '8%',
-              type: FormTypes.inputNumber,
-              placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
               title: '是否异常',

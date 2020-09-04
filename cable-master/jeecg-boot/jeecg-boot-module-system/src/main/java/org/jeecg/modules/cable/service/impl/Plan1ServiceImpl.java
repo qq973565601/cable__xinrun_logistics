@@ -65,7 +65,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
           deliverStorage.setPlanId(Integer.parseInt(plan1Ids.get(i).toString())); // 计划id
           deliverStorage.setPlanType(1); // 计划类型(1\2\3\4表)
           // 拿到物料描述去查询物料信息,取出物料id来使用
-          Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("rawMaterialText").toString()));
+          Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("wasteMaterialText").toString()));
           deliverStorage.setMaterialId(material == null ? 0 : material.getId()); // 物料id
           deliverStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString())); // 仓库id
           deliverStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString())); // 库位id
@@ -144,7 +144,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
           receivingStorage.setPlanId(Integer.parseInt(plan1Ids.get(i).toString())); // 计划id
           receivingStorage.setPlanType(1); // 计划类型(1\2\3\4表)
           // 拿到物料描述去查询物料信息,取出物料id来使用
-          Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("rawMaterialText").toString()));
+          Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("wasteMaterialText").toString()));
           receivingStorage.setMaterialId(material == null ? 0 : material.getId()); // 物料id
           receivingStorage.setWarehouseId(Integer.parseInt(map.get("warehouseId").toString())); // 仓库id
           receivingStorage.setStorageLocationId(Integer.parseInt(map.get("storageLocationId").toString())); // 库位id

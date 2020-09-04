@@ -88,12 +88,16 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
 
             //TODO 将共有部分派单参数赋值给该计划派单参数
             BeanUtils.copyProperties(sendOrdersVo,sendOrders);    // sendOrdersVo → sendOrders
-            sendOrders.setProjectNo(orders.getProjectNo());//工程账号
-            sendOrders.setBackup2(orders.getBackup2()); //任务地址
-            sendOrders.setBackup3(orders.getBackup3()); //联系人
-            sendOrders.setBackup4(orders.getBackup4()); //电话
-            sendOrders.setPlanId(orders.getId());       //计划id
-            sendOrders.setId(null);                     //派单id 设置为空
+            sendOrders.setProjectNo(orders.getProjectNo());                 //工程账号
+//            sendOrders.setBackup2(orders.getBackup2());                   //任务地址
+//            sendOrders.setBackup3(orders.getBackup3());                   //联系人
+//            sendOrders.setBackup4(orders.getBackup4());                   //电话
+            sendOrders.setWarehouseId(orders.getWarehouseId());             //自家仓库  warehouseId
+            sendOrders.setStorageLocationId(orders.getStorageLocationId()); //自家库位  storageLocationId
+            sendOrders.setEndWarehouseId(orders.getEndWarehouseId());       //终点仓库  endWarehouseId
+            sendOrders.setBackup1(orders.getBackup1());                     //派单数量
+            sendOrders.setPlanId(orders.getId());                           //计划id
+            sendOrders.setId(null);                                         //派单id 设置为空
             sendOrdersMapper.insert(sendOrders);
 
             //TODO 派单成功之后，只获取第一次的派单id

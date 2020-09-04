@@ -113,7 +113,7 @@
                         }
                     },
                     {
-                        title: '任务日 期',
+                        title: '任务日期',
                         align: 'center',
                         dataIndex: 'taskTime',
                         width: 90
@@ -153,9 +153,21 @@
                         }
                     },
                     {
-                        title: '任务详情',
+                        title: '项目名称',
                         align: 'center',
                         dataIndex: 'projectName',
+                        scopedSlots: {customRender: 'factoryText'}
+                    },
+                    {
+                        title: '物料描述',
+                        align: 'center',
+                        dataIndex: 'rawMaterialText',
+                        scopedSlots: {customRender: 'factoryText'}
+                    },
+                    {
+                        title: '物料数量',
+                        align: 'center',
+                        dataIndex: 'backup1',
                         scopedSlots: {customRender: 'factoryText'}
                     },
                     {
@@ -215,7 +227,7 @@
                     {
                         title: '操作',
                         dataIndex: 'action',
-                        width: 140,
+                        width: 50,
                         align: 'center',
                         scopedSlots: {customRender: 'action'}
                     }
