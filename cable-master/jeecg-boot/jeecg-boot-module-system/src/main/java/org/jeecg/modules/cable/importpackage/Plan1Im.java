@@ -19,6 +19,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 public class Plan1Im implements Serializable {
+    private static final long serialVersionUID = -6285711128150523778L;
 
     // 主键id
     // @Excel(name = "序号", width = 15)
@@ -100,10 +101,6 @@ public class Plan1Im implements Serializable {
     @Excel(name = "实际入库数量", width = 15)
     private BigDecimal deliverNum;
 
-    /*入库日期*/
-    @Excel(name = "入库日期", width = 25, format = "yyyy/MM/dd")           // ---------------------------------------
-    private Date deliverTime;
-
     /*入库凭证*/
     @Excel(name = "入库凭证", width = 15)
     private String deliverVoucher;
@@ -115,10 +112,6 @@ public class Plan1Im implements Serializable {
     /*项目名称*/
     @Excel(name = "项目名称", width = 15)
     private String projectName;
-
-    // 导入计划类型
-    @Excel(name = "项目类型", width = 15)
-    private String planType;
 
     /*资产编码*/
     @Excel(name = "资产编码", width = 15)
@@ -161,11 +154,11 @@ public class Plan1Im implements Serializable {
     private String deliveryCreateBy;
 
     /*入库交接单创建日期*/
-    @Excel(name = "入库交接单创建日期", width = 25, format = "yyyy/MM/dd")           // ---------------------------------------
+    @Excel(name = "入库交接单创建日期", width = 25, format = "yyyy/MM/dd")
     private Date deliveryCreateTime;
 
     /*入库交接单接收日期*/
-    @Excel(name = "入库交接单接收日期", width = 25, format = "yyyy/MM/dd")           // ---------------------------------------
+    @Excel(name = "入库交接单接收日期", width = 25, format = "yyyy/MM/dd")
     private Date deliveryReceiveTime;
 
     /*项目（管理）单位联系人*/
@@ -213,46 +206,59 @@ public class Plan1Im implements Serializable {
     private String rateFormation;
 
     /*计划报废完成时间*/
-    @Excel(name = "计划报废完成时间", width = 25, format = "yyyy/MM/dd")            // ---------------------------------------
+    @Excel(name = "计划报废完成时间", width = 25, format = "yyyy/MM/dd")
     private Date plansCompleteTime;
 
-        // 项目类型
+    // 项目类型
+    @Excel(name = "项目类型", width = 15)
     private String projectType;
+
+    // 导入计划类型
+    @Excel(name = "项目类型", width = 15)
+    private String planType;
 
     // 入库数量
     @Excel(name = "入库数量", width = 15)
-    private String stockNum;
+    private BigDecimal stockNum;
+
+    /*入库日期*/
+    @Excel(name = "入库日期", width = 25, format = "yyyy/MM/dd")
+    private Date deliverTime;
 
     // 库存点
-    @Excel(name = "库存点", width = 15)
-    private String inventoryPoint;
+    @Excel(name = "中间点", width = 15)
+    private String warehouseName;
 
     // 出库数量
     @Excel(name = "出库数量", width = 15)
     private BigDecimal receivingNum;
 
+    // 出库日期
+    @Excel(name = "出库日期", width = 25, format = "yyyy/MM/dd")
+    private Date receivingTime;
+
     // 终点仓
     @Excel(name = "终点仓", width = 15)
     private String terminalBin;
 
-    // 出库日期
-    @Excel(name = "出库日期", width = 25, format = "yyyy/MM/dd")            // ---------------------------------------
-    private Date receivingTime;
+    // 反馈日期
+    @Excel(name = "反馈日期", width = 25, format = "yyyy/MM/dd")
+    private Date feedbackDate;
 
-    // 说明
-    @Excel(name = "说明", width = 15)
+    // 补充说明
+    @Excel(name = "补充说明", width = 15)
     private String explain;
 
     /*计划完成状态*/
     private String completeState;
 
     /*计划完成开始时间*/
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")         // ---------------------------------------
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateBegin;
 
     /*计划完成结束时间*/
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")         // ---------------------------------------
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateEnd;
 

@@ -52,19 +52,14 @@ import static org.jeecgframework.poi.excel.ExcelExportUtil.exportExcel;
 public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @Autowired
     private IPlan1Service plan1Service;
-
     @Autowired
     private IPlan2Service plan2Service;
-
     @Autowired
     private IPlan3Service plan3Service;
-
     @Autowired
     private IPlan4Service plan4Service;
-
     @Autowired
     private IMaterialService materialService;
-
     @Autowired
     private ISysDictItemService sysDictItemService;
 
@@ -162,8 +157,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     }
 
     /**
-     *  根据ids集合
-     *  实现分页列表查询
+     * 根据ids集合
+     * 实现分页列表查询
      *
      * @return
      */
@@ -171,13 +166,13 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
     @GetMapping(value = "/idslist")
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
 
         List<Plan1> pageList = plan1Service.idsqueryPageList(Arrays.asList(ids.split(",")));
         for (Plan1 plan : pageList) {
             if (!pageList.get(0).getProjectNo().equals(plan.getProjectNo()))
-            return Result.error("工程账号必须一致");
+                return Result.error("工程账号必须一致");
         }
         return Result.ok(pageList);
     }
@@ -266,18 +261,16 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     }
 
     /**
-     * 导出excel
-     * bai
-     * 2020/5/28
+     * 导出 plan1
+     * bai 2020/9/7
+     *
+     * @return 要导出计划1数据
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan1Im plan1Im,
-                                  @RequestParam(name = "explain", required = false) String explain) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String title = "计划列表";
+    public ModelAndView exportXls(Plan1Im plan1Im, @RequestParam(name = "explain", required = false) String explain) {
         // 获取导出数据集
         List<Plan1Im> list = plan1Service.exportPlan1(plan1Im, explain);
-        list.forEach(obj -> {
+        /*list.forEach(obj -> {
             String inventoryPoint = obj.getInventoryPoint();
             if (null != inventoryPoint && inventoryPoint.length() > 0) {
                 String[] s = inventoryPoint.split("_");
@@ -288,10 +281,10 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
                 String[] s = terminalBin.split("_");
                 obj.setTerminalBin(s[1]);
             }
-        });
+        });*/
         // AutoPoi 导出 excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下/
+        /*mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下/*/
         mv.addObject(NormalExcelConstants.CLASS, Plan1Im.class);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams());
         mv.addObject(NormalExcelConstants.DATA_LIST, list);
@@ -314,7 +307,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if(null != sysUser) {
+        if (null != sysUser) {
             material.setCreateBy(sysUser.getUsername());
             material.setUpdateBy(sysUser.getUsername());
         }
@@ -395,7 +388,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         if (sendOrdersVo.getPlanType().equals("1")) {
             Plan1 plan1 = plan1Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan1.setUpdateBy(sysUser.getUsername());
+                plan1.setUpdateBy(sysUser.getUsername());
             plan1.setUpdateTime(new Date());
             plan1.setTheContact(sendOrdersVo.getLinkman());
             plan1.setThePhone(sendOrdersVo.getPhone());
@@ -406,7 +399,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("2")) {
             Plan2 plan2 = plan2Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan2.setUpdateBy(sysUser.getUsername());
+                plan2.setUpdateBy(sysUser.getUsername());
             plan2.setUpdateTime(new Date());
             plan2.setEquipmentOwners(sendOrdersVo.getLinkman());
 
@@ -416,7 +409,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("3")) {
             Plan3 plan3 = plan3Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan3.setUpdateBy(sysUser.getUsername());
+                plan3.setUpdateBy(sysUser.getUsername());
             plan3.setUpdateTime(new Date());
             plan3.setFieldConsignee(sendOrdersVo.getLinkman());
             plan3.setCPhone(sendOrdersVo.getLinkman());
@@ -427,7 +420,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         } else if (sendOrdersVo.getPlanType().equals("4")) {
             Plan4 plan4 = plan4Service.getById(sendOrdersVo.getPlanId());
             if (null != sysUser)
-            plan4.setUpdateBy(sysUser.getUsername());
+                plan4.setUpdateBy(sysUser.getUsername());
             plan4.setUpdateTime(new Date());
             plan4.setTeamContact(sendOrdersVo.getLinkman());
 
@@ -477,19 +470,17 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
 
         Plan1 plan1 = new Plan1();
         plan1.setBackup1("1");
-        plan1Service.update(plan1,new QueryWrapper<Plan1>().eq("project_no",projectNo));
+        plan1Service.update(plan1, new QueryWrapper<Plan1>().eq("project_no", projectNo));
         Plan2 plan2 = new Plan2();
         plan2.setBackup1("1");
-        plan2Service.update(plan2,new QueryWrapper<Plan2>().eq("project_no",projectNo));
+        plan2Service.update(plan2, new QueryWrapper<Plan2>().eq("project_no", projectNo));
         Plan3 plan3 = new Plan3();
         plan1.setBackup1("1");
-        plan3Service.update(plan3,new QueryWrapper<Plan3>().eq("project_no",projectNo));
+        plan3Service.update(plan3, new QueryWrapper<Plan3>().eq("project_no", projectNo));
         Plan4 plan4 = new Plan4();
         plan4.setBackup1("1");
-        plan4Service.update(plan4,new QueryWrapper<Plan4>().eq("project_no",projectNo));
+        plan4Service.update(plan4, new QueryWrapper<Plan4>().eq("project_no", projectNo));
 
         return Result.ok("结算成功!");
     }
-
-
 }

@@ -283,7 +283,9 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     }
                 }
             }
-            // 设置反馈说明
+            // 设置反馈日期
+            p.setFeedbackDate(new Date());
+            // 设置补充说明
             p.setExplain(explain);
         }
         return list;

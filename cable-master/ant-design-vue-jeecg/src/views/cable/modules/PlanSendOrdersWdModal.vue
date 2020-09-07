@@ -35,9 +35,11 @@
                   <j-ellipsis :value="text" :length="10"/>
                 </span>
                 <span slot="action" slot-scope="text, record">
-                <a-popconfirm title="确定删除吗?" @confirm="() => sdhandleDelete(record)">
-                  <a>删除</a>
-                </a-popconfirm>
+                  <a-popconfirm title="确定删除吗?" @confirm="() => sdhandleDelete(record)">
+                    <a>删除</a>
+                  </a-popconfirm>
+                  <a-divider type="vertical"/>
+                  <a @click="handleEdit(record)">修改</a>
                 </span>
 
                 <span slot="receiptPhotos" slot-scope="text,record">
@@ -68,9 +70,7 @@
               </a-table>
             </div>
           </div>
-
         </div>
-
       </a-form>
     </a-spin>
 
@@ -101,7 +101,7 @@
       JDate,
       JEllipsis,
       PlanAccomplishModal,
-      PlanTheSameDayDeModal
+      PlanTheSameDayDeModal,
     },
     data () {
       return {
@@ -240,6 +240,22 @@
       this.cloer()
     },
     methods: {
+      handleEdit (record) {
+        console.log('从计划?开始进入修改完单记录页面', this.paln)
+        console.log('完单记录修改功能', record)
+        switch (this.paln) {
+        case 1:
+          break
+        case 2:
+          break
+        case 3:
+          break
+        case 4:
+          break
+        default:
+          break
+        }
+      },
       /**
        * 派单类型 change 方法[待定功能]============
        * @Param value 派单类型[0出库/1入库]

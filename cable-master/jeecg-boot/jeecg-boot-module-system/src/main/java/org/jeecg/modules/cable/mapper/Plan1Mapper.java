@@ -53,11 +53,10 @@ public interface Plan1Mapper extends BaseMapper<Plan1> {
     List<StorageLocationListVo> StorageLocationListVoPage(@Param("storageLocationListVo")StorageLocationListVo storageLocationListVo, @Param("page") Page<StorageLocationListVo> page);
 
     /**
-     * 导出计划表1数据
-     * bai
-     * 2020/5/27
+     * 导出 plan1
+     * bai 2020/9/7
      *
-     * @return
+     * @return 要导出计划1数据
      */
     List<Plan1Im> exportPlan1(@Param("plan1Im") Plan1Im plan1Im);
 
