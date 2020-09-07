@@ -6,8 +6,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.cable.entity.*;
@@ -25,6 +27,7 @@ import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecg.modules.cable.vo.TaskVo;
 import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
 import org.jeecg.modules.demo.test.vo.JeecgOrderMainPage;
+import org.omg.CORBA.COMM_FAILURE;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,6 +103,7 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * jsonObject 派单信息
      * ids 计划id的集合（字符串类型）
      * liu
+     *
      * @return
      */
     @Transactional
@@ -370,11 +374,13 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * 编辑
      * zhu
      * 2020-08-28
+     *
      * @return
      */
     @AutoLog(value = "派单表-编辑")
     @ApiOperation(value = "派单表-编辑", notes = "派单表-编辑")
     @PutMapping(value = "/edit")
+    @Transactional(rollbackFor = Exception.class)
     public Result<?> edit(@RequestBody SendOrdersVo sendOrdersVo) {
         SendOrders sendOrders = new SendOrders();
         sendOrders.setId(sendOrdersVo.getId());
@@ -520,20 +526,20 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         return Result.ok(list);
     }
 
-    /**
+   /* *//**
      * 完单操作
      *
      * @Author Xm
      * @Date 2020/5/27 10:52
-     */
+     *//*
     @PutMapping(value = "/planedit")
     public Result<?> planedit(@RequestBody JSONObject jsonObject) {
         PlanVo planVo = JSON.parseObject(jsonObject.toJSONString(), PlanVo.class);
         Result<?> planedit = sendOrdersService.planedit(planVo);
-        if(planedit.getCode() == 200) return Result.ok(planedit.getMessage());
-        if(planedit.getCode() == 500) return Result.error(planedit.getMessage());
+        if (planedit.getCode() == 200) return Result.ok(planedit.getMessage());
+        if (planedit.getCode() == 500) return Result.error(planedit.getMessage());
         return Result.ok(planedit);
-    }
+    }*/
 
     /**
      * 派单记录
@@ -585,31 +591,19 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
                                         @RequestParam(name = "planType", required = true) String planType,
                                         @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<SendOrdersVo> page = new Page<>(pageNo, pageSize);
-        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersWD(ids, planType,page);
+        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersWD(ids, planType, page);
         return Result.ok(iPage);
     }
 
-
     /**
      * 通过id删除完单记录
+     * 2020/9/7
      *
-     * @param id
-     * @return
+     * @param sendOrdersVo 要回退的内容数据
+     * @param tableId      要删除的计划表1\2\3\4
      */
-    @Transactional
-    @AutoLog(value = "删除完单记录")
-    @ApiOperation(value = "删除完单记录", notes = "删除完单记录")
-    @DeleteMapping(value = "/wddelete")
-    public Result<?> wdDelete(@RequestParam(name = "id", required = true) String id,@RequestParam(name = "type",required = true) String type) {
-        if(type.equals("出库")){
-            //删除出库完单记录
-            receivingStorageService.removeById(id);
-        }else if(type.equals("入库")){
-            //删除入库完单记录
-            deliverStorageService.removeById(id);
-        }
-        return Result.ok("删除成功!");
+    @PutMapping(value = "/wddelete/{tableId}")
+    public Result<?> wdDelete(@RequestBody SendOrdersVo sendOrdersVo, @PathVariable(name = "tableId") String tableId) {
+        return sendOrdersService.deletelStoragesById(sendOrdersVo.getId(), sendOrdersVo.getPlanType(), sendOrdersVo, tableId);
     }
-
-
 }

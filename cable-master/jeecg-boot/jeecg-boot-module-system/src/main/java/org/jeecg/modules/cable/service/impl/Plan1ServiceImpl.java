@@ -110,7 +110,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     } else {
                         plan1.setAlreadyDeliverStorage(plan1.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())))); // 已入库数
                     }
-                    boolean res = this.updateById(plan1);
+                    boolean res = plan1Service.updateById(plan1);
                     System.err.println("计划1更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {

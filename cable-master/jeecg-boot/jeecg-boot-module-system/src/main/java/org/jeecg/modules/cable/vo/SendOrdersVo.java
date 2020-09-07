@@ -1,6 +1,7 @@
 package org.jeecg.modules.cable.vo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.jeecg.modules.cable.entity.SendOrders;
 import org.jeecg.modules.cable.entity.SendOrdersSubtabulation;
 import org.jeecg.modules.cable.entity.Vehicle;
@@ -19,17 +20,21 @@ import java.util.List;
  * @Date 2020/5/26 15:07
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class SendOrdersVo extends SendOrders implements Serializable {
+    private static final long serialVersionUID = 6837471465767940590L;
 
     /**
      * zhu
      * 2020-08-28
      */
     private String wname;
-    private String storagename;
     private String tasktime;
+    private String storagename;
     private String accomplishnum;
     private String accomplishnumunit;
+    private BigDecimal accomplishVolume;
+    private BigDecimal accomplishWeight;
     private String scenesituation;
     private String phontos;//异常图片（多张）
     private String scenePhotos1;//第一张异常图片
@@ -48,11 +53,6 @@ public class SendOrdersVo extends SendOrders implements Serializable {
      * 物料编码
      */
     private String serial;
-
-    /**
-     * 车牌号集合
-     */
-    private List<String> license;
 
     /**
      * 车牌号
@@ -129,4 +129,9 @@ public class SendOrdersVo extends SendOrders implements Serializable {
      * 人员 id 集合
      */
     private List<String> realname;
+
+    /**
+     * 车牌号集合
+     */
+    private List<String> license;
 }

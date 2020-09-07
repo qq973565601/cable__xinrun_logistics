@@ -40,7 +40,7 @@
                 </a-popconfirm>
                 </span>
 
-              <span slot="receiptPhotos" slot-scope="text,record">
+                <span slot="receiptPhotos" slot-scope="text,record">
                 <template v-if="record.receiptPhotos!=undefined&&record.receiptPhotos!=null&&record.receiptPhotos!=''">
                   <a @click="() => getUrlNewView(record.receiptPhotos)">点我查看</a>
                 </template>
@@ -90,7 +90,7 @@
   import JEllipsis from '@/components/jeecg/JEllipsis'
   import pick from 'lodash.pick'
   import JDate from '@/components/jeecg/JDate'
-  import { httpAction, getAction, deleteAction } from '@/api/manage'
+  import { httpAction, getAction, deleteAction, } from '@/api/manage'
   import PlanAccomplishModal from './PlanAccomplishModal'
   import '@/assets/less/TableExpand.less'
   import PlanTheSameDayDeModal from './PlanTheSameDayDeModal'
@@ -147,13 +147,13 @@
             title: '项目名称',
             align: 'center',
             dataIndex: 'projectName',
-            scopedSlots: {customRender: 'factoryText'}
+            scopedSlots: { customRender: 'factoryText' }
           },
           {
             title: '物料描述',
             align: 'center',
             dataIndex: 'rawMaterialText',
-            scopedSlots: {customRender: 'factoryText'}
+            scopedSlots: { customRender: 'factoryText' }
           },
           {
             title: '完单数量',
@@ -176,19 +176,19 @@
             align: 'center',
             dataIndex: 'scenesituation',
             customRender: (value, row, index) => {
-              var y=''
-              if(value=='0'){
-                y='正常'
-              }else {
-                y='异常'
+              var y = ''
+              if (value == '0') {
+                y = '正常'
+              } else {
+                y = '异常'
               }
               return y
             }
           },
           {
-              title: '异常原因',
-              align: 'center',
-              dataIndex: 'anomalousCause'
+            title: '异常原因',
+            align: 'center',
+            dataIndex: 'anomalousCause'
           },
           {
             title: '异常照片1',
@@ -204,11 +204,11 @@
             width: 200
           },
           {
-              title: '操作',
-              dataIndex: 'action',
-              width: 50,
-              align: 'center',
-              scopedSlots: {customRender: 'action'}
+            title: '操作',
+            dataIndex: 'action',
+            width: 50,
+            align: 'center',
+            scopedSlots: { customRender: 'action' }
           }
         ],
         form: this.$form.createForm(this),
@@ -224,7 +224,7 @@
           wddelete: '/cable/sendOrders/wddelete'
         },
         //查询参数
-        ids:'',
+        ids: '',
         paln: '',
         data: {},
         vehicles: {},
@@ -255,7 +255,7 @@
           this.sendOrderType = false
         }
       },
-      getUrlNewView(textUrl) {
+      getUrlNewView (textUrl) {
         let config = window._CONFIG['domianURL'] + '/sys/common/view'
         window.open(config + '/' + textUrl, '_blank')
       },
@@ -275,7 +275,7 @@
           this.isorter.column = sorter.field
           this.isorter.order = 'ascend' == sorter.order ? 'asc' : 'desc'
         }
-        this.ipagination = pagination;
+        this.ipagination = pagination
         this.dataas()
       },
       handleEdits (record) {
@@ -283,12 +283,15 @@
         this.$refs.planTheSameDayDeModal.title = '修改'
       },
       sdhandleDelete: function (record) {
-        var that = this
-        let param  = {
-          id:record.id,
-          type:record.planType
-        }
-        deleteAction(that.url.wddelete, param ).then((res) => {
+        let that = this
+        /*let param = {
+          SendOrdersVo: record,
+          id: record.id,
+          type: record.planType,
+          tableId: this.paln
+        }*/
+        console.log('完单记录删除操作', record)
+        httpAction('/cable/sendOrders/wddelete/' + this.paln, record, 'put').then((res) => {
           if (res.success) {
             that.$message.success(res.message)
             that.dataas(that.vadjsoifjweoi)
@@ -300,10 +303,10 @@
       },
       dataas (ids, paln) {
         let param = {
-          ids:this.ids,
-          planType:this.paln,
-          pageNo:this.ipagination.current,
-          pageSize:this.ipagination.pageSize,
+          ids: this.ids,
+          planType: this.paln,
+          pageNo: this.ipagination.current,
+          pageSize: this.ipagination.pageSize,
         }
         console.log('参数this.ids', this.ids)
         console.log('参数this.paln', this.paln)
@@ -317,7 +320,7 @@
         })
       },
       dakpd (ids, paln) {
-        console.log("打开完单记录页面：：",ids,paln)
+        console.log('打开完单记录页面：：', ids, paln)
         this.ids = ids
         this.paln = paln
         this.dataas(ids, paln)
