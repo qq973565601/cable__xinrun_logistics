@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -278,4 +279,20 @@ public class Plan3 implements Serializable {
     @Excel(name = "backup5", width = 15)
     @ApiModelProperty(value = "backup5")
     private java.lang.String backup5;
+
+    /**
+     * 导出时选择计划开始日期
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(exist = false)  //exist = false 是否为数据库表字段
+    private Date beginTime;
+
+    /**
+     * 导出时选择计划结束日期
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(exist = false)  //exist = false  是否为数据库表字段
+    private Date endTime;
 }

@@ -1,10 +1,13 @@
 package org.jeecg.modules.cable.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -244,4 +247,20 @@ public class Plan2 implements Serializable {
     @Excel(name = "backup5", width = 15)
     @ApiModelProperty(value = "backup5")
     private java.lang.String backup5;
+
+    /**
+     * 导出时选择计划开始日期
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(exist = false)  //exist = false 是否为数据库表字段
+    private Date beginTime;
+
+    /**
+     * 导出时选择计划结束日期
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @TableField(exist = false)  //exist = false  是否为数据库表字段
+    private Date endTime;
 }

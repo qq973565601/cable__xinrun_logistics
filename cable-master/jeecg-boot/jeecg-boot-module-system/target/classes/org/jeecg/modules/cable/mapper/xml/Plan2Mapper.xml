@@ -118,6 +118,12 @@
             <if test="null != plan2.completeState">
                 AND p.complete_state = #{plan2.completeState}
             </if>
+            <if test="null != plan2.beginTime">
+                AND p.create_time &gt;= #{plan2.beginTime}
+            </if>
+            <if test="null != plan2.endTime">
+                AND p.create_time &lt;= #{plan2.endTime}
+            </if>
         </where>
         GROUP BY p.id
     </select>

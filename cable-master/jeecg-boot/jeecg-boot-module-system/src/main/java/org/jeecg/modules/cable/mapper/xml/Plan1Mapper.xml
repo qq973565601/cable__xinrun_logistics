@@ -181,6 +181,12 @@
             <if test="null != plan1Im.completeState">
                 AND p.complete_state = #{plan1Im.completeState}
             </if>
+            <if test="null != plan1Im.beginTime">
+                AND p.create_time &gt;= #{plan1Im.beginTime}
+            </if>
+            <if test="null != plan1Im.endTime">
+                AND p.create_time &lt;= #{plan1Im.endTime}
+            </if>
         </where>
         GROUP BY
         p.id

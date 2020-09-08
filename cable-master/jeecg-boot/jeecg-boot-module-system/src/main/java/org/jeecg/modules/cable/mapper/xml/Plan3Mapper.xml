@@ -119,6 +119,12 @@
             <if test="plan3.completeState != null">
                 AND p.complete_state = #{plan3.completeState}
             </if>
+            <if test="plan3.beginTime != null">
+                AND p.create_time &gt;= #{plan3.beginTime}
+            </if>
+            <if test="plan3.endTime != null">
+                AND p.create_time &lt;= #{plan3.endTime}
+            </if>
         </where>
         ORDER BY p.id
     </select>

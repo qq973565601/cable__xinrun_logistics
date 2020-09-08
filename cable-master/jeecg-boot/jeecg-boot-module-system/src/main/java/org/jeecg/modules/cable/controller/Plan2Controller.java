@@ -152,8 +152,8 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
 
 
     /**
-     *  根据ids集合
-     *  实现分页列表查询
+     * 根据ids集合
+     * 实现分页列表查询
      *
      * @return
      */
@@ -162,7 +162,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @GetMapping(value = "/idslist")
     public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids) {
         List<Plan1> list = new ArrayList<>();
-        Plan1 plan ;
+        Plan1 plan;
         List<Plan2> pageList = plan2Service.idsqueryPageList2(Arrays.asList(ids.split(",")));
         for (int i = 0; i < pageList.size(); i++) {
             if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
