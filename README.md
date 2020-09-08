@@ -1,4 +1,4 @@
-# cable_昕润物流
+#_昕润物流
 
 #### 介绍
 基于Jeecg-boot开发的物流仓储系统，涵盖模块：用户管理、车辆管理、计划管理、仓库管理、库存管理、财务管理、统计报表、系统管理等模块组成
@@ -16,10 +16,36 @@
 - 其他技术：Druid(数据库连接池)、Logback(日志工具)、poi(Excel工具)、Quartz(定时任务)、lombok(简化代码)
 - 项目构建：Maven、JDK1.8+
 
-#### 启动教程
-- 查看 jeecg-boot 官网的文档说明：根据步骤安装所需的环境依赖，然后启动项目即可。
-- 启动项目分为前端和后端
+#### 项目所需软件下载路径及jeecg文档说明
 - [JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
+
+#### 新手必看启动教学
+##### 1. 前端项目可以使用 WebStorm 开发工具打开,后端项目可以使用 IDEA 开发工具打开,也可以使用 IDEA 一个工具来进行开发。
+##### 2. 进入 IDEA 工具后设置 Maven 依赖下载设置
+更改自己的 Maven 安装路径，用来下载项目所需的 jar 包
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0908/162303_6d442bd7_5459645.jpeg "2.jpg")
+##### 3. 选择后台项目的启动环境 -> dev[开发环境] 或者 prod[生产环境]
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0908/162540_75a31d7f_5459645.png "3.png")
+###### 3.0 然后更改对应开发环境的配置文件，如 application-dev.yml 文件
+###### 3.1 配置项目启动端口号
+![](https://images.gitee.com/uploads/images/2020/0908/163026_f58e544f_5459645.png "屏幕截图.png")
+###### 3.2 配置数据库连接信息
+![](https://images.gitee.com/uploads/images/2020/0908/163137_81f31777_5459645.png "屏幕截图.png")
+###### 3.3 配置 redis 连接信息
+![](https://images.gitee.com/uploads/images/2020/0908/163257_ec9d7035_5459645.png "屏幕截图.png")
+###### 3.4 配置 jeecg 专用配置文件上传路径
+![](https://images.gitee.com/uploads/images/2020/0908/163408_f590b880_5459645.png "屏幕截图.png")
+##### 4. 找到 JeecgApplication 启动类启动项目即可
+##### 5. 通过访问 `http://localhost:8080/jeecg-boot/` 可以查看后台 API 接口文档
+![](https://images.gitee.com/uploads/images/2020/0908/164142_770af197_5459645.png "屏幕截图.png")
+##### 6. 前端项目使用 IDEA 打开后,通过执行 `cnpm install` 命令来下载前端依赖
+##### 7. 下载成功后目录下会多出一个 node_modules 的包,这个就是管理前端依赖的包
+![](https://images.gitee.com/uploads/images/2020/0908/164349_05bb9650_5459645.png "屏幕截图.png")
+##### 8. 配置 index.html 页面的全局配置 -> 指定后台路径
+![](https://images.gitee.com/uploads/images/2020/0908/164608_ca257c76_5459645.png "屏幕截图.png")
+##### 9. 配置项目根目录下的 vue.config.js 文件，指定后台路径,建立前后端对接
+![](https://images.gitee.com/uploads/images/2020/0908/164711_39ac879c_5459645.png "屏幕截图.png")
+##### 10. 最后配置完成后，需要前端后端同时启动才能访问 `localhost:3000` 
 
 #### 项目截图
 1. 登录界面
