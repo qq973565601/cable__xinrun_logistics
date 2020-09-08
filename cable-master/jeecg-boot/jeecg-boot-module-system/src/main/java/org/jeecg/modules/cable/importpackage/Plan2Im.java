@@ -23,16 +23,12 @@ import java.util.Date;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 public class Plan2Im implements Serializable {
+    private static final long serialVersionUID = -1425320488905440913L;
     /**
      * 计划表2id
      */
     @Excel(name = "序号", width = 15)
     private Integer id;
-
-    /**计划类型(字典 备品\临措)*/
-//    @Excel(name = "计划类型", width = 15)
-//    private String planType;
-
     /**
      * 站点（老）
      * 工程名称（新）
@@ -43,9 +39,8 @@ public class Plan2Im implements Serializable {
     private String site;
     /**
      * 设备名（老）
-     * 物料描述（新）
      */
-    @Excel(name = "物料描述", width = 15)
+    @Excel(name = "设备名", width = 15)
     private String equipmentName;
     /**
      * 实施工程项目编号（老）
@@ -128,53 +123,34 @@ public class Plan2Im implements Serializable {
      */
     @Excel(name = "实物已退役但未处置", width = 15)
     private String disposed;
-    /**
-     * 入库单号（老）
-     * 物料代码（新）
-     */
+    /*@Excel(name = "入库单号", width = 15)
+    private String receiptNo;*/
     @Excel(name = "物料代码", width = 15)
-    private String receiptNo;
-
-    //    @Excel(name = "入库单号", width = 15)
-////    private String receiptNo;
-    @Excel(name = "入库日期", width = 15)
+    private String backup3;
+    @Excel(name = "物料描述", width = 15)
+    private String backup2;
+    @Excel(name = "入库日期", width = 15, format = "yyyy/MM/dd")
     private String deliverTime;
     @Excel(name = "入库数量", width = 15)
     private String deliverNum;
-    @Excel(name = "入库仓库", width = 15)
-    private String name;
+    /*@Excel(name = "入库仓库", width = 15)
+    private String name;*/
+    @Excel(name = "出库日期", width = 15,  format = "yyyy/MM/dd")
+    private String receivingTime;
     @Excel(name = "出库数量", width = 15)
     private String receivingNum;
-    @Excel(name = "出库日期", width = 15)
-    private String receivingTime;
-    //
-    @Excel(name = "终点仓库", width = 15)
+    /*@Excel(name = "终点仓库", width = 15)
     private String endWarehouse;
     @Excel(name = "施工队", width = 15)
     private String team;
-
     @Excel(name = "联系人", width = 15)
     private String contacts;
     @Excel(name = "联系电话", width = 15)
-    private String contactsPhone;
-
-    //
+    private String contactsPhone;*/
+    @Excel(name = "情况说明", width = 15)
+    private String annotation;
     @Excel(name = "反馈日期", width = 15, format = "yyyy-MM-dd")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date feedbackDateTime;
-    @Excel(name = "情况说明", width = 15)
-    private String annotation;
-
-
-    /**
-     * liu
-     * 8-25
-     * 客户备品导入操作时，提供物料代码，物料描述
-     */
-    @Excel(name = "物料描述", width = 15)
-    private String backup2;
-    @Excel(name = "物料代码", width = 15)
-    private String backup3;
-
 }

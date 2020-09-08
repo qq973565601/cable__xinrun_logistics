@@ -53,13 +53,10 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @Autowired
     private IPlan2Service plan2Service;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Autowired
     private IMaterialService materialService;
-
     @Autowired
     private ISysDictItemService sysDictItemService;
 
@@ -267,20 +264,18 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
 
     /**
      * 导出excel
-     * bai
-     * 2020/5/29
+     * bai 2020/9/7
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan2 plan2,
-                                  @RequestParam(name = "explain", required = false) String explain) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String title = "备品计划";
+    public ModelAndView exportXls(Plan2 plan2, @RequestParam(name = "explain", required = false) String explain) {
+        /*LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String title = "备品计划";*/
         // 获取导出数据
         List<Plan2Im> list = plan2Service.exportPlan2(plan2, explain);
         // 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         //此处设置的filename无效 ,前端会重更新设置一下
-        mv.addObject(NormalExcelConstants.FILE_NAME, title);
+        /*mv.addObject(NormalExcelConstants.FILE_NAME, title);*/
         mv.addObject(NormalExcelConstants.CLASS, Plan2Im.class);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams());
         mv.addObject(NormalExcelConstants.DATA_LIST, list);
@@ -376,5 +371,4 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         List<SysUser> list = sysUserService.list(queryWrapper);
         return Result.ok(list);
     }
-
 }

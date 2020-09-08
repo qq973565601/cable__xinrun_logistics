@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class SecurityToolsTest {
 
@@ -62,5 +65,44 @@ public class SecurityToolsTest {
         //解密报文data为解密报文
         //sucess 为验签成功失败标志 true代码验签成功，false代表失败
         System.out.println(new JSONObject(securityResp).toStringPretty());
+    }
+
+    /**
+     * CompletableFuture 异步回调测试
+     */
+    @Test
+    public void test01() throws ExecutionException, InterruptedException {
+        // 无返回值的 runAsync 异步回调
+        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName() + "runAsync->Void");
+        });
+        System.out.println("111");
+        completableFuture.get();
+    }
+
+    /**
+     * CompletableFuture 异步回调测试2
+     */
+    @Test
+    public void test02() throws ExecutionException, InterruptedException {
+        // 有返回值的 supplyAsync 异步回调
+        CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "supplyAsync->Integer");
+            int i = 10 / 0;
+            return 1024;
+        });
+
+        System.out.println(completableFuture.whenComplete((u, t) -> {
+            System.out.println("u->" + u);  // 正常结果
+            System.out.println("t->" + t);  // 错误结果 java.lang.ArithmeticException: / by zero
+        }).exceptionally((e) -> {
+            System.out.println(e.getMessage());
+            return 404; // 能够获取到异常情况的值
+        }).get()); // 能够获取到返回值
     }
 }

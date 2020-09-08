@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @Description: 计划表2
  * @Author: jeecg-boot
- * @Date:   2020-05-22
+ * @Date: 2020-05-22
  * @Version: V1.0
  */
 public interface IPlan2Service extends IService<Plan2> {
@@ -23,7 +23,7 @@ public interface IPlan2Service extends IService<Plan2> {
      * 计划2合并完单
      * 2020/8/28 bai
      *
-     * @param ids          批量完单的计划 id集合
+     * @param ids               批量完单的计划 id集合
      * @param operatorSchema    完单类型[0:出库\1:入库]
      * @param receiptNo         交接单号
      * @param receiptPhotos     回单照片
@@ -54,23 +54,23 @@ public interface IPlan2Service extends IService<Plan2> {
     /**
      * 根据ids集合条件查询
      *
-     * @param ids
-     *  liu
+     * @param ids liu
      * @Date 2020/7/21
      */
-    List<Plan2> idsqueryPageList2(List<String> ids );
+    List<Plan2> idsqueryPageList2(List<String> ids);
+
     /**
      * 分页展示计划表2数据
-     *  bai
-     *  2020/5/29
+     * bai
+     * 2020/5/29
+     *
      * @return
      */
     IPage<Plan2> pageList(Plan2 plan2, Page<Plan2> page);
+
     /**
-     * 导出 plan2
-     * bai
-     * 2020/5/27
-     * @return
+     * 导出excel
+     * bai 2020/9/7
      */
     List<Plan2Im> exportPlan2(Plan2 plan2, String explain);
 }
