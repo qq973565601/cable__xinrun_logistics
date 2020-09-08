@@ -147,7 +147,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         List<Plan1> list = new ArrayList<>();
-        Plan1 plan ;
+        Plan1 plan;
         List<Plan3> pageList = plan3Service.idsqueryPageList3(Arrays.asList(ids.split(",")));
         for (int i = 0; i < pageList.size(); i++) {
             if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
@@ -248,21 +248,17 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
 
     /**
      * 导出excel
-     * bai
-     * 2020/5/28
-     *
-     * @return
+     * bai 2020/9/8
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(Plan3 plan3,
-                                  @RequestParam(name = "explain", required = false) String explain) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String title = "新品/临措";
+    public ModelAndView exportXls(Plan3 plan3, @RequestParam(name = "explain", required = false) String explain) {
+        // LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        // String title = "新品/临措";
         // 获取导出数据集
         List<Plan3Im> list = plan3Service.exportPlan3(plan3, explain);
         // 导出 excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
+        // mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.CLASS, Plan3Im.class);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams());
         mv.addObject(NormalExcelConstants.DATA_LIST, list);

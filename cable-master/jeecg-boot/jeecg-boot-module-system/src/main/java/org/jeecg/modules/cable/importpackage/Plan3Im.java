@@ -19,6 +19,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 public class Plan3Im implements Serializable {
+    private static final long serialVersionUID = 3104282117205546755L;
 
     // 计划表3id
     @Excel(name = "序号", width = 15)
@@ -88,10 +89,6 @@ public class Plan3Im implements Serializable {
     @Excel(name = "送货(施工)地点", width = 15)
     private String address;
 
-    // 物资调配中心反馈意见(物资供应公司填写
-    @Excel(name = "物资调配中心反馈意见(物资供应公司填写)", width = 15)
-    private String feedback;
-
     // 具体施工日期
     @Excel(name = "具体施工日期", width = 25, format = "yyyy/MM/dd")
     private Date constructionTime;
@@ -100,13 +97,17 @@ public class Plan3Im implements Serializable {
     @Excel(name = "具体到货日期", width = 25, format = "yyyy/MM/dd")
     private Date dateOfArrival;
 
-    // 要求开始送货日期
-    @Excel(name = "要求开始送货日期", width = 25, format = "yyyy/MM/dd")
-    private Date startTime;
-
     // 要求最终到货日期
     @Excel(name = "要求最终到货日期", width = 25, format = "yyyy/MM/dd")
     private Date stopTime;
+
+    // 物资调配中心反馈意见(物资供应公司填写
+    @Excel(name = "物资调配中心反馈意见(物资供应公司填写)", width = 15)
+    private String feedback;
+
+    // 要求开始送货日期
+    /*@Excel(name = "要求开始送货日期", width = 25, format = "yyyy/MM/dd")
+    private Date startTime;*/
 
     // 备注
     @Excel(name = "备注", width = 15)
@@ -125,10 +126,10 @@ public class Plan3Im implements Serializable {
     private String mainContractor;
 
     // 发出日期
-    @Excel(name = "发出日期", width = 25, format = "yyyy/MM/dd")
+    /*@Excel(name = "发出日期", width = 25, format = "yyyy/MM/dd")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date receivingTime2;
+    private Date receivingTime2;*/
 
     // 入库日期
     @Excel(name = "入库日期", width = 25, format = "yyyy/MM/dd")
@@ -141,12 +142,8 @@ public class Plan3Im implements Serializable {
     private BigDecimal deliverNum;
 
     // 库位
-    @Excel(name = "库位名称", width = 15)
-    private String storageLocationName;
-
-    // 出库数量
-    @Excel(name = "出库数量", width = 15)
-    private BigDecimal receivingNum;
+    /*@Excel(name = "库位名称", width = 15)
+    private String storageLocationName;*/
 
     // 出库日期
     @Excel(name = "出库日期", width = 25, format = "yyyy/MM/dd")
@@ -154,12 +151,24 @@ public class Plan3Im implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date receivingTime;
 
-    // 施工队
+    // 出库数量
+    @Excel(name = "出库数量", width = 15)
+    private BigDecimal receivingNum;
+
+    /*// 施工队
     @Excel(name = "施工队", width = 15)
     private String team;
 
     // 备注
     @Excel(name = "备注", width = 15)
-    private String note2;
+    private String note2;*/
+
+    @Excel(name = "情况说明", width = 15)
+    private String annotation;
+
+    @Excel(name = "反馈日期", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date feedbackDateTime;
 }
 

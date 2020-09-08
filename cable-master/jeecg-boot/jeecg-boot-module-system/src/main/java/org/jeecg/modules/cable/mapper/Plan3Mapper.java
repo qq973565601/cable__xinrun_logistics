@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @Description: 计划表3
  * @Author: jeecg-boot
- * @Date:   2020-05-22
+ * @Date: 2020-05-22
  * @Version: V1.0
  */
 public interface Plan3Mapper extends BaseMapper<Plan3> {
@@ -44,11 +44,8 @@ public interface Plan3Mapper extends BaseMapper<Plan3> {
     List<Plan3> pageList(@org.apache.ibatis.annotations.Param("plan3") Plan3 plan3, @org.apache.ibatis.annotations.Param("page") Page<Plan3> page);
 
     /**
-     * 导出计划表3数据
-     * bai
-     * 2020/5/27
-     *
-     * @return
+     * 导出excel
+     * bai 2020/9/8
      */
     List<Plan3Im> exportPlan3(@Param("plan3") Plan3 plan3);
 }

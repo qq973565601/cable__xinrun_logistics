@@ -257,10 +257,10 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
 
     @Override
     public List<Plan3Im> exportPlan3(Plan3 plan3, String explain) {
+        // 单位之间的转换
+        List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
         List<Plan3Im> list = baseMapper.exportPlan3(plan3);
         for (Plan3Im p : list) {
-            // 单位之间的转换
-            List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
             for (SysDictItem dictItem : dictItems) {
                 // 导出时若单位不为空才进行单位转换
                 if (StrUtil.isNotBlank(p.getMeasuringUnit())) {
@@ -270,7 +270,9 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                 }
             }
             // 设置导出反馈说明
-            p.setNote2(explain);
+            p.setAnnotation(explain);
+            // 设置导出返回日期
+            p.setFeedbackDateTime(new Date());
         }
         return list;
     }
