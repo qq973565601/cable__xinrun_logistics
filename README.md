@@ -51,7 +51,7 @@
 1. 登录界面
 ![登录截图](https://images.gitee.com/uploads/images/2020/0628/192351_69d1a279_5459645.jpeg "1.jpg")
 2. 首页
-![首页](https://images.gitee.com/uploads/images/2020/0628/192911_b2a0b33a_5459645.jpeg "2.jpg")
+![首页大数据统计](https://images.gitee.com/uploads/images/2020/0916/184700_11bea32e_5459645.png "屏幕截图.png")
 3. 系统设置 - 可以更改系统主体颜色设置等等
 ![系统设置](https://images.gitee.com/uploads/images/2020/0829/131611_5c8e13e6_5459645.jpeg "系统设置.jpg")
 4. 员工管理模块 
