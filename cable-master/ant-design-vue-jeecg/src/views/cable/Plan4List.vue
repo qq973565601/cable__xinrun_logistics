@@ -43,8 +43,8 @@
                         :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
                 <a-button type="primary" icon="import">导入</a-button>
               </a-upload>
-              <a-button style="margin-left: 8px" type="primary" icon="download"
-                        @click="showExportPlan4Modal">导出</a-button>
+              <!--<a-button style="margin-left: 8px" type="primary" icon="download"
+                        @click="showExportPlan4Modal">导出</a-button>-->
               <a-modal
                 v-model="plan4ExportModal_visible"
                 :width=600 style="margin-top: 150px">
@@ -53,7 +53,11 @@
                   :form="plan4Exportform"
                   :label-col="{ span: 5 }"
                   :wrapper-col="{ span: 12 }">
-                  <a-form-item label="导出反馈说明" style="margin-top: 20px">
+                  <a-form-item
+                    label="起止日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-range-picker @change="onChange" v-model="queryParam.buildTime"/>
+                  </a-form-item>
+                  <a-form-item label="导出反馈说明" style="margin-top: 20px" :labelCol="labelCol" :wrapperCol="wrapperCol">
                     <a-input v-model="queryParam.explain" placeholder="请输入反馈说明" style="width: 370px"></a-input>
                   </a-form-item>
                 </a-form>
@@ -201,14 +205,14 @@
       </a-table>
     </div>
 
-    <plan4-modal ref="modalForm" @ok="modalFormOk"></plan4-modal>
-    <plan-accomplish-modal4 ref="planAccomplishModal4"></plan-accomplish-modal4>  <!-- 计划4完单modal -->
+    <plan4-modal ref="modalForm" @ok="modasFormOk"></plan4-modal>
+    <plan-accomplish-modal4 ref="planAccomplishModal4" @ok="modasFormOk"></plan-accomplish-modal4>  <!-- 计划4完单modal -->
     <plan-send-orders-modal4 ref="planSendOrdersModal4" @ok="modasFormOk"></plan-send-orders-modal4> <!-- 派单 -->
-    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
+    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal" @ok="modasFormOk"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
-    <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
-    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="mergePlan"></merge-plan-model-plan1>
-    <complete-plan4-model ref="CompletePlan4Model" @ok="CompletePlan"></complete-plan4-model>
+    <merge-plan ref="MergePlan" @ok="modasFormOk"></merge-plan>
+    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="modasFormOk"></merge-plan-model-plan1><!-- 合并派单 -->
+    <complete-plan4-model ref="CompletePlan4Model" @ok="modasFormOk"></complete-plan4-model>
     <plan-send-orders-j-l-modal ref="planSendOrdersJLModal" @ok="modasFormOk"></plan-send-orders-j-l-modal><!-- 派单记录 modal -->
     <plan-send-orders-wd-modal ref="planSendOrdersWdModal" @ok="modasFormOk"></plan-send-orders-wd-modal><!-- 完单记录 modal -->
   </a-card>
@@ -445,11 +449,31 @@
         this.$refs.planCompleteStateModal.show(record, 4)
       },
       modasFormOk() {
-        this.loadData(1)
+        this.loadData()
       },
-      TheSameDay() {
-        this.$refs.planSendOrdersTheSameDayModal.theSameDays()
-        this.$refs.planSendOrdersTheSameDayModal.title = ''
+      loadData(arg) {
+        //清空勾选
+        this.selectedRowKeys = []
+        if(!this.url.list){
+          //this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
       showExportPlan4Modal() {
         this.plan4ExportModal_visible = true
@@ -470,7 +494,13 @@
         if (!fileName || typeof fileName != 'string') {
           fileName = '导出文件'
         }
-        let param = { ...this.queryParam }
+        if(this.buildTime[0] === undefined || this.buildTime[0] === "") return this.$message.warning('请选择起始止时间段!')
+        let param = {
+          // ...this.queryParam ,
+          explain : this.queryParam.explain,
+          beginTime: this.buildTime[0],
+          endTime: this.buildTime[1]
+        }
         if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
           param['selections'] = this.selectedRowKeys.join(',')
         }
@@ -547,6 +577,13 @@
         })
       },
       /**
+       * 今日派单
+       */
+      TheSameDay() {
+        this.$refs.planSendOrdersTheSameDayModal.theSameDays()
+        this.$refs.planSendOrdersTheSameDayModal.title = '今日派单'
+      },
+      /**
        * 派单记录
        */
       assignsJL() {
@@ -555,7 +592,7 @@
           return this.$message.warning('请选择查看派单记录的计划!')
         console.log('派单记录4', ids)
         this.$refs.planSendOrdersJLModal.dakpd(ids.toString(), 4)
-        this.$refs.planSendOrdersJLModal.title = ''
+        this.$refs.planSendOrdersJLModal.title = '派单记录'
       },
       /**
        * 完单记录
@@ -566,7 +603,7 @@
           return this.$message.warning('请选择派单项目!')
         console.log('完单记录4', ids)
         this.$refs.planSendOrdersWdModal.dakpd(ids.toString(), 4)
-        this.$refs.planSendOrdersWdModal.title = ''
+        this.$refs.planSendOrdersWdModal.title = '完单记录'
       },
       /**
        * 合并派单

@@ -13,6 +13,8 @@ import org.jeecg.modules.cable.mapper.*;
 import org.jeecg.modules.cable.service.*;
 import org.jeecg.modules.cable.vo.*;
 import org.jeecg.modules.demo.test.mapper.JeecgOrderCustomerMapper;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,8 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
     @Autowired
     private MaterialMapper materialMapper;
     @Autowired
+    private WarehouseMapper warehouseMapper;
+    @Autowired
     private IPlan1Service plan1Service;
     @Autowired
     private IPlan2Service plan2Service;
@@ -67,27 +71,108 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
     private IMaterialService materialService;
     @Autowired
     private IStorageLocationService storageLocationService;
+    @Autowired
+    private ISysUserService sysUserService;
+
 
     @Transactional
     @Override
-    public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrders> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
-        //TODO 当前登陆对象
+    public void MergePlanEdit(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
+        //TODO 当前登陆对象`
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //车辆派单表 关联第一条派单记录 id
         Integer id = null;
 
         //TODO 遍历所有派单信息，进行派单操作
-        for (SendOrders orders : sendOrdersMainPageVoList) {
+        for (SendOrdersVo orders : sendOrdersMainPageVoList) {
             SendOrders sendOrders = new SendOrders();
+            Integer warehouseId = null;
+            Integer storageLocationId = null;
+            if (null != orders.getWname())
+                warehouseId = warehouseMapper.selectOne(new QueryWrapper<Warehouse>().eq("name", orders.getWname())).getId();
+            if (null != orders.getStoragename())
+                storageLocationId = storageLocationMapper.selectOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", orders.getStoragename())).getId();
 
             //TODO 将共有部分派单参数赋值给该计划派单参数
-            BeanUtils.copyProperties(sendOrdersVo, sendOrders);    // sendOrdersVo → sendOrders
+//            BeanUtils.copyProperties(sendOrdersVo, sendOrders);             // sendOrdersVo → sendOrders
+            sendOrders.setOperatorSchema(sendOrdersVo.getOperatorSchema());     //派单类型【出库/入库】
+            sendOrders.setTaskTime(sendOrdersVo.getTaskTime());                 //任务时间
+            sendOrders.setBackup2(sendOrdersVo.getBackup2());                   //任务地址
+            sendOrders.setBackup3(sendOrdersVo.getBackup3());                   //联系人
+            sendOrders.setBackup4(sendOrdersVo.getBackup4());                   //电话
+            sendOrders.setProjectNo(orders.getProjectNo());                     //工程账号
+            sendOrders.setWarehouseId(warehouseId);                             //自家仓库  warehouseId
+            sendOrders.setStorageLocationId(storageLocationId);                 //自家库位  storageLocationId
+            sendOrders.setEndWarehouseId(orders.getEndWarehouseId());           //终点仓库  endWarehouseId
+            sendOrders.setBackup1(orders.getBackup1());                         //派单数量
+            sendOrders.setPlanId(orders.getId());                               //计划id
+            sendOrders.setId(sendOrdersVo.getId());                             //派单id
+            sendOrdersMapper.updateById(sendOrders);
+
+            //TODO 派单成功之后，只获取第一次的派单id
+            if (id == null) id = sendOrdersVo.getId();
+
+            //TODO 更新计划 1 表 的派单状态为“已派单”
+            Plan1 plan1 = new Plan1();
+            plan1.setId(sendOrders.getPlanId());
+            plan1.setSendOrdersState(1);
+            plan1Mapper.updateById(plan1);
+        }
+
+        //TOOD 派单编辑车辆和员工时，先根据派单id删除所有员工和车辆，再进行新增
+        sendOrdersSubtabulationMapper.delete(new QueryWrapper<SendOrdersSubtabulation>().eq("send_orders_id",id));
+
+        //TODO 派单-车辆-员工关系表添加 “车辆” 数据
+        SendOrdersSubtabulation subtabulation = new SendOrdersSubtabulation();
+        subtabulation.setSendOrdersId(id);
+        subtabulation.setTaskTime(sendOrdersVo.getTaskTime());
+        if (vehicleList != null) {
+            for (SendOrdersTaskVo s : vehicleList) {
+                //根据车辆数量，新增车辆派单数据个数
+                for (int i = 0; i < s.getNumber(); i++) {
+                    subtabulation.setDistributionType(0);
+                    subtabulation.setTypeId(s.getLicense());
+                    sendOrdersSubtabulationMapper.insert(subtabulation);
+                }
+            }
+        }
+        if (sendOrdersVo.getRealname() != null) {
+            for (String s : sendOrdersVo.getRealname()) {
+                //TODO 派单-车辆-员工关系表添加 “员工” 数据
+                subtabulation.setDistributionType(1);
+                subtabulation.setTypeId(sysUserService.getOne(new QueryWrapper<SysUser>().eq("realname",s)).getId());
+                sendOrdersSubtabulationMapper.insert(subtabulation);
+            }
+        }
+    }
+
+
+    @Transactional
+    @Override
+    public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
+        //TODO 当前登陆对象`
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //车辆派单表 关联第一条派单记录 id
+        Integer id = null;
+
+        //TODO 遍历所有派单信息，进行派单操作
+        for (SendOrdersVo orders : sendOrdersMainPageVoList) {
+            SendOrders sendOrders = new SendOrders();
+            Integer warehouseId = null;
+            Integer storageLocationId = null;
+            if (null != orders.getWname())
+                warehouseId = warehouseMapper.selectOne(new QueryWrapper<Warehouse>().eq("name", orders.getWname())).getId();
+            if (null != orders.getStoragename())
+                storageLocationId = storageLocationMapper.selectOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", orders.getStoragename())).getId();
+
+            //TODO 将共有部分派单参数赋值给该计划派单参数
+            BeanUtils.copyProperties(sendOrdersVo, sendOrders);              // sendOrdersVo → sendOrders
             sendOrders.setProjectNo(orders.getProjectNo());                 //工程账号
 //            sendOrders.setBackup2(orders.getBackup2());                   //任务地址
 //            sendOrders.setBackup3(orders.getBackup3());                   //联系人
 //            sendOrders.setBackup4(orders.getBackup4());                   //电话
-            sendOrders.setWarehouseId(orders.getWarehouseId());             //自家仓库  warehouseId
-            sendOrders.setStorageLocationId(orders.getStorageLocationId()); //自家库位  storageLocationId
+            sendOrders.setWarehouseId(warehouseId);                         //自家仓库  warehouseId
+            sendOrders.setStorageLocationId(storageLocationId);             //自家库位  storageLocationId
             sendOrders.setEndWarehouseId(orders.getEndWarehouseId());       //终点仓库  endWarehouseId
             sendOrders.setBackup1(orders.getBackup1());                     //派单数量
             sendOrders.setPlanId(orders.getId());                           //计划id
@@ -221,7 +306,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
         return list;
     }
 
-    /*@Transactional
+    @Transactional
     @Override
     public Result<?> planedit(PlanVo planVo) {
         // 完单状态[0:未完单/1:已完单]
@@ -423,13 +508,13 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
             storageLocationMapper.updateById(storageLocation);
             return Result.ok("出库完单成功!");
         }
-    }*/
+    }
 
     @Override
     public IPage<SendOrdersVo> selectSendOrdersController(String ids, String planType, Page<SendOrdersVo> page) {
         List<String> planId = Arrays.asList(ids.split(","));
         List<SendOrdersVo> list = baseMapper.selectSendOrdersController(planId, planType, page);
-        if (list != null) {
+        /*if (list != null) {
             for (SendOrdersVo sendOrdersVo : list) {
                 sendOrdersVo.setLicense(new ArrayList<>());
                 sendOrdersVo.setRealname(new ArrayList<>());
@@ -446,7 +531,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                     }
                 }
             }
-        }
+        }*/
         return page.setRecords(list);
     }
 
@@ -492,6 +577,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
         //删除 派单-车辆-员工关系表 信息
         sendOrdersSubtabulationMapper.delete(new QueryWrapper<SendOrdersSubtabulation>().eq("send_orders_id", id));
     }
+
 
     /*@Transactional
     @Override
@@ -738,7 +824,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 deliverStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan1 plan1 = plan1Service.getOne(new QueryWrapper<Plan1>().eq("id", sendOrdersVo.getPlanId()));
-                plan1.setAlreadyDeliverStorage(plan1.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan1.setAlreadyDeliverStorage(plan1.getAlreadyDeliverStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan1Service.updateById(plan1);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper1 = new QueryWrapper<>();
@@ -750,7 +836,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory = inventoryService.getOne(wrapper1);
                 if (inventory != null) {
                     // 修改库存数量
-                    inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory.setBackup4(inventory.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory);
@@ -772,7 +858,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 deliverStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan2 plan2 = plan2Service.getOne(new QueryWrapper<Plan2>().eq("id", sendOrdersVo.getPlanId()));
-                plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan2Service.updateById(plan2);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper2 = new QueryWrapper<>();
@@ -784,7 +870,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory2 = inventoryService.getOne(wrapper2);
                 if (inventory2 != null) {
                     // 修改库存数量
-                    inventory2.setInventoryQuantity(inventory2.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory2.setInventoryQuantity(inventory2.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory2.setBackup4(inventory2.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory2);
@@ -806,7 +892,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 deliverStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan3 plan3 = plan3Service.getOne(new QueryWrapper<Plan3>().eq("id", sendOrdersVo.getPlanId()));
-                plan3.setAlreadyDeliverStorage(plan3.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan3.setAlreadyDeliverStorage(plan3.getAlreadyDeliverStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan3Service.updateById(plan3);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper3 = new QueryWrapper<>();
@@ -818,7 +904,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory3 = inventoryService.getOne(wrapper3);
                 if (inventory3 != null) {
                     // 修改库存数量
-                    inventory3.setInventoryQuantity(inventory3.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory3.setInventoryQuantity(inventory3.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory3.setBackup4(inventory3.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory3);
@@ -841,7 +927,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 deliverStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan4 plan4 = plan4Service.getOne(new QueryWrapper<Plan4>().eq("id", sendOrdersVo.getPlanId()));
-                plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan4Service.updateById(plan4);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper4 = new QueryWrapper<>();
@@ -855,7 +941,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory4 = inventoryService.getOne(wrapper4);
                 if (inventory4 != null) {
                     // 修改库存数量
-                    inventory4.setInventoryQuantity(inventory4.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory4.setInventoryQuantity(inventory4.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory4.setBackup4(inventory4.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     // 修改库存电缆重量
@@ -896,7 +982,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 receivingStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan1 plan1 = plan1Service.getOne(new QueryWrapper<Plan1>().eq("id", sendOrdersVo.getPlanId()));
-                plan1.setAlreadyReceivingStorage(plan1.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan1.setAlreadyReceivingStorage(plan1.getAlreadyReceivingStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan1Service.updateById(plan1);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper1 = new QueryWrapper<>();
@@ -908,7 +994,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory = inventoryService.getOne(wrapper1);
                 if (inventory != null) {
                     // 修改库存数量
-                    inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory.setBackup4(inventory.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory);
@@ -930,7 +1016,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 receivingStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan2 plan2 = plan2Service.getOne(new QueryWrapper<Plan2>().eq("id", sendOrdersVo.getPlanId()));
-                plan2.setAlreadyReceivingStorage(plan2.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan2.setAlreadyReceivingStorage(plan2.getAlreadyReceivingStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan2Service.updateById(plan2);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper2 = new QueryWrapper<>();
@@ -942,7 +1028,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory2 = inventoryService.getOne(wrapper2);
                 if (inventory2 != null) {
                     // 修改库存数量
-                    inventory2.setInventoryQuantity(inventory2.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory2.setInventoryQuantity(inventory2.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory2.setBackup4(inventory2.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory2);
@@ -964,7 +1050,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 receivingStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan3 plan3 = plan3Service.getOne(new QueryWrapper<Plan3>().eq("id", sendOrdersVo.getPlanId()));
-                plan3.setAlreadyReceivingStorage(plan3.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan3.setAlreadyReceivingStorage(plan3.getAlreadyReceivingStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan3Service.updateById(plan3);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper3 = new QueryWrapper<>();
@@ -976,7 +1062,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory3 = inventoryService.getOne(wrapper3);
                 if (inventory3 != null) {
                     // 修改库存数量
-                    inventory3.setInventoryQuantity(inventory3.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory3.setInventoryQuantity(inventory3.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory3.setBackup4(inventory3.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     inventoryService.updateById(inventory3);
@@ -999,7 +1085,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 receivingStorageService.removeById(id);
                 // 2.将计划中累计的已入库数回退
                 Plan4 plan4 = plan4Service.getOne(new QueryWrapper<Plan4>().eq("id", sendOrdersVo.getPlanId()));
-                plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().subtract(sendOrdersVo.getAccomplishNum()));
                 plan4Service.updateById(plan4);
                 // 3.修改库存中完单的数量
                 QueryWrapper<Inventory> wrapper4 = new QueryWrapper<>();
@@ -1013,7 +1099,7 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 Inventory inventory4 = inventoryService.getOne(wrapper4);
                 if (inventory4 != null) {
                     // 修改库存数量
-                    inventory4.setInventoryQuantity(inventory4.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getAccomplishnum()))));
+                    inventory4.setInventoryQuantity(inventory4.getInventoryQuantity().subtract(sendOrdersVo.getAccomplishNum()));
                     // 修改容积
                     inventory4.setBackup4(inventory4.getBackup4().subtract(sendOrdersVo.getAccomplishVolume()));
                     // 修改库存电缆重量
@@ -1036,4 +1122,5 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
                 break;
         }
     }
+
 }

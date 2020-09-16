@@ -114,8 +114,8 @@
 <script>
 
   import '@/assets/less/TableExpand.less'
-  import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {mixinDevice} from '@/utils/mixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import AFormItem from 'ant-design-vue/es/form/FormItem'
   import ACol from 'ant-design-vue/es/grid/Col'
   import JEllipsis from '../../components/jeecg/JEllipsis'
@@ -128,12 +128,11 @@
       AFormItem,
       JEllipsis
     },
-    data () {
+    data() {
       return {
         description: '物料年度出入台账',
         // 计划年份
         year: '',
-        // 表头
         columns: [
           {
             title: '计划类型',
@@ -361,6 +360,7 @@
             align: 'center',
             children: [
               {
+                // StorageLocationList
                 title: '入库',
                 align: 'center',
                 dataIndex: 'm121'
@@ -395,21 +395,21 @@
           }
         ],
         url: {
-          list: '/cable/material/getAnnualAccountList'
+            list: '/cable/material/getAnnualAccountList'
         }
       }
     },
-    created () {
+    created() {
       // 调用计划年份
-      this.getCurrentYear()
+      this.getCurrentYear();
     },
     methods: {
       // 计划年份
-      getCurrentYear () {
-        let date = new Date()
-        this.year = date.getFullYear()
+      getCurrentYear() {
+        let date = new Date();
+        this.year = date.getFullYear();
         this.queryParam.dateTime = this.year
-        console.log('当前年份', this.year)
+        console.log("当前年份", this.year)
       }
     }
   }

@@ -1,6 +1,7 @@
 package org.jeecg.modules.cable.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -114,7 +115,7 @@ public class SendOrders implements Serializable {
      */
     @Excel(name = "backup1", width = 15)
     @ApiModelProperty(value = "backup1")
-    private Integer backup1;
+    private BigDecimal backup1;
     /**
      * backup2
      * 任务地址

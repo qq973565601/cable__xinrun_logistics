@@ -157,7 +157,6 @@ public class Inventory implements Serializable {
     private java.lang.Integer backup3;
     /**
      * backup4
-     * 容积
      */
     @Excel(name = "backup4", width = 15)
     @ApiModelProperty(value = "backup4")

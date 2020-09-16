@@ -16,6 +16,7 @@ import Print from 'vue-print-nb-jeecg'
 /*import '@babel/polyfill'*/
 import preview from 'vue-photo-preview'
 import 'vue-photo-preview/dist/skin.css'
+import 'lib-flexible/flexible.js'
 
 require('@jeecg/antd-online-beta220')
 require('@jeecg/antd-online-beta220/dist/OnlineForm.css')

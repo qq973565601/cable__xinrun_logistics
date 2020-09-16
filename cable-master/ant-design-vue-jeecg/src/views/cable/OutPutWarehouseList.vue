@@ -12,11 +12,11 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="7" :sm="6">
+          <a-col :md="6" :sm="6">
             <a-form-item label="操作时间">
-              <j-date v-model="queryParam.startTime" placeholder="开始时间"></j-date>
+              <j-date v-model="queryParam.startTime" placeholder="开始时间" style="width: 40%"></j-date>
               <span>——</span>
-              <j-date v-model="queryParam.endTime" placeholder="结束时间"></j-date>
+              <j-date v-model="queryParam.endTime" placeholder="结束时间"style="width: 40%"></j-date>
             </a-form-item>
           </a-col>
 
@@ -228,9 +228,21 @@
             scopedSlots: { customRender: 'factoryText' }
           },
           {
+            title: '终点仓',
+            align: 'center',
+            dataIndex: 'endWarehouseName',
+            scopedSlots: { customRender: 'factoryText' }
+          },
+          {
             title: '交接单号',
             align: 'center',
             dataIndex: 'receiptNo',
+            scopedSlots: { customRender: 'factoryText' }
+          },
+          {
+            title: '情况说明',
+            align: 'center',
+            dataIndex: 'annotation',
             scopedSlots: { customRender: 'factoryText' }
           }
           /*{

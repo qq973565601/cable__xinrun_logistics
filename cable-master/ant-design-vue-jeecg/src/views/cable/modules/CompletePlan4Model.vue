@@ -127,15 +127,15 @@
               placeholder: '请输入${title}'
             },
             {
-              title: '电缆规格',
-              key: 'cableCross',
+              title: '电缆名称',
+              key: 'cableName',
               width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
             {
-              title: '电缆名称',
-              key: 'cableName',
+              title: '电缆规格',
+              key: 'cableCross',
               width: '15%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
@@ -159,7 +159,7 @@
               placeholder: '请选择${title}'
             },
             {
-              title: '可出库数量',
+              title: '可出库重量',
               key: 'inventoryQuantity',
               width: '15%',
               type: FormTypes.normal,
@@ -192,7 +192,7 @@
               width: '15%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '请输入${title}' }]
+              validateRules: [{ required: false, message: '请输入${title}' }]
             },
             {
               title: '单位',
@@ -201,7 +201,7 @@
               type: FormTypes.select,
               dictCode: 'unit',
               placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }]
+              validateRules: [{ required: false, message: '请选择${title}' }]
             },
             {
               title: '完单重量',
@@ -236,6 +236,13 @@
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
               validateRules: [{ required: true, message: '请选择${title}' }]
+            },
+            {
+              title: '说明',
+              key: 'annotation',
+              width: '10%',
+              type: FormTypes.input_pop,
+              placeholder: '请输入${title}'
             }
           ]
         },
@@ -252,15 +259,22 @@
               placeholder: '请输入${title}'
             },
             {
+              title: '电缆名称',
+              key: 'cableName',
+              width: '10%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}'
+            },
+            /*{
               title: '电缆规格',
               key: 'cableCross',
               width: '10%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
-            },
+            },*/
             {
-              title: '电缆名称',
-              key: 'cableName',
+              title: '电缆规格',
+              key: 'cableCross',
               width: '10%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
@@ -284,13 +298,13 @@
               placeholder: '请选择${title}'
             },
             {
-              title: '可出库数量',
+              title: '可出库重量',
               key: 'inventoryQuantity',
               width: '8%',
               type: FormTypes.normal,
               placeholder: '请输入${title}'
             },
-            {
+            /*{
               title: '回收规格',
               key: 'recyclingSpecifications',
               width: '10%',
@@ -310,14 +324,14 @@
                 { title: '铝', value: '铝' }
               ],
               validateRules: [{ required: true, message: '请选择${title}' }]
-            },
+            },*/
             {
               title: '完单数量',
               key: 'accomplishNum',
               width: '8%',
               type: FormTypes.inputNumber,
               placeholder: '请输入${title}',
-              validateRules: [{ required: true, message: '请输入${title}' }]
+              validateRules: [{ required: false, message: '请输入${title}' }]
             },
             {
               title: '单位',
@@ -326,7 +340,7 @@
               type: FormTypes.select,
               dictCode: 'unit',
               placeholder: '请选择${title}',
-              validateRules: [{ required: true, message: '请选择${title}' }]
+              validateRules: [{ required: false, message: '请选择${title}' }]
             },
             {
               title: '完单重量',
@@ -361,6 +375,13 @@
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
               validateRules: [{ required: true, message: '请选择${title}' }]
+            },
+            {
+              title: '说明',
+              key: 'annotation',
+              width: '10%',
+              type: FormTypes.input_pop,
+              placeholder: '请输入${title}'
             }
           ]
         },
@@ -461,7 +482,7 @@
               validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
-              title: '目标仓库',
+              title: '自家仓库',
               key: 'warehouseId',
               width: '10%',
               type: FormTypes.select,

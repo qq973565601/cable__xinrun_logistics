@@ -72,7 +72,7 @@
 
         <span v-if="storageLocation.storageLocationName != '电缆库位'">
         <!-- 空闲库位容量 0 为空闲状态-->
-          <span v-if="storageLocation.percentage == 0">
+          <span v-if="storageLocation.percentage == 0 || storageLocation.percentage < 0">
             <div :id="storageLocation.id" class="stordiv">
              <div class="stor">
                 {{storageLocation.storageLocationName}}

@@ -1,15 +1,14 @@
 package org.jeecg.modules.cable.controller;
 
+import java.math.BigDecimal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.cable.entity.*;
@@ -27,7 +26,6 @@ import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecg.modules.cable.vo.TaskVo;
 import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
 import org.jeecg.modules.demo.test.vo.JeecgOrderMainPage;
-import org.omg.CORBA.COMM_FAILURE;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +73,12 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
     @Autowired
     private IPlan4Service plan4Service;
 
+    @Autowired
+    private IInventoryService inventoryService;
+
+    @Autowired
+    private IStorageLocationService storageLocationService;
+
 
     /**
      * 分页列表查询
@@ -103,7 +107,6 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * jsonObject 派单信息
      * ids 计划id的集合（字符串类型）
      * liu
-     *
      * @return
      */
     @Transactional
@@ -113,6 +116,22 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
     public Result<?> MergePlan(@RequestBody SendOrdersVo sendOrdersVo) {
         sendOrdersService.saveMain(sendOrdersVo, sendOrdersVo.getJeecgOrderCustomerList(), sendOrdersVo.getJeecgOrderTicketList());
         return Result.ok("派单成功！");
+    }
+
+    /**
+     * 派单编辑
+     * sendOrdersVo 派单信息
+     * ids 计划id的集合（字符串类型）
+     * liu
+     * @return
+     */
+    @Transactional
+    @AutoLog(value = "派单表-派单编辑")
+    @ApiOperation(value = "派单表-派单编辑", notes = "派单表-派单编辑")
+    @PostMapping(value = "/mergePlanEdit")
+    public Result<?> MergePlanEdit(@RequestBody SendOrdersVo sendOrdersVo) {
+        sendOrdersService.MergePlanEdit(sendOrdersVo, sendOrdersVo.getJeecgOrderCustomerList(), sendOrdersVo.getJeecgOrderTicketList());
+        return Result.ok("派单编辑成功！");
     }
 
     /**
@@ -374,13 +393,11 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
      * 编辑
      * zhu
      * 2020-08-28
-     *
      * @return
      */
     @AutoLog(value = "派单表-编辑")
     @ApiOperation(value = "派单表-编辑", notes = "派单表-编辑")
     @PutMapping(value = "/edit")
-    @Transactional(rollbackFor = Exception.class)
     public Result<?> edit(@RequestBody SendOrdersVo sendOrdersVo) {
         SendOrders sendOrders = new SendOrders();
         sendOrders.setId(sendOrdersVo.getId());
@@ -526,20 +543,20 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         return Result.ok(list);
     }
 
-   /* *//**
+    /**
      * 完单操作
      *
      * @Author Xm
      * @Date 2020/5/27 10:52
-     *//*
+     */
     @PutMapping(value = "/planedit")
     public Result<?> planedit(@RequestBody JSONObject jsonObject) {
         PlanVo planVo = JSON.parseObject(jsonObject.toJSONString(), PlanVo.class);
         Result<?> planedit = sendOrdersService.planedit(planVo);
-        if (planedit.getCode() == 200) return Result.ok(planedit.getMessage());
-        if (planedit.getCode() == 500) return Result.error(planedit.getMessage());
+        if(planedit.getCode() == 200) return Result.ok(planedit.getMessage());
+        if(planedit.getCode() == 500) return Result.error(planedit.getMessage());
         return Result.ok(planedit);
-    }*/
+    }
 
     /**
      * 派单记录
@@ -591,9 +608,10 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
                                         @RequestParam(name = "planType", required = true) String planType,
                                         @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<SendOrdersVo> page = new Page<>(pageNo, pageSize);
-        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersWD(ids, planType, page);
+        IPage<SendOrdersVo> iPage = sendOrdersService.selectSendOrdersWD(ids, planType,page);
         return Result.ok(iPage);
     }
+
 
     /**
      * 通过id删除完单记录
@@ -606,4 +624,299 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
     public Result<?> wdDelete(@RequestBody SendOrdersVo sendOrdersVo, @PathVariable(name = "tableId") String tableId) {
         return sendOrdersService.deletelStoragesById(sendOrdersVo.getId(), sendOrdersVo.getPlanType(), sendOrdersVo, tableId);
     }
+
+    /**
+     * 完单记录编辑
+     * zhu
+     * 2020-08-28
+     * @param sendOrdersVo
+     * @return
+     */
+    @AutoLog(value = "完单表-编辑")
+    @ApiOperation(value = "完单表-编辑", notes = "完单表-编辑")
+    @PutMapping(value = "/wdedit")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<?> wdedit(@RequestBody SendOrdersVo sendOrdersVo) {
+        Material material = new Material();
+        if(sendOrdersVo.getPlanType().equals("出库")){
+            ReceivingStorage receivingStorage=new ReceivingStorage();
+            SendOrdersVo sendOrdersVo1 = sendOrdersVo.getCompleteOrderList().get(0);
+            //出库表ID
+            receivingStorage.setId(sendOrdersVo.getId());
+            //出库日期
+            receivingStorage.setReceivingTime(sendOrdersVo.getTaskTime());
+            //交接单号
+            receivingStorage.setReceiptNo(sendOrdersVo.getReceiptNo());
+            //回单照片
+            receivingStorage.setReceiptPhotos(sendOrdersVo.getReceiptPhotos());
+
+            //完单数量
+            receivingStorage.setAccomplishNum(sendOrdersVo1.getAccomplishNum());
+            //完单数量单位
+            receivingStorage.setAccomplishNumUnit(sendOrdersVo1.getUnit());
+            //容积
+            receivingStorage.setAccomplishVolume(sendOrdersVo1.getAccomplishVolume());
+            //自家仓库
+            receivingStorage.setWarehouseId(sendOrdersVo1.getWarehouseId());
+            //库位
+            receivingStorage.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
+            //目标仓库
+            receivingStorage.setBackup1(sendOrdersVo1.getEndWarehouseId());
+            //情况说明
+            receivingStorage.setAnnotation(sendOrdersVo1.getAnnotation());
+            //计划四（材质和规格）
+            if(sendOrdersVo.getPtype().equals(4)){
+                receivingStorage.setRecyclingSpecifications(sendOrdersVo1.getRawMaterialText());
+                receivingStorage.setTexture(sendOrdersVo1.getTexture());
+            }
+            receivingStorageService.updateById(receivingStorage);
+
+            // 拿到物料描述去查询物料信息,取出物料id来使用
+            material = materialService.getOne(new QueryWrapper<Material>().eq("name", sendOrdersVo.getRawMaterialText() + " " + sendOrdersVo.getTexture()));
+            if (null == material) return Result.error("没有查到该物料!");
+
+
+            // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
+            QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
+            wrapper.eq("warehouse_id", sendOrdersVo.getZjid()); // 自家仓库id
+            wrapper.eq("storage_location_id", sendOrdersVo.getKwid()); // 库位id
+            if(sendOrdersVo.getPtype().equals("1")){
+                Plan1 plan1 = plan1Service.getOne(new QueryWrapper<Plan1>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan1.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan1.getAssetNo()); // 资产编号
+                wrapper.eq("backup1", sendOrdersVo.getPlanId()); // 计划 Id
+                wrapper.eq("backup2", 1);  // 计划表1
+                if (plan1.getAlreadyReceivingStorage() == null) {
+                    plan1.setAlreadyReceivingStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan1.setAlreadyReceivingStorage(plan1.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan1Service.updateById(plan1);
+            }
+            if(sendOrdersVo.getPtype().equals("2")){
+                Plan2 plan2 = plan2Service.getOne(new QueryWrapper<Plan2>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan2.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan2.getRetiredAssetNo()); // 退役资产编号
+                if (plan2.getAlreadyReceivingStorage() == null) {
+                    plan2.setAlreadyReceivingStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan2.setAlreadyReceivingStorage(plan2.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan2Service.updateById(plan2);
+            }
+            if(sendOrdersVo.getPtype().equals("3")){
+                Plan3 plan3 = plan3Service.getOne(new QueryWrapper<Plan3>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan3.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan3.getProTheorderNo()); // 采购订单号
+                if (plan3.getAlreadyReceivingStorage() == null) {
+                    plan3.setAlreadyReceivingStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan3.setAlreadyReceivingStorage(plan3.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan3Service.updateById(plan3);
+            }
+            if(sendOrdersVo.getPtype().equals("4")){
+                Plan4 plan4 = plan4Service.getOne(new QueryWrapper<Plan4>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan4.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("recycling_specifications", sendOrdersVo1.getRawMaterialText() + " " + sendOrdersVo1.getTexture()); // 电缆 =  规格 + ‘ ’ +材质
+                wrapper.eq("backup1", sendOrdersVo.getPlanId()); // 计划 Id
+                wrapper.eq("backup2", 4);  // 计划表 4
+                if (plan4.getAlreadyReceivingStorage() == null) {
+                    plan4.setAlreadyReceivingStorage(sendOrdersVo1.getAccomplishWeight());
+                } else {
+                    plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan4Service.updateById(plan4);
+            }
+
+            Inventory inventory = inventoryService.getOne(wrapper);
+            if (inventory == null) return Result.error("没有查到该库存信息!");
+            // 存在库存,在原本的库存数上减少数量，目标仓库增加数量
+            inventory.setWarehouseId(sendOrdersVo1.getWarehouseId());
+            inventory.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            inventory.setUpdateTime(new Date());
+            inventory.setUpdateBy(sysUser.getUsername());
+            inventory.setBackup3(sendOrdersVo1.getUnit());
+            inventory.setMaterialId(material.getId());
+            if(sendOrdersVo.getPtype().equals("4")) {
+                inventory.setMaterialId(materialService.getOne(new QueryWrapper<Material>().eq("name", sendOrdersVo1.getRawMaterialText() + " " + sendOrdersVo1.getTexture())).getId());
+                inventory.setBackup5(sendOrdersVo1.getAccomplishWeight());
+                inventory.setRecyclingSpecifications(sendOrdersVo1.getRawMaterialText());
+            }
+            inventory.setInventoryQuantity(inventory.getInventoryQuantity().add(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+            inventory.setBackup4(inventory.getBackup4().add(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getRjchange()))));
+            inventoryService.updateById(inventory);
+
+            if (sendOrdersVo1.getStorageLocationId() == sendOrdersVo.getKwid()) {
+                StorageLocation storageLocation = storageLocationService.getById(sendOrdersVo1.getStorageLocationId());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getRjchange()))));
+                storageLocationService.updateById(storageLocation);
+            }
+
+            if (sendOrdersVo1.getStorageLocationId()!=sendOrdersVo.getKwid()) {
+                StorageLocation storageLocation = storageLocationService.getById(sendOrdersVo1.getStorageLocationId());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().add(sendOrdersVo1.getAccomplishVolume()));
+                storageLocationService.updateById(storageLocation);
+                storageLocation = storageLocationService.getById(sendOrdersVo.getKwid());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(sendOrdersVo1.getAccomplishVolume()));
+                storageLocationService.updateById(storageLocation);
+            }
+
+        }
+        if(sendOrdersVo.getPlanType().equals("入库")) {
+            SendOrdersVo sendOrdersVo1 = sendOrdersVo.getCompleteOrderList().get(0);
+            DeliverStorage deliverStorage = new DeliverStorage();
+            //入口库表Id
+            deliverStorage.setId(sendOrdersVo.getId());
+            //出库日期
+            deliverStorage.setDeliverTime(sendOrdersVo.getTaskTime());
+            //交接单号
+            deliverStorage.setReceiptNo(sendOrdersVo.getReceiptNo());
+            //回单照片
+            deliverStorage.setReceiptPhotos(sendOrdersVo.getReceiptPhotos());
+
+            //完单数量
+            //TODO 做计算 -------------------------------
+            deliverStorage.setAccomplishNum(sendOrdersVo1.getAccomplishNum());
+            //完单数量单位
+            deliverStorage.setAccomplishNumUnit(sendOrdersVo1.getUnit());
+            //容积
+            //TODO 做计算 -------------------------------
+            deliverStorage.setAccomplishVolume(sendOrdersVo1.getAccomplishVolume());
+            //目标仓库ID
+            deliverStorage.setWarehouseId(sendOrdersVo1.getWarehouseId());
+            //库位
+            deliverStorage.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
+            //是否异常
+            deliverStorage.setSceneSituation(Integer.parseInt(sendOrdersVo1.getSceneSituation()));
+            //异常原因
+            deliverStorage.setAnomalousCause(sendOrdersVo1.getAnomalousCause());
+            //异常图片
+            deliverStorage.setScenePhotos(sendOrdersVo1.getScenePhotos1());
+            //说明
+            deliverStorage.setAnnotation(sendOrdersVo1.getAnnotation());
+            //计划四（材质和规格）
+            if (sendOrdersVo.getPtype().equals("4")) {
+                //当编辑计划4 电缆时，更新规格 以及材质
+                deliverStorage.setRecyclingSpecifications(sendOrdersVo1.getRawMaterialText());
+                deliverStorage.setTexture(sendOrdersVo1.getTexture());
+                //当编辑计划4 电缆时，更新重量 以及单位
+                deliverStorage.setAccomplishWeight(sendOrdersVo1.getAccomplishWeight());
+                deliverStorage.setAccomplishWeightUnit(2);//电缆重量默认吨
+            }
+            deliverStorageService.updateById(deliverStorage);
+
+            // 查老的库存信息，使用老物料,取物料id来使用
+            material = materialService.getOne(new QueryWrapper<Material>().eq("name", sendOrdersVo.getRawMaterialText() + " " + sendOrdersVo.getTexture()));
+            if (null == material) return Result.error("没有查到该物料!");
+            // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
+            QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
+            wrapper.eq("warehouse_id", sendOrdersVo.getZjid()); // 仓库id
+            wrapper.eq("storage_location_id", sendOrdersVo.getKwid()); // 库位id
+            if (sendOrdersVo.getPtype().equals("1")) {
+                Plan1 plan1 = plan1Service.getOne(new QueryWrapper<Plan1>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan1.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan1.getAssetNo()); // 资产编号
+                wrapper.eq("backup1", sendOrdersVo.getPlanId()); // 计划 Id
+                wrapper.eq("backup2", 1);  // 计划表1
+                if (plan1.getAlreadyDeliverStorage() == null) {
+                    plan1.setAlreadyDeliverStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan1.setAlreadyDeliverStorage(plan1.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan1Service.updateById(plan1);
+            }
+            if (sendOrdersVo.getPtype().equals("2")) {
+                Plan2 plan2 = plan2Service.getOne(new QueryWrapper<Plan2>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan2.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan2.getRetiredAssetNo()); // 退役资产编号
+                if (plan2.getAlreadyDeliverStorage() == null) {
+                    plan2.setAlreadyDeliverStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan2Service.updateById(plan2);
+            }
+            if (sendOrdersVo.getPtype().equals("3")) {
+                Plan3 plan3 = plan3Service.getOne(new QueryWrapper<Plan3>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan3.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("asset_no", plan3.getProTheorderNo()); // 采购订单号
+                if (plan3.getAlreadyDeliverStorage() == null) {
+                    plan3.setAlreadyDeliverStorage(sendOrdersVo1.getAccomplishNum());
+                } else {
+                    plan3.setAlreadyDeliverStorage(plan3.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan3Service.updateById(plan3);
+            }
+            if (sendOrdersVo.getPtype().equals("4")) {
+                Plan4 plan4 = plan4Service.getOne(new QueryWrapper<Plan4>().eq("id", sendOrdersVo.getPlanId()));
+                wrapper.eq("project_no", plan4.getProjectNo()); // 项目编号
+                wrapper.eq("material_id", material.getId()); // 物料id
+                wrapper.eq("recycling_specifications", sendOrdersVo1.getRawMaterialText() + " " + sendOrdersVo1.getTexture()); // 电缆 =  规格 + ‘ ’ +材质
+                wrapper.eq("backup1", sendOrdersVo.getPlanId()); // 计划 Id
+                wrapper.eq("backup2", 4);  // 计划表 4
+                if (plan4.getAlreadyDeliverStorage() == null) {
+                    plan4.setAlreadyDeliverStorage(sendOrdersVo1.getAccomplishWeight());
+                } else {
+                    plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+                }
+                plan4Service.updateById(plan4);
+            }
+
+            Inventory inventory = inventoryService.getOne(wrapper);
+            if (inventory == null) return Result.error("没有查到该库存信息!");
+            // 存在库存,在原本的库存数上增加入库数量即可
+            inventory.setWarehouseId(sendOrdersVo1.getWarehouseId());
+            inventory.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            inventory.setUpdateTime(new Date());
+            inventory.setUpdateBy(sysUser.getUsername());
+            inventory.setBackup3(sendOrdersVo1.getUnit());
+            inventory.setMaterialId(material.getId());
+            if (sendOrdersVo.getPtype().equals("4")) {
+                inventory.setMaterialId(materialService.getOne(new QueryWrapper<Material>().eq("name", sendOrdersVo1.getRawMaterialText() + " " + sendOrdersVo1.getTexture())).getId());
+                inventory.setBackup5(sendOrdersVo1.getAccomplishWeight());
+                inventory.setRecyclingSpecifications(sendOrdersVo1.getRawMaterialText());
+            }
+            inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getSlchange()))));
+            inventory.setBackup4(inventory.getBackup4().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getRjchange()))));
+            inventoryService.updateById(inventory);
+
+            if (sendOrdersVo1.getStorageLocationId() == sendOrdersVo.getKwid()) {
+                StorageLocation storageLocation = storageLocationService.getById(sendOrdersVo1.getStorageLocationId());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(BigDecimal.valueOf(Double.parseDouble(sendOrdersVo.getRjchange()))));
+                storageLocationService.updateById(storageLocation);
+            }
+
+            if (sendOrdersVo1.getStorageLocationId()!=sendOrdersVo.getKwid()) {
+                StorageLocation storageLocation = storageLocationService.getById(sendOrdersVo1.getStorageLocationId());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().add(sendOrdersVo1.getAccomplishVolume()));
+                storageLocationService.updateById(storageLocation);
+                storageLocation = storageLocationService.getById(sendOrdersVo.getKwid());
+                if (storageLocation == null) return Result.error("没有查到该库位信息!");
+                storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(sendOrdersVo1.getAccomplishVolume()));
+                storageLocationService.updateById(storageLocation);
+            }
+
+
+        }
+
+        return Result.ok("编辑成功!");
+    }
+
+
+
 }

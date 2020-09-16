@@ -135,7 +135,7 @@ public class Plan2Im implements Serializable {
     private String deliverNum;
     /*@Excel(name = "入库仓库", width = 15)
     private String name;*/
-    @Excel(name = "出库日期", width = 15,  format = "yyyy/MM/dd")
+    @Excel(name = "出库日期", width = 15, format = "yyyy/MM/dd")
     private String receivingTime;
     @Excel(name = "出库数量", width = 15)
     private String receivingNum;

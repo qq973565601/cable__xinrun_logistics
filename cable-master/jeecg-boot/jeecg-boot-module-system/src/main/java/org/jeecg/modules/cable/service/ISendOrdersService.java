@@ -25,9 +25,15 @@ import java.util.Map;
 public interface ISendOrdersService extends IService<SendOrders> {
 
     /**
+     * 派单编辑操作
+     */
+    public void MergePlanEdit(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersList, List<SendOrdersTaskVo> vehicleList);
+
+
+    /**
      * 合并派单操作
      */
-    public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrders> sendOrdersList, List<SendOrdersTaskVo> vehicleList);
+    public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersList, List<SendOrdersTaskVo> vehicleList);
 
     /**
      * 根据年份和月份查询当月每日的车辆任务的数量
@@ -72,14 +78,14 @@ public interface ISendOrdersService extends IService<SendOrders> {
      */
     List<PlanVo> selectPlan2Accomplish(String projectNo, String id, String planType, String sendOrdersId, Page<PlanVo> page);
 
-//    /**
-//     * 完单操作
-//     *
-//     * @param planVo
-//     * @Author Xm
-//     * @Date 2020/5/27 10:53
-//     */
-//    Result<?> planedit(PlanVo planVo);
+    /**
+     * 完单操作
+     *
+     * @param planVo
+     * @Author Xm
+     * @Date 2020/5/27 10:53
+     */
+    Result<?> planedit(PlanVo planVo);
 
     /**
      * 根据计划id和计划类型查询历史派单记录
@@ -98,6 +104,7 @@ public interface ISendOrdersService extends IService<SendOrders> {
 
     IPage<SendOrdersVo> selectPlanSendOrdersTheSameDay(Page<SendOrdersVo> page);
 
+
     IPage<SendOrdersVo> selectSendOrdersWD(String ids, String planType, Page<SendOrdersVo> page);
 
     /**
@@ -111,5 +118,4 @@ public interface ISendOrdersService extends IService<SendOrders> {
      * @return success/error
      */
     Result<?> deletelStoragesById(Integer id, String type, SendOrdersVo sendOrdersVo, String tableId);
-
 }

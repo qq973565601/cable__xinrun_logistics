@@ -133,7 +133,7 @@ public class Plan4Vo implements Serializable {
     /**
      * 可出库数量[批量完单操作时使用此属性] ----2020/8/26 bai
      */
-    private int inventoryQuantity;
+    private BigDecimal inventoryQuantity;
     /**
      * 批量完单的计划 id集合
      */
@@ -154,6 +154,10 @@ public class Plan4Vo implements Serializable {
      * 任务日期
      */
     private String taskTime;
+    /**
+     * 出库重量
+     */
+    private String retrievalWeight;
     /**
      * 合并完单填写的数据集
      */

@@ -180,6 +180,7 @@
                 getAction('/cable/inventory/insurancePageList', this.queryParam).then((res) => {
                     if (res.success) {
                         this.dataSource = res.result.records
+                        this.ipagination.total = res.result.total;
                         console.log('库位的库存信息', res)
                     }
                 })

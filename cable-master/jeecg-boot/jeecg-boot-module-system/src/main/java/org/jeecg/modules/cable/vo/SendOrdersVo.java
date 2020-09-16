@@ -1,7 +1,7 @@
 package org.jeecg.modules.cable.vo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecg.modules.cable.entity.SendOrders;
 import org.jeecg.modules.cable.entity.SendOrdersSubtabulation;
 import org.jeecg.modules.cable.entity.Vehicle;
@@ -20,28 +20,59 @@ import java.util.List;
  * @Date 2020/5/26 15:07
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 public class SendOrdersVo extends SendOrders implements Serializable {
-    private static final long serialVersionUID = 6837471465767940590L;
+    private static final long serialVersionUID = 1934731618945857271L;
+    /**
+     * liu
+     * 2020-9-4
+     */
+    private String wasteMaterialText;//物料描述
+    private BigDecimal inventoryQuantity;//可出库数量
+    private String warehouseName;//仓库名称
+    private String endWarehouseName;//终点仓库名称
 
     /**
      * zhu
      * 2020-08-28
      */
     private String wname;
-    private String tasktime;
     private String storagename;
-    private String accomplishnum;
+    private String tasktime;
+    @Dict(dicCode = "unit")
     private String accomplishnumunit;
     private BigDecimal accomplishVolume;
-    private BigDecimal accomplishWeight;
-    private String scenesituation;
+//    private String accomplishnum;
+    private BigDecimal accomplishNum;
+    private BigDecimal accomplishWeight;    //TODO accomplishWeight 字母含大写
+    @Dict(dicCode = "unit")
+    private String accomplishweightunit;
     private String phontos;//异常图片（多张）
     private String scenePhotos1;//第一张异常图片
     private String scenePhotos2;//第二张异常图片
     private String receiptPhotos;//回单照片
     private String receiptPhotoss;
     private String anomalousCause;
+//    private String accomplishweight;    //TODO accomplishweight 字母纯小写
+    private String mubiaock;// 目标仓库
+
+    /**
+     * zhu
+     * 2020-09-11
+     */
+    private String annotation;//说明
+    private String receiptNo;//交接单号
+    private Integer zjid;// 自家仓库ID
+    private Integer kwid;// 库位ID
+    private Integer mbid;// 目标仓库ID
+//    private String scenesituation;
+    private String sceneSituation;//是否异常
+    private Integer unit;// 完单数量单位
+    private String texture;// 材质
+    private String ptype;// 区分计划表
+    private String zlchange;// 修改重量变化的值
+    private String rjchange;// 修改容积变化的值
+    private String slchange;// 修改容积变化的值
+    private List<SendOrdersVo> completeOrderList; //完单信息集合
 
 
     /**
@@ -53,6 +84,11 @@ public class SendOrdersVo extends SendOrders implements Serializable {
      * 物料编码
      */
     private String serial;
+
+    /**
+     * 车牌号集合
+     */
+    private List<String> license;
 
     /**
      * 车牌号
@@ -118,7 +154,7 @@ public class SendOrdersVo extends SendOrders implements Serializable {
     /**
      * 派单信息集合
      */
-    private List<SendOrders> jeecgOrderCustomerList;
+    private List<SendOrdersVo> jeecgOrderCustomerList;
 
     /**
      * 派单车辆集合
@@ -129,9 +165,4 @@ public class SendOrdersVo extends SendOrders implements Serializable {
      * 人员 id 集合
      */
     private List<String> realname;
-
-    /**
-     * 车牌号集合
-     */
-    private List<String> license;
 }

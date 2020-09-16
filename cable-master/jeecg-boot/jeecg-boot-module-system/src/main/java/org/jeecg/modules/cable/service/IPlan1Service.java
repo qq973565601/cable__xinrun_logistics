@@ -6,10 +6,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan1;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan1Im;
-import org.jeecg.modules.cable.vo.Plan1Vo;
-import org.jeecg.modules.cable.vo.SettleAccountsDetailsVo;
-import org.jeecg.modules.cable.vo.SettleAccountsVo;
-import org.jeecg.modules.cable.vo.StorageLocationListVo;
+import org.jeecg.modules.cable.vo.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -69,7 +66,15 @@ public interface IPlan1Service extends IService<Plan1> {
      * @param ids liu
      * @Date 2020/7/21
      */
-    List<Plan1> idsqueryPageList(List<String> ids);
+    List<Plan1> idsqueryRuList(List<String> ids);
+
+    /**
+     * 根据ids集合条件查询
+     *
+     * @param ids liu
+     * @Date 2020/7/21
+     */
+    List<SendOrdersVo> idsqueryChuList(List<String> ids);
 
     /**
      * 查看库位
@@ -83,13 +88,27 @@ public interface IPlan1Service extends IService<Plan1> {
 
     /**
      * 导出 plan1
-     * bai 2020/9/7
+     * bai
+     * 2020/5/27
      *
-     * @return 要导出计划1数据
+     * @return
      */
     List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain);
 
     IPage<SettleAccountsVo> selectSettleAccounts(String backup1, String planType, String projectNo, Page<SettleAccountsVo> page);
 
     IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(String projectNo, Page<SettleAccountsDetailsVo> page);
+    /**
+     * 计划表1配变电/线路统计
+     *
+     * @return
+     */
+    IPage<Plan1Vo> selectSubstation(String wasteMaterialText,String beginTime,String endTime,String planType,Page<Plan1Vo> page);
+    /**
+     * 导出变电/导线统计数据
+     *
+     * @return
+     */
+    List<Plan1ExcelVo> exportPlan2(Plan1ExcelVo plan1ExcelVo);
+
 }

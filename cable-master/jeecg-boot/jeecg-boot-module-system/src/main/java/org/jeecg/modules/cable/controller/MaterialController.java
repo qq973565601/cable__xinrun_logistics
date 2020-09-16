@@ -206,6 +206,8 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
             return Result.error("物料编号重复！");
         }
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (null == sysUser)
+            return Result.error("请先登录！");
         Material one = materialService.getById(material.getId());
         material.setUpdateTime(new Date());
         material.setUpdateBy(sysUser.getUsername());

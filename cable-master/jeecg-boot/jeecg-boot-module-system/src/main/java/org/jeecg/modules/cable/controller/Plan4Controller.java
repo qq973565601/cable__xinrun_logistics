@@ -1,18 +1,23 @@
 package org.jeecg.modules.cable.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan3;
 import org.jeecg.modules.cable.entity.Plan4;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
+import org.jeecg.modules.cable.service.IMaterialService;
 import org.jeecg.modules.cable.service.IPlan4Service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -20,7 +25,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.cable.vo.Plan4ExcelVo;
 import org.jeecg.modules.cable.vo.Plan4Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -28,6 +35,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -49,6 +57,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     @Autowired
     private IPlan4Service plan4Service;
+
+    @Autowired
+    private IMaterialService materialService;
 
     /**
      * 计划4合并完单
@@ -131,13 +142,13 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      */
     @AutoLog(value = "计划表1-分页列表查询")
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
-    @GetMapping(value = "/idslist")
-    public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
+    @GetMapping(value = "/idslistRu")
+    public Result<?> idsqueryRuList(@RequestParam(name = "ids") String ids,
                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         List<Plan1> list = new ArrayList<>();
         Plan1 plan ;
-        List<Plan4> pageList = plan4Service.idsqueryPageList4(Arrays.asList(ids.split(",")));
+        List<Plan4> pageList = plan4Service.idsqueryRuList(Arrays.asList(ids.split(",")));
         for (int i = 0; i < pageList.size(); i++) {
             if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
                 return Result.error("工程账号必须一致");
@@ -149,10 +160,29 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
             String material = pageList.get(i).getCableName() + " " + pageList.get(i).getVoltageGrade() + " " + pageList.get(i).getCableCross();
             plan.setWasteMaterialText(material);                                    //物料描述
             plan.setWasteMaterialCode(material);                                    //物料代码
+            pageList.get(i).setBackup1(null);
             list.add(plan);
         }
         return Result.ok(list);
 
+    }
+
+    /**
+     *  根据ids集合
+     *  派单出库列表查询
+     *
+     * @return
+     */
+    @AutoLog(value = "计划表1-分页列表查询")
+    @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
+    @GetMapping(value = "/idslistChu")
+    public Result<?> idsqueryChuList(@RequestParam(name = "ids") String ids) {
+        List<SendOrdersVo> pageList = plan4Service.idsqueryChuList(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+        }
+        return Result.ok(pageList);
     }
 
     /**
@@ -247,11 +277,13 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(Plan4 plan4,
-                                  @RequestParam(name = "explain", required = false) String explain) {
+                                  @RequestParam(name = "explain", required = false) String explain,
+                                  @RequestParam(name = "beginTime", required = false) String beginTime,
+                                  @RequestParam(name = "endTime", required = false) String endTime) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集
-        List<Plan4Im> list = plan4Service.exportPlan4(plan4, explain);
+        List<Plan4Im> list = plan4Service.exportPlan4(plan4, explain, beginTime,endTime);
         // 导出 excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
@@ -299,11 +331,14 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      * @param response
      * @return
      */
+    @Transactional
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Integer in = 0;
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             MultipartFile file = entity.getValue();// 获取上传文件对象
             ImportParams params = new ImportParams();
@@ -314,6 +349,11 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
                 //List<Plan4> plan4List = CollectionCopyUtil.copyList(list, Plan4.class);
                 Plan4 plan4 = new Plan4();
                 for (Plan4Im plan4Im : list) {
+
+                    //判断对象中属性值是否为空
+                    Boolean flag = (StrUtil.isNotBlank(plan4Im.getEngName()) || StrUtil.isNotBlank(plan4Im.getProjectNo())|| StrUtil.isNotBlank(plan4Im.getCableName()) || StrUtil.isNotBlank(plan4Im.getCableCross()) || StrUtil.isNotBlank(plan4Im.getVoltageGrade()));
+                    if(!flag) return Result.error("请补全电缆信息！");
+
                     // 属性拷贝 将 plan4Im 接收的excel数据转换为 plan4 实体类数据
                     BeanUtils.copyProperties(plan4Im, plan4);
                     plan4.setPlanType("电缆");
@@ -324,6 +364,30 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
                     plan4.setUpdateTime(new Date());
                     plan4.setCreateTime(new Date());
                     plan4Service.save(plan4);
+                    in++;
+
+                    /*String serial = plan4.getVoltageGrade().trim() + " " + plan4.getCableCross().trim();
+                    QueryWrapper<Material> queryWrapper = new QueryWrapper<>();
+                    queryWrapper.like("serial",serial);
+                    queryWrapper.like("name", serial);
+                    List<Material> lists = materialService.list(queryWrapper);
+                    if (lists.size() == 0) {
+                        in++;
+                        // 添加计划4同时对物料进行添加操作
+                        for (int i = 0; i < 2; i++) {
+                            if (i == 0) {
+                                material.setSerial(serial + " 铜"); // 物料编号
+                                material.setName(serial + " 铜");// 物料名称
+                            }else if (i == 1) {
+                                material.setSerial(serial + " 铝"); // 物料编号
+                                material.setName(serial + " 铝");// 物料名称
+                            }
+                        materialService.save(material);
+                        }
+                    }*/
+                }
+                if (in != 0) {
+                    return Result.ok("文件导入成功！数据行数：" + in);
                 }
                 return Result.ok("文件导入成功！数据行数：" + list.size());
             } catch (Exception e) {
@@ -338,5 +402,60 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
             }
         }
         return Result.error("文件导入失败！");
+    }
+
+    /**
+     * 计划表4配变电统计
+     *
+     * @return
+     */
+    @GetMapping(value = "/selectCable")
+    public Result<?> selectCable(@RequestParam(name = "voltageGrade",required = false) String voltageGrade,
+                                 @RequestParam(name = "beginTime",required = false) String beginTime,
+                                 @RequestParam(name = "endTime",required = false) String endTime,
+                                 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<Plan4Vo> page = new Page<>(pageNo, pageSize);
+        String planType="电缆";
+        IPage<Plan4Vo> pageList = plan4Service.selectCable(voltageGrade,beginTime,endTime,planType,page);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 导出电缆统计数据 excel
+     *
+     * @param request
+     */
+    @RequestMapping(value = "/exportXls3")
+    public ModelAndView exportXls3(HttpServletRequest request, Plan4ExcelVo plan4ExcelVo) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String title = "电缆统计";
+        List<Plan4ExcelVo> list = plan4Service.exportPlan3(plan4ExcelVo);
+        Plan4ExcelVo plan4ExcelVo1 = new Plan4ExcelVo();
+        BigDecimal length = BigDecimal.valueOf(0);
+        BigDecimal weight =  BigDecimal.valueOf(0);
+        BigDecimal retrieval_weight =  BigDecimal.valueOf(0);
+        String proName = "";
+        for (Plan4ExcelVo excelVo : list) {
+            proName += excelVo.getEngName() + ",";
+            length=length.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getLength())));
+            weight=weight.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getWeight())));
+            retrieval_weight=retrieval_weight.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getRetrievalWeight())));
+            excelVo.setEngName(null);
+        }
+        plan4ExcelVo1.setVoltageGrade("合计:");
+        plan4ExcelVo1.setLength(length.toString());
+        plan4ExcelVo1.setWeight(weight.toString());
+        plan4ExcelVo1.setRetrievalWeight(retrieval_weight.toString());
+        list.add(plan4ExcelVo1);
+        list.get(0).setDecommissioningDate(plan4ExcelVo.getDecommissioningDate());
+        list.get(0).setRemark(plan4ExcelVo.getRemark());
+        list.get(0).setEngName(proName);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.CLASS, Plan4ExcelVo.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(plan4ExcelVo.getBeginTime()+"--"+plan4ExcelVo.getEndTime()+"/电缆统计",""));
+        mv.addObject(NormalExcelConstants.DATA_LIST, list);
+        return mv;
     }
 }

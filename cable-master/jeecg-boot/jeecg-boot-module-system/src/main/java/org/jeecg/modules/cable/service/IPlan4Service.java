@@ -7,7 +7,9 @@ import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan4;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
+import org.jeecg.modules.cable.vo.Plan4ExcelVo;
 import org.jeecg.modules.cable.vo.Plan4Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -58,7 +60,16 @@ public interface IPlan4Service extends IService<Plan4> {
      *  liu
      * @Date 2020/7/21
      */
-    List<Plan4> idsqueryPageList4(List<String> ids);
+    List<Plan4> idsqueryRuList(List<String> ids);
+
+    /**
+     * 根据ids集合条件查询
+     *
+     * @param ids
+     *  liu
+     * @Date 2020/7/21
+     */
+    List<SendOrdersVo> idsqueryChuList(List<String> ids);
 
     /**
      * 分页展示计划表4数据
@@ -77,7 +88,7 @@ public interface IPlan4Service extends IService<Plan4> {
      *
      * @return
      */
-    List<Plan4Im> exportPlan4(Plan4 plan4, String explain);
+    List<Plan4Im> exportPlan4(Plan4 plan4, String explain, String beginTime, String endTime);
 
     /**
      * 导出计划表4汇总数据
@@ -86,4 +97,16 @@ public interface IPlan4Service extends IService<Plan4> {
      * @return
      */
     List<Plan4Vo> exportFeedbackSummary(Plan4Vo plan4Vo);
+    /**
+     * 计划表4电缆统计
+     *
+     * @return
+     */
+    IPage<Plan4Vo> selectCable(String voltageGrade,String beginTime,String endTime,String planType,Page<Plan4Vo> page);
+    /**
+     * 导出电缆统计数据
+     *
+     * @return
+     */
+    List<Plan4ExcelVo> exportPlan3(Plan4ExcelVo plan4ExcelVo);
 }

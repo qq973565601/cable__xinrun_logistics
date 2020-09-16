@@ -12,10 +12,7 @@ import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan1Im;
 import org.jeecg.modules.cable.mapper.Plan1Mapper;
 import org.jeecg.modules.cable.service.*;
-import org.jeecg.modules.cable.vo.Plan1Vo;
-import org.jeecg.modules.cable.vo.SettleAccountsDetailsVo;
-import org.jeecg.modules.cable.vo.SettleAccountsVo;
-import org.jeecg.modules.cable.vo.StorageLocationListVo;
+import org.jeecg.modules.cable.vo.*;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +53,21 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
     private IWarehouseService warehouseService;
     @Autowired
     private IPlan1Service plan1Service;
+
+
+    @Override
+    public List<Plan1> idsqueryRuList(List<String> ids) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<Plan1> list = baseMapper.selectBatchIds(ids);
+        return list;
+    }
+
+    @Override
+    public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
+        return list;
+    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -105,6 +117,8 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     wrapper.eq("project_no", plan1.getProjectNo()); // 项目编号
                     wrapper.eq("material_id", material == null ? null : material.getId()); // 物料编号
                     wrapper.eq("asset_no", plan1.getAssetNo()); // 资产编号
+                    wrapper.eq("backup1", plan1Ids.get(i)); // 计划 Id
+                    wrapper.eq("backup2", 1);  // 计划表1
                     if (plan1.getAlreadyDeliverStorage() == null) {
                         plan1.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                     } else {
@@ -153,7 +167,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId()); // 物料id
                     Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
                     receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
-                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("warehouse_id", warehouse.getId()).eq("storage_location_name", map.get("storageLocationName").toString()));
                     receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
                     receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))); // 出库完单数量
@@ -163,6 +177,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     receivingStorage.setState(1); // 完单状态 默认已完成
                     receivingStorage.setReceiptPhotos(receiptPhotos); // 回单图片路径
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime)); // 出库日期
+                    receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date()); // 创建时间
                     LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     receivingStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername()); // 创建人
@@ -252,13 +267,6 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
     }
 
     @Override
-    public List<Plan1> idsqueryPageList(List<String> ids) {
-        //TODO 构造条件，根据id的集合做条件查询
-        List<Plan1> list = baseMapper.selectBatchIds(ids);
-        return list;
-    }
-
-    @Override
     public IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page) {
         List<StorageLocationListVo> list = baseMapper.StorageLocationListVoPage(storageLocationListVo, page);
         return page.setRecords(list);
@@ -266,10 +274,10 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
 
     @Override
     public List<Plan1Im> exportPlan1(Plan1Im plan1Im, String explain) {
+        // 单位之间的转换
+        List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
         List<Plan1Im> list = baseMapper.exportPlan1(plan1Im);
         for (Plan1Im p : list) {
-            // 单位之间的转换
-            List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
             for (SysDictItem dictItem : dictItems) {
                 // 导出时判断单位是否存在，存在则进行单位转换
                 if (StrUtil.isNotBlank(p.getRawMaterialUnit())) {
@@ -285,7 +293,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
             }
             // 设置反馈日期
             p.setFeedbackDate(new Date());
-            // 设置补充说明
+            // 设置反馈说明
             p.setExplain(explain);
         }
         return list;
@@ -301,4 +309,26 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
     public IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(String projectNo, Page<SettleAccountsDetailsVo> page) {
         return page.setRecords(baseMapper.selectSettleAccountsDetails(projectNo, page));
     }
+
+    /**
+     * 计划表1配变电/线路统计
+     *
+     * @return
+     */
+    @Override
+    public IPage<Plan1Vo> selectSubstation(String wasteMaterialText,String beginTime,String endTime,String planType,Page<Plan1Vo> page) {
+        return page.setRecords(baseMapper.selectSubstation(wasteMaterialText, beginTime, endTime,planType,page));
+    }
+    /**
+     *   变电/导线统计导出
+     *
+     * @return
+     */
+    @Override
+    public List<Plan1ExcelVo> exportPlan2(Plan1ExcelVo plan1ExcelVo) {
+        List<Plan1ExcelVo> list = baseMapper.exportPlan2(plan1ExcelVo);
+        return list;
+    }
+
+
 }

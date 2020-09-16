@@ -16,8 +16,11 @@
       :pagination="ipagination"
       @change="handleTableChange" style="margin-top: 20px">
 
+      <span slot="factoryText10" slot-scope="text">
+        <j-ellipsis :value="text" :length="10"/>
+      </span>
       <span slot="factoryText" slot-scope="text">
-        <j-ellipsis :value="text" :length="11"/>
+        <j-ellipsis :value="text" :length="7"/>
       </span>
 
       <span slot="action" slot-scope="text, record">
@@ -81,38 +84,37 @@
             }
           },
           {
-            title: '物料描述',
-            align: 'center',
-            dataIndex: 'rawMaterialText',
-            width: 180,
-            scopedSlots: { customRender: 'factoryText' }
-          },
-          {
-            title: '物料数量',
-            align: 'center',
-            dataIndex: 'backup1',
-            width: 80,
-            scopedSlots: { customRender: 'factoryText' }
-          },
-          {
             title: '计划类型',
             align: 'center',
             dataIndex: 'pplanType',
             width: 80
           },
           {
-            title: '任务名称',
+            title: '项目名称',
             align: 'center',
             dataIndex: 'projectName',
             width:200,
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: { customRender: 'factoryText10' }
+          },
+          {
+            title: '物料描述',
+            align: 'center',
+            dataIndex: 'rawMaterialText',
+            width: 180,
+            scopedSlots: { customRender: 'factoryText10' }
+          },
+          {
+            title: '派单数量',
+            align: 'center',
+            dataIndex: 'backup1',
+            width: 80,
           },
           {
             title: '任务地址',
             align: 'center',
             dataIndex: 'address',
             width:200,
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: { customRender: 'factoryText10' }
           },
           {
             title: '联系人',
@@ -136,7 +138,8 @@
             title: '派单人员',
             align: 'center',
             dataIndex: 'a1',
-            customRender: (value, row, index) => {
+            scopedSlots: { customRender: 'factoryText' },
+            /*customRender: (value, row, index) => {
               if (value == null) {
                 return '未安排人员'
               }
@@ -157,8 +160,7 @@
                 return '未安排人员'
               }
 
-            },
-            scopedSlots: { customRender: 'factoryText' }
+            },*/
           },
           {
             title: '操作',
@@ -216,6 +218,7 @@
         this.$refs.planTheSameDayDeModal.title = '';
       },
       theSameDays() {
+        // 今日派单页面
         this.data()
         this.visible = true
       },

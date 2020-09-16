@@ -1,6 +1,7 @@
 package org.jeecg.modules.cable.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -52,14 +54,19 @@ import static org.jeecgframework.poi.excel.ExcelExportUtil.exportExcel;
 public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @Autowired
     private IPlan1Service plan1Service;
+
     @Autowired
     private IPlan2Service plan2Service;
+
     @Autowired
     private IPlan3Service plan3Service;
+
     @Autowired
     private IPlan4Service plan4Service;
+
     @Autowired
     private IMaterialService materialService;
+
     @Autowired
     private ISysDictItemService sysDictItemService;
 
@@ -147,6 +154,10 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
             //TODO 项目编码
             wrapper.like("project_no", plan1.getProjectNo());
         }
+        if (StrUtil.isNotBlank(plan1.getProjectName())) {
+            //TODO 项目名称
+            wrapper.like("project_name", plan1.getProjectName());
+        }
         if (null != plan1.getCompleteState()) {
             //TODO 计划完成状态(字典 0未完成 1已完成)
             wrapper.eq("complete_state", plan1.getCompleteState());
@@ -157,25 +168,66 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     }
 
     /**
-     * 根据ids集合
-     * 实现分页列表查询
+     *  根据ids集合
+     *  实现分页列表查询
      *
      * @return
      */
     @AutoLog(value = "计划表1-分页列表查询")
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
-    @GetMapping(value = "/idslist")
-    public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+    @GetMapping(value = "/idslistRu")
+    public Result<?> idsqueryRuList(@RequestParam(name = "ids") String ids,
+                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        List<Plan1> pageList = plan1Service.idsqueryRuList(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+            pageList.get(i).setBackup1(null);
+        }
+        return Result.ok(pageList);
+    }
 
-        List<Plan1> pageList = plan1Service.idsqueryPageList(Arrays.asList(ids.split(",")));
-        for (Plan1 plan : pageList) {
-            if (!pageList.get(0).getProjectNo().equals(plan.getProjectNo()))
+    /**
+     *  根据ids集合
+     *  派单出库列表查询
+     *
+     * @return
+     */
+    @AutoLog(value = "计划表1-分页列表查询")
+    @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
+    @GetMapping(value = "/idslistChu")
+    public Result<?> idsqueryChuList(@RequestParam(name = "ids") String ids,
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        List<SendOrdersVo> pageList = plan1Service.idsqueryChuList(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
                 return Result.error("工程账号必须一致");
         }
         return Result.ok(pageList);
     }
+    /*
+        List<SendOrdersVo> list = new ArrayList<>();
+        SendOrdersVo sendOrdersVo ;
+        List<SendOrdersVo> pageList = plan1Service.idsqueryChuList(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+            sendOrdersVo = new SendOrdersVo();
+            sendOrdersVo.setId(pageList.get(i).getId());                                //计划id
+            sendOrdersVo.setProjectNo(pageList.get(i).getProjectNo());                  //工程账号
+            sendOrdersVo.setProjectName(pageList.get(i).getProjectName());              //项目名称
+            sendOrdersVo.setWasteMaterialText(pageList.get(i).getWasteMaterialText());  //物料描述
+            sendOrdersVo.setWarehouseId(pageList.get(i).getWarehouseId());              //仓库 id
+            sendOrdersVo.setStorageLocationId(pageList.get(i).getStorageLocationId());  //库位 id
+            sendOrdersVo.setWname(pageList.get(i).getWname());                          //仓库名称
+            sendOrdersVo.setStoragename(pageList.get(i).getStoragename());              //库位名称
+            sendOrdersVo.setInventoryQuantity(pageList.get(i).getInventoryQuantity());  //可出库数量
+            list.add(sendOrdersVo);
+        }
+        return Result.ok(list);
+    */
 
     /**
      * 添加
@@ -301,16 +353,17 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
      * @param planType 导入excel类型
      * @return
      */
+    @Transactional
     @RequestMapping(value = "/importExcel/{planType}", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response, @PathVariable String planType) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null != sysUser) {
+        if(null != sysUser) {
             material.setCreateBy(sysUser.getUsername());
             material.setUpdateBy(sysUser.getUsername());
-        }
+        }else return Result.error("请重新登录！");
         material.setCreateTime(new Date());
         material.setUpdateTime(new Date());
         Integer in = 0;
@@ -323,17 +376,21 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
                 List<Plan1Im> list = ExcelImportUtil.importExcel(file.getInputStream(), Plan1Im.class, params);
                 Plan1 plan1 = new Plan1();
                 for (Plan1Im plan1Im : list) {
+                    //判断对象中属性值是否为空
+                    Boolean flag = (StrUtil.isNotBlank(plan1Im.getProjectName()) || StrUtil.isNotBlank(plan1Im.getProjectNo()) || StrUtil.isNotBlank(plan1Im.getWasteMaterialCode()) || StrUtil.isNotBlank(plan1Im.getWasteMaterialText()) || StrUtil.isNotBlank(plan1Im.getAssetNo()));
+                    if(!flag) return Result.error("请补全物料信息！");
+
                     // 单位之间的转换
                     List<SysDictItem> dictItems = sysDictItemService.selectType("unit");
                     for (SysDictItem dictItem : dictItems) {
                         // 导入时判断单位是否存在，存在则进行单位转换
                         if (StrUtil.isNotBlank(plan1Im.getRawMaterialUnit())) {
-                            if (plan1Im.getRawMaterialUnit().equals(dictItem.getItemText())) {
+                            if (plan1Im.getRawMaterialUnit().trim().equals(dictItem.getItemText())) {
                                 plan1.setRawMaterialUnit(Integer.parseInt(dictItem.getItemValue()));
                             }
                         }
                         if (StrUtil.isNotBlank(plan1Im.getWasteMaterialUnit())) {
-                            if (plan1Im.getWasteMaterialUnit().equals(dictItem.getItemText())) {
+                            if (plan1Im.getWasteMaterialUnit().trim().equals(dictItem.getItemText())) {
                                 plan1.setWasteMaterialUnit(Integer.parseInt(dictItem.getItemValue()));
                             }
                         }
@@ -348,24 +405,25 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
                     plan1.setUpdateTime(new Date());
                     plan1.setCreateTime(new Date());
                     plan1Service.save(plan1);
+                    in++;
                     QueryWrapper<Material> queryWrapper = new QueryWrapper<>();
                     queryWrapper.eq("serial", plan1.getWasteMaterialCode());
+                    queryWrapper.eq("name", plan1.getWasteMaterialText());
                     List<Material> list1 = materialService.list(queryWrapper);
                     if (list1.size() == 0) {
-                        if (StrUtil.isNotBlank(plan1.getWasteMaterialCode())) {
-                            in++;
+                        if (StrUtil.isNotBlank(plan1.getWasteMaterialCode()) && StrUtil.isNotBlank(plan1.getWasteMaterialText())) {
                             // 废旧物料编码作为物料编码
                             material.setSerial(plan1.getWasteMaterialCode());
-                            // 废旧物料单位作为物料单位
-                            material.setUnit(plan1.getWasteMaterialUnit());
                             // 废旧物料描述作为物料名称
                             material.setName(plan1.getWasteMaterialText());
+                            // 废旧物料单位作为物料单位
+                            material.setUnit(plan1.getWasteMaterialUnit());
                             materialService.save(material);
                         }
                     }
                 }
                 if (in != 0) {
-                    return Result.ok("文件导入成功！数据行数：" + list.size());
+                    return Result.ok("文件导入成功！数据行数：" + in);
                 }
                 return Result.ok("文件导入成功！数据行数：" + list.size());
             } catch (Exception e) {
@@ -465,22 +523,97 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         return Result.ok(pageList);
     }
 
+    /**
+     * 项目结算，计划结算功能
+     * @param projectNo
+     * @return
+     */
     @GetMapping(value = "/updateSettleAccounts")
     public Result<?> updateSettleAccounts(@RequestParam(name = "projectNo", required = false) String projectNo) {
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (null == sysUser)
+            return Result.error("用户登录超时，请重新登录!");
+
         Plan1 plan1 = new Plan1();
         plan1.setBackup1("1");
-        plan1Service.update(plan1, new QueryWrapper<Plan1>().eq("project_no", projectNo));
+        plan1.setUpdateTime(new Date());
+        plan1.setUpdateBy(sysUser.getUsername());
+        plan1Service.update(plan1,new QueryWrapper<Plan1>().eq("project_no",projectNo));
         Plan2 plan2 = new Plan2();
         plan2.setBackup1("1");
-        plan2Service.update(plan2, new QueryWrapper<Plan2>().eq("project_no", projectNo));
+        plan2.setUpdateTime(new Date());
+        plan2.setUpdateBy(sysUser.getUsername());
+        plan2Service.update(plan2,new QueryWrapper<Plan2>().eq("project_no",projectNo));
         Plan3 plan3 = new Plan3();
-        plan1.setBackup1("1");
-        plan3Service.update(plan3, new QueryWrapper<Plan3>().eq("project_no", projectNo));
+        plan3.setBackup1("1");
+        plan3.setUpdateTime(new Date());
+        plan3.setUpdateBy(sysUser.getUsername());
+        plan3Service.update(plan3,new QueryWrapper<Plan3>().eq("project_no",projectNo));
         Plan4 plan4 = new Plan4();
         plan4.setBackup1("1");
-        plan4Service.update(plan4, new QueryWrapper<Plan4>().eq("project_no", projectNo));
+        plan4.setUpdateTime(new Date());
+        plan4.setUpdateBy(sysUser.getUsername());
+        plan4Service.update(plan4,new QueryWrapper<Plan4>().eq("project_no",projectNo));
 
         return Result.ok("结算成功!");
     }
+
+    /**
+     * 计划表1配变电统计
+     *
+     * @return
+     */
+    @GetMapping(value = "/selectSubstation")
+    public Result<?> selectSubstation(@RequestParam(name = "wasteMaterialText",required = false) String wasteMaterialText,
+                                      @RequestParam(name = "beginTime",required = false) String beginTime,
+                                      @RequestParam(name = "endTime",required = false) String endTime,
+                                      @RequestParam(name = "planType",required = false) String planType,
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<Plan1Vo> page = new Page<>(pageNo, pageSize);
+        // String planType="配变电";
+        IPage<Plan1Vo> pageList = plan1Service.selectSubstation(wasteMaterialText,beginTime,endTime,planType,page);
+        return Result.ok(pageList);
+    }
+    /**
+     * 导出变电/导线统计数据 excel
+     *
+     * @param request
+     */
+    @RequestMapping(value = "/exportXls2")
+    public ModelAndView exportXls2(HttpServletRequest request, Plan1ExcelVo plan1ExcelVo) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String title = "变电统计";
+        List<Plan1ExcelVo> list = plan1Service.exportPlan2(plan1ExcelVo);
+        System.out.println(plan1ExcelVo.getDecommissioningDate());
+        Plan1ExcelVo plan1ExcelVo1 = new Plan1ExcelVo();
+        BigDecimal stockNum = BigDecimal.valueOf(0);
+        BigDecimal receivingNum =  BigDecimal.valueOf(0);
+        String proName = "";
+        for (Plan1ExcelVo excelVo : list) {
+            proName += excelVo.getProjectName() + ",";
+            stockNum=stockNum.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getStockNum())));
+            receivingNum=receivingNum.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getReceivingNum())));
+            excelVo.setProjectName(null);
+        }
+        plan1ExcelVo1.setWasteMaterialText("合计:");
+        plan1ExcelVo1.setStockNum(stockNum.toString());
+        plan1ExcelVo1.setReceivingNum(receivingNum.toString());
+        list.add(plan1ExcelVo1);
+        list.get(0).setDecommissioningDate(plan1ExcelVo.getDecommissioningDate());
+        list.get(0).setRemark(plan1ExcelVo.getRemark());
+        list.get(0).setProjectName(proName);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.CLASS, Plan1ExcelVo.class);
+        if (plan1ExcelVo.getPlanType().equals("线路")){
+            mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(plan1ExcelVo.getBeginTime()+"--"+plan1ExcelVo.getEndTime()+"/线路统计",""));
+        }else {
+            mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(plan1ExcelVo.getBeginTime() + "--" + plan1ExcelVo.getEndTime() + "/变电统计", ""));
+        }
+        mv.addObject(NormalExcelConstants.DATA_LIST, list);
+        return mv;
+    }
+
 }

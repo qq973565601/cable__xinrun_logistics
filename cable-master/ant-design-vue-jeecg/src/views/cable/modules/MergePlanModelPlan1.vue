@@ -23,31 +23,6 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="6" :sm="12">
-            <a-form-item label="自家仓库">
-              <j-dict-select-tag v-decorator="['warehouseId',validatorRules.warehouseId]" :triggerChange="true" @change="types"
-                                 placeholder="请选择自家仓库" dictCode="warehouse,name,id,type='1'"/>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="6" :sm="12" v-if="this.sendOrderType">
-            <a-form-item label="自家库位">
-              <a-select v-decorator="['storageLocationId',validatorRules.storageLocationId]" id="sl"
-                        placeholder="请选择自家库位">
-                <template v-for="storageLocation in storageLocations">
-                  <a-select-option v-bind:value="storageLocation.id">{{storageLocation.storageLocationName}}
-                  </a-select-option>
-                </template>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          &lt;!&ndash; 出库才选择终点仓库,入库不需要选择终点仓库[根据 this.sendOrderType 做判断是否显示] &ndash;&gt;
-          <a-col :md="6" :sm="12" v-if="this.sendOrderType">
-            <a-form-item label="终点仓库">
-              <j-dict-select-tag v-decorator="['endWarehouseId',validatorRules.endWarehouseId]" :triggerChange="true"
-                                 placeholder="请选择终点仓库" dictCode="warehouse,name,id"/>
-            </a-form-item>
-          </a-col>-->
           <a-col :md="6" :sm="12">
             <a-form-item label="任务日期">
               <j-date v-decorator="['taskTime',validatorRules.taskTime]" :showTime="true" date-format="YYYY-MM-DD"
@@ -180,6 +155,7 @@
     </a-spin>
 
   </a-modal>
+
 </template>
 
 <script>
@@ -192,7 +168,6 @@
   import moment from 'moment'
   import JSearchSelectTag from '@/components/dict/JSearchSelectTag'
   import JMultiSelectTag from '@/components/dict/JMultiSelectTag'
-
 
   export default {
     // plan1 合并派单页面
@@ -208,12 +183,11 @@
         confirmLoading: false,
         // 派单类型
         sendOrderType: false,
-        storageLocations:[],
         // 人员集合
         dictOptions:[],
         validatorRules: {
           operatorSchema: {rules: [{required: true, message: '请选择派单类型'}]},
-          warehouseId: {rules: [{required: true, message: '请选择目标仓库'}]},
+          warehouseId: {rules: [{required: true, message: '请选择自家仓库'}]},
           endWarehouseId: {rules: [{required: true, message: '请选择终点仓库'}]},
           storageLocationId: {rules: [{required: true, message: '请选择库位'}]},
           taskTime: {rules: [{required: true, message: '请选择任务时间'}]}
@@ -228,8 +202,16 @@
           sm: { span: 24 - 6 }
         },
         activeKey: '1',
-        // 派单信息
+        // 默认table
         table1: {
+          loading: false,
+          dataSource: [],
+          columns:  [
+
+          ],
+        },
+        // 入库派单信息
+        tableRu: {
           loading: false,
           dataSource: [],
           columns:  [
@@ -268,9 +250,9 @@
               type: FormTypes.inputNumber,
               defaultValue: '1',
               placeholder: '${title}',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
+              validateRules: [{ required: true,pattern: /^([^0]|.{2,})$/, message: '${title}不能为空' }]
             },
-            {
+            /*{
               title: '自家仓库',
               key: 'warehouseId',
               width: '10%',
@@ -296,8 +278,8 @@
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
               validateRules: [{ required: false, message: '请选择${title}' }]
-            }
-            /*{
+            },
+            {
               title: '联系人',
               key: 'backup3',
               width: '12%',
@@ -324,6 +306,88 @@
               placeholder: '请输入${title}',
               validateRules: [{ required: false, message: '${title}不能为空' }]
             },*/
+          ],
+        },
+        // 出库派单信息
+        tableChu: {
+          loading: false,
+          dataSource: [],
+          columns:  [
+            {
+              title: '工程账号',
+              key: 'projectNo',
+              width: '12%',
+              type: FormTypes.normal,
+              defaultValue: 'A1002',
+              placeholder: '请输入${title}',
+              validateRules: [{ required: false, message: '${title}不能为空' }]
+            },
+            {
+              title: '工程名称',
+              key: 'projectName',
+              width: '22%',
+              type: FormTypes.normal,
+              defaultValue: 'A一零零二',
+              placeholder: '请输入${title}',
+              validateRules: [{ required: false, message: '${title}不能为空' }],
+              scopedSlots: { customRender: 'factoryText' },
+            },
+            {
+              title: '物料名称',
+              key: 'wasteMaterialText',
+              width: '20%',
+              type: FormTypes.normal,
+              defaultValue: 'A02',
+              placeholder: '请输入${title}',
+              validateRules: [{ required: false, message: '${title}不能为空' }]
+            },
+            {
+              title: '自家仓库',
+              key: 'wname',
+              width: '10%',
+              type: FormTypes.normal,
+              // disabled:true,
+              // dictCode:"warehouse,name,id",
+              placeholder: '请选择${title}',
+              validateRules: [{ required: false, message: '请选择${title}' }],
+              // onchange: 'onchange'
+            },
+            {
+              title: '自家库位',
+              key: 'storagename',
+              width: '10%',
+              type: FormTypes.normal,
+              // disabled:true,
+              // dictCode: 'storage_location,storage_location_name,id',
+              validateRules: [{ required: false, message: '请选择${title}' }],
+              placeholder: '请选择${title}'
+            },
+            {
+              title: '可出库数量',
+              key: 'inventoryQuantity',
+              width: '8%',
+              type: FormTypes.normal,
+              placeholder: '请输入${title}',
+              validateRules: [{ required: false, message: '${title}不能为空' }]
+            },
+            {
+              title: '派单数量',
+              key: 'backup1',
+              width: '8%',
+              type: FormTypes.inputNumber,
+              defaultValue: '1',
+              placeholder: '${title}',
+              validateRules: [{ required: true,pattern: /^([^0]|.{2,})$/, message: '${title}不能为空' }]
+            },
+            {
+              title: '终点仓库',
+              key: 'endWarehouseId',
+              width: '10%',
+              type: FormTypes.select,
+              dictCode: 'warehouse,name,id',
+              placeholder: '请选择${title}',
+              validateRules: [{ required: false, message: '请选择${title}' }]
+            }
           ],
         },
         // 派单车辆信息
@@ -363,12 +427,20 @@
             },*/
           ]
         },
-        url: {
-          list1: '/cable/plan1/idslist',
-          list2: '/cable/plan2/idslist',
-          list3: '/cable/plan3/idslist',
-          list4: '/cable/plan4/idslist',
+        urlChu: {
+          list1: '/cable/plan1/idslistChu',
+          list2: '/cable/plan2/idslistChu',
+          list3: '/cable/plan3/idslistChu',
+          list4: '/cable/plan4/idslistChu',
+        },
+        urlRu: {
+          list1: '/cable/plan1/idslistRu',
+          list2: '/cable/plan2/idslistRu',
+          list3: '/cable/plan3/idslistRu',
+          list4: '/cable/plan4/idslistRu',
 
+        },
+        url:{
           add: '/cable/sendOrders/mergePlanadd',
           edit: '/cable/sendOrders/mergePlanadd',
           orderCustomerList: '/test/jeecgOrderMain/queryOrderCustomerListByMainId',
@@ -380,25 +452,9 @@
 
     },
     methods: {
-
       onchange(val){
         console.log("进入了sendNumberonblur方法！！！")
         console.log("对象的id >>>>:",val)
-      },
-
-      /**
-       * 自家仓库
-       */
-      types(val) {
-        this.storageLocations = []
-        this.form.setFieldsValue({storageLocationId: undefined})
-        let va = val
-        getAction('/cable/storageLocation/list', {warehouseId: va}).then((res) => {
-          if (res.success) {
-            this.storageLocations = res.result
-            console.log(this.storageLocations)
-          }
-        })
       },
       /**
        * 派单类型 change 方法[待定功能]============
@@ -409,10 +465,12 @@
         if (value == 0) {
           // 出库操作
           this.sendOrderType = true
+          this.table1 = this.tableChu
         }
         if (value == 1) {
           // 入库操作
           this.sendOrderType = false
+          this.table1 = this.tableRu
         }
       },
       // 获取所有的editableTable实例
@@ -433,28 +491,45 @@
         this.edit({})
       },
       mergePlanModelShow(ids,paln) {
+        // 默认新增一条数据
+        this.getAllTable().then(editableTables => {
+          editableTables[1].add()
+        })
         this.activeKey = '1'
-        this.form.resetFields()
-        this.form.setFieldsValue({warehouseId:undefined})
+
         this.ids = ids.toString()
         this.paln = paln
-        let url = '';
-        if(paln == '1') { url = this.url.list1 }
-        else if(paln == '2'){ url += this.url.list2}
-        else if(paln == '3'){ url += this.url.list3}
-        else if(paln == '4'){ url += this.url.list4}
+        let urlRu = '';
+        let urlChu = '';
+        if(paln == '1') {
+          urlRu = this.urlRu.list1
+          urlChu = this.urlChu.list1
+        }
+        else if(paln == '2'){
+          urlRu += this.urlRu.list2
+          urlChu += this.urlChu.list2
+        }
+        else if(paln == '3'){
+          urlRu += this.urlRu.list3
+          urlChu += this.urlChu.list3
+        }
+        else if(paln == '4'){
+          urlRu += this.urlRu.list4
+          urlChu += this.urlChu.list4
+        }
 
 
         console.log("打开合并派单页面》》》： ",ids)
         // 加载子表数据
         if (ids) {
           let params = { ids: this.ids }
-          this.requestTableData(url, params, this.table1)
+          this.requestTableData(urlRu, params, this.tableRu)
+          this.requestTableData(urlChu, params, this.tableChu)
         }
       },
       close() {
-        this.storageLocations = []
-        this.vehicles={}
+
+        console.log("进入 close 方法》》》》》")
         this.visible = false
         this.getAllTable().then(editableTables => {
           editableTables[0].initialize()
@@ -478,6 +553,8 @@
           console.log("查询成功》》数据是》》：",tab.dataSource,"表格是》：",tab)
         }).finally(() => {
           tab.loading = false
+          this.form.setFieldsValue({operatorSchema:'1'})
+          this.table1 = this.tableRu
         })
       },
       handleOk() {
@@ -530,17 +607,19 @@
           url = this.url.edit
           method = 'put'
         }
-        this.confirmLoading = true
         formData.planType = this.paln
-        console.log("formData",formData)
         if (formData.realname != undefined)
-        formData.realname = formData.realname.split(",")
+          formData.realname = formData.realname.split(",")
+
+
+        if (formData.operatorSchema == 0) {
+          let backup1 = Number(formData.jeecgOrderCustomerList[0].backup1)
+          let inventoryQuantity = Number(formData.jeecgOrderCustomerList[0].inventoryQuantity)
+          if (backup1 > inventoryQuantity) return this.$message.warning("出库数量不足！")
+        }
 
         console.log("发起新增或修改的请求",url, formData, method)
-          // this.confirmLoading = false
-          // return
-
-
+        this.confirmLoading = true
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)

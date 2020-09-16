@@ -1,6 +1,7 @@
 package org.jeecg.modules.cable.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +24,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.cable.vo.Plan3ExcelVo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -33,6 +36,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -142,13 +146,13 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      */
     @AutoLog(value = "计划表1-分页列表查询")
     @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
-    @GetMapping(value = "/idslist")
-    public Result<?> idsqueryPageList(@RequestParam(name = "ids") String ids,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+    @GetMapping(value = "/idslistRu")
+    public Result<?> idsqueryRuList(@RequestParam(name = "ids") String ids,
+                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         List<Plan1> list = new ArrayList<>();
         Plan1 plan;
-        List<Plan3> pageList = plan3Service.idsqueryPageList3(Arrays.asList(ids.split(",")));
+        List<Plan3> pageList = plan3Service.idsqueryRuList(Arrays.asList(ids.split(",")));
         for (int i = 0; i < pageList.size(); i++) {
             if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
                 return Result.error("工程账号必须一致");
@@ -158,9 +162,28 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
             plan.setProjectName(pageList.get(i).getEngName());                  //项目名称
             plan.setWasteMaterialText(pageList.get(i).getMaterialDescribe());   //物料描述
             plan.setWasteMaterialCode(pageList.get(i).getMaterialCode());       //物料代码
+            pageList.get(i).setBackup1(null);
             list.add(plan);
         }
         return Result.ok(list);
+    }
+
+    /**
+     * 根据ids集合
+     * 派单出库列表查询
+     *
+     * @return
+     */
+    @AutoLog(value = "计划表1-分页列表查询")
+    @ApiOperation(value = "计划表1-分页列表查询", notes = "计划表1-分页列表查询")
+    @GetMapping(value = "/idslistChu")
+    public Result<?> idsqueryChuList(@RequestParam(name = "ids") String ids) {
+        List<SendOrdersVo> pageList = plan3Service.idsqueryChuList(Arrays.asList(ids.split(",")));
+        for (int i = 0; i < pageList.size(); i++) {
+            if (!pageList.get(0).getProjectNo().equals(pageList.get(i).getProjectNo()))
+                return Result.error("工程账号必须一致");
+        }
+        return Result.ok(pageList);
     }
 
     /**
@@ -272,14 +295,17 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      *
      * @return
      */
+    @Transactional
     @RequestMapping(value = "/importExcel/{planType}", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response, @PathVariable String planType) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        material.setCreateBy(sysUser == null ? "" : sysUser.getUsername());
-        material.setUpdateBy(sysUser == null ? "" : sysUser.getUsername());
+        if (null != sysUser) {
+            material.setCreateBy(sysUser.getUsername());
+            material.setUpdateBy(sysUser.getUsername());
+        } else return Result.error("请重新登录！");
         material.setCreateTime(new Date());
         material.setUpdateTime(new Date());
         Integer in = 0;
@@ -296,6 +322,10 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
                 List<Material> materialList = new ArrayList<>();
                 QueryWrapper<Material> queryWrapper = new QueryWrapper<>();
                 for (Plan3Im plan3Im : list) {
+                    //判断对象中属性值是否为空
+                    Boolean flag = (StrUtil.isNotBlank(plan3Im.getEngName()) || StrUtil.isNotBlank(plan3Im.getProjectNo()) || StrUtil.isNotBlank(plan3Im.getMaterialCode()) || StrUtil.isNotBlank(plan3Im.getMaterialDescribe()) || StrUtil.isNotBlank(plan3Im.getProTheorderNo()));
+                    if (!flag) return Result.error("请补全物料信息！");//只要有一个参数不为空的就新增一条数据
+
                     Plan3 plan3 = new Plan3();
                     for (SysDictItem dictItem : dictItems) {
                         // 导入时若单位不为空则进行单位转换
@@ -316,18 +346,22 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
                     plan3.setCreateTime(new Date());
                     //todo 每次都向计划3集合中添加单个计划对象信息
                     plan3List.add(plan3);
+                    in++;
+
                     // 根据计划3的物料代码构造条件
                     queryWrapper.eq("serial", plan3.getMaterialCode());
+                    queryWrapper.eq("name", plan3.getMaterialDescribe());
                     // 根据条件查询数据库中是否存在此物料
                     List<Material> list1 = materialService.list(queryWrapper);
                     if (list1.size() == 0) {
-                        // 不存在此物料那么就向数据库中新增一条物料信息
-                        in++;   // 记录新增的物料信息数量
-                        material.setSerial(plan3.getMaterialCode());    // 物料编码
-                        material.setUnit(plan3.getMeasuringUnit());     // 物料单位
-                        material.setName(plan3.getMaterialDescribe());  // 物料描述
-                        //todo 每次都向物料集合中添加单个物料对象信息
-                        materialList.add(material);
+                        if (StrUtil.isNotBlank(plan3.getMaterialCode()) && StrUtil.isNotBlank(plan3.getMaterialDescribe())) {
+                            // 不存在此物料那么就向数据库中新增一条物料信息
+                            material.setSerial(plan3.getMaterialCode());    // 物料编码
+                            material.setName(plan3.getMaterialDescribe());  // 物料描述
+                            material.setUnit(plan3.getMeasuringUnit());     // 物料单位
+                            //todo 每次都向物料集合中添加单个物料对象信息
+                            materialList.add(material);
+                        }
                     }
                 }
                 // todo 最后通过 saveBatch 方法全部添加所有的物料和计划3中的数据到库中
@@ -336,7 +370,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
                 materialService.saveBatch(materialList);
                 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
                 if (in != 0) {
-                    return Result.ok("文件导入成功！数据行数：" + list.size());
+                    return Result.ok("文件导入成功！数据行数：" + in);
                 }
                 return Result.ok("文件导入成功！数据行数：" + list.size());
             } catch (Exception e) {
@@ -352,4 +386,55 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
         }
         return Result.error("文件导入失败！");
     }
+    /**
+     * 计划表3新品统计
+     *
+     * @return
+     */
+    @GetMapping(value = "/selectNewproducts")
+    public Result<?> selectNewproducts(@RequestParam(name = "materialDescribe",required = false) String materialDescribe,
+                                       @RequestParam(name = "beginTime",required = false) String beginTime,
+                                       @RequestParam(name = "endTime",required = false) String endTime,
+                                       @RequestParam(name = "planType",required = false) String planType,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<Plan3Vo> page = new Page<>(pageNo, pageSize);
+        IPage<Plan3Vo> pageList = plan3Service.selectNewproducts(materialDescribe,beginTime,endTime,planType,page);
+        return Result.ok(pageList);
+    }
+    /**
+     * 导出新品统计数据 excel
+     *
+     * @param request
+     */
+    @RequestMapping(value = "/exportXls2")
+    public ModelAndView exportXls2(HttpServletRequest request, Plan3ExcelVo plan3ExcelVo) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String title = "新品统计";
+        List<Plan3ExcelVo> list = plan3Service.exportPlan2(plan3ExcelVo);
+        Plan3ExcelVo plan3ExcelVo1 = new Plan3ExcelVo();
+        BigDecimal warehousingNum = BigDecimal.valueOf(0);
+        BigDecimal warehouseOutNum =  BigDecimal.valueOf(0);
+        String proName = "";
+        for (Plan3ExcelVo excelVo : list) {
+            proName += excelVo.getEngName() + ",";
+            warehousingNum=warehousingNum.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getWarehousingNum())));
+            warehouseOutNum=warehouseOutNum.add(BigDecimal.valueOf(Double.parseDouble(excelVo.getWarehouseOutNum())));
+            excelVo.setEngName(null);
+        }
+        plan3ExcelVo1.setMaterialDescribe("合计:");
+        plan3ExcelVo1.setWarehousingNum(warehousingNum.toString());
+        plan3ExcelVo1.setWarehouseOutNum(warehouseOutNum.toString());
+        list.add(plan3ExcelVo1);
+        list.get(0).setDecommissioningDate(plan3ExcelVo.getDecommissioningDate());
+        list.get(0).setRemark(plan3ExcelVo.getRemark());
+        list.get(0).setEngName(proName);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.CLASS, Plan3ExcelVo.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(plan3ExcelVo.getBeginTime()+"--"+plan3ExcelVo.getEndTime()+"/新品统计",""));
+        mv.addObject(NormalExcelConstants.DATA_LIST, list);
+        return mv;
+    }
+
 }

@@ -212,14 +212,14 @@
       </a-table>
     </div>
 
-    <plan3-modal ref="modalForm" @ok="modalFormOk"></plan3-modal>
-    <planAccomplish-modal ref="planAccomplishModal"></planAccomplish-modal>
+    <plan3-modal ref="modalForm" @ok="modasFormOk"></plan3-modal>
+    <planAccomplish-modal ref="planAccomplishModal" @ok="modasFormOk"></planAccomplish-modal>
     <planSendOrders-modal ref="planSendOrdersModal" @ok="modasFormOk"></planSendOrders-modal>
-    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal"></plan-send-orders-the-same-day-modal>
+    <plan-send-orders-the-same-day-modal ref="planSendOrdersTheSameDayModal" @ok="modasFormOk"></plan-send-orders-the-same-day-modal>
     <plan-complete-state-modal ref="planCompleteStateModal" @ok="modasFormOk"></plan-complete-state-modal>
-    <merge-plan ref="MergePlan" @ok="mergePlan"></merge-plan>
-    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="mergePlan"></merge-plan-model-plan1>
-    <complete-plan3-model ref="CompletePlan3Model" @ok="CompletePlan"></complete-plan3-model>
+    <merge-plan ref="MergePlan" @ok="modasFormOk"></merge-plan>
+    <merge-plan-model-plan1 ref="MergePlanModelPlan1" @ok="modasFormOk"></merge-plan-model-plan1>
+    <complete-plan3-model ref="CompletePlan3Model" @ok="modasFormOk"></complete-plan3-model>
     <plan-send-orders-j-l-modal ref="planSendOrdersJLModal" @ok="modasFormOk"></plan-send-orders-j-l-modal>
     <!-- 派单记录 modal -->
     <plan-send-orders-wd-modal ref="planSendOrdersWdModal" @ok="modasFormOk"></plan-send-orders-wd-modal>
@@ -229,23 +229,23 @@
 
 <script>
   import '@/assets/less/TableExpand.less'
-  import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {mixinDevice} from '@/utils/mixin'
+  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import Plan3Modal from './modules/Plan3Modal'
   import JInput from '@/components/jeecg/JInput'
-  import { httpAction, getAction } from '@/api/manage'
+  import {httpAction, getAction} from '@/api/manage'
   import PlanSendOrdersModal from './modules/PlanSendOrdersModal'
   import PlanAccomplishModal from './modules/PlanAccomplishModal'
   import PlanSendOrdersTheSameDayModal from './modules/PlanSendOrdersTheSameDayModal'
   import JEllipsis from '../../components/jeecg/JEllipsis'
   import JDate from '@/components/jeecg/JDate'
-  import { downFile } from '../../api/manage'
+  import {downFile} from '../../api/manage'
   import PlanCompleteStateModal from './modules/PlanCompleteStateModal'
-  import MergePlan from './modules/MergePlanModel'
-  import MergePlanModelPlan1 from './modules/MergePlanModelPlan1'
-  import CompletePlan3Model from './modules/CompletePlan3Model'
-  import PlanSendOrdersJLModal from './modules/PlanSendOrdersJLModal'
-  import PlanSendOrdersWdModal from './modules/PlanSendOrdersWdModal'
+  import MergePlan from "./modules/MergePlanModel";
+  import MergePlanModelPlan1 from "./modules/MergePlanModelPlan1";
+  import CompletePlan3Model from "./modules/CompletePlan3Model";
+  import PlanSendOrdersJLModal from "./modules/PlanSendOrdersJLModal";
+  import PlanSendOrdersWdModal from './modules/PlanSendOrdersWdModal';
 
   export default {
     name: 'Plan3List',
@@ -265,7 +265,7 @@
       PlanCompleteStateModal,
       CompletePlan3Model
     },
-    data () {
+    data() {
       return {
         description: '计划表3管理页面',
         width: 800,
@@ -287,37 +287,35 @@
             title: '计划类型',
             align: 'center',
             dataIndex: 'planType',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '项目编号',
             align: 'center',
             dataIndex: 'projectNo',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '工程名称',
             align: 'center',
             dataIndex: 'engName',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '采购订单号',
             align: 'center',
             dataIndex: 'proTheorderNo',
-            scopedSlots: { customRender: 'factoryText' }
           },
           {
             title: '物料描述',
             align: 'center',
             dataIndex: 'materialDescribe',
-            scopedSlots: { customRender: 'factoryText' }
+            scopedSlots: {customRender: 'factoryText'}
           },
           {
             title: '需求数量',
             align: 'center',
             dataIndex: 'num',
-            scopedSlots: { customRender: 'factoryText' }
           },
           /*{
             title: '单位',
@@ -330,11 +328,8 @@
             align: 'center',
             dataIndex: '',
             customRender: (text, record) => {
-              if (record.alreadyDeliverStorage === null || record.alreadyDeliverStorage === undefined || record.alreadyDeliverStorage === 0) {
-                return '未入库'
-              } else {
-                return '已入库'
-              }
+              if (record.alreadyDeliverStorage === null || record.alreadyDeliverStorage === undefined || record.alreadyDeliverStorage === 0) return '未入库'
+              else return '已入库'
             }
           },
           {
@@ -342,11 +337,8 @@
             align: 'center',
             dataIndex: 'alreadyDeliverStorage',
             customRender: (value, row, index) => {
-              if (value === null || value === undefined) {
-                return 0
-              } else {
-                return value
-              }
+              if (value === null || value === undefined) return 0
+              else return value
             }
           },
           {
@@ -354,11 +346,8 @@
             align: 'center',
             dataIndex: '',
             customRender: (text, record) => {
-              if (record.alreadyReceivingStorage === null || record.alreadyReceivingStorage === undefined || record.alreadyReceivingStorage === 0) {
-                return '未出库'
-              } else {
-                return '已出库'
-              }
+              if (record.alreadyReceivingStorage === null || record.alreadyReceivingStorage === undefined || record.alreadyReceivingStorage === 0) return '未出库'
+              else return '已出库'
             }
           },
           {
@@ -366,11 +355,8 @@
             align: 'center',
             dataIndex: 'alreadyReceivingStorage',
             customRender: (value, row, index) => {
-              if (value === null || value === undefined) {
-                return 0
-              } else {
-                return value
-              }
+              if (value === null || value === undefined) return 0
+              else return value
             }
           },
           {
@@ -378,11 +364,8 @@
             align: 'center',
             dataIndex: 'sendOrdersState',
             customRender: (value, row, index) => {
-              if (value === 0) {
-                return '未派单'
-              } else {
-                return '已派单'
-              }
+              if (value === 0) return '未派单'
+              else return '已派单'
             }
           },
           {
@@ -394,9 +377,9 @@
             title: '操作',
             dataIndex: 'action',
             align: 'center',
-            fixed: 'right',
+            fixed: "right",
             width: 147,
-            scopedSlots: { customRender: 'action' }
+            scopedSlots: {customRender: 'action'}
           }
         ],
         url: {
@@ -410,12 +393,12 @@
         completeStates: {},
         plan3TypeList: {},
         labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 }
+          xs: {span: 24},
+          sm: {span: 5}
         },
         wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 }
+          xs: {span: 24},
+          sm: {span: 16}
         },
       }
     },
@@ -424,11 +407,10 @@
       /**
        * 计划3合并完单
        */
-      completePlan () {
+      completePlan() {
         var ids = this.selectedRowKeys
-        if (ids.length == 0) {
+        if (ids.length == 0)
           return this.$message.warning('请选择合并完单项目!')
-        }
         //TODO 打开合并完单页面
         this.$refs.CompletePlan3Model.completePlanModelShow(ids)
         this.$refs.CompletePlan3Model.title = '合并完单'
@@ -436,14 +418,14 @@
       /**
        * 计划3完成状态
        */
-      plan3Status (record) {
+      plan3Status(record) {
         console.log('计划3完成状态[0未完成 1已完成]', record)
         this.$refs.planCompleteStateModal.show(record, 3)
       },
-      modasFormOk () {
-        this.loadData(1)
+      modasFormOk() {
+        this.loadData()
       },
-      loadData (arg) {
+      loadData(arg) {
         if (!this.url.list) {
           //this.$message.error("请设置url.list属性!")
           return
@@ -468,37 +450,31 @@
       /**
        * 派单记录
        */
-      assignsJL () {
+      assignsJL() {
         let ids = this.selectedRowKeys
-        if (ids.length == 0) {
+        if (ids.length == 0)
           return this.$message.warning('请选择查看派单记录的计划!')
-        }
         console.log('派单记录3', ids)
         this.$refs.planSendOrdersJLModal.dakpd(ids.toString(), 3)
-        this.$refs.planSendOrdersJLModal.title = ''
+        this.$refs.planSendOrdersJLModal.title = '派单记录'
       },
       /**
        * 完单记录
        */
-      assignsWD (val) {
+      assignsWD(val) {
         let ids = this.selectedRowKeys
-        if (ids.length == 0) {
+        if (ids.length == 0)
           return this.$message.warning('请选择派单项目!')
-        }
         console.log('完单记录3', ids)
         this.$refs.planSendOrdersWdModal.dakpd(ids.toString(), 3)
-        this.$refs.planSendOrdersWdModal.title = ''
-      },
-      TheSameDay () {
-        this.$refs.planSendOrdersTheSameDayModal.theSameDays()
-        this.$refs.planSendOrdersTheSameDayModal.title = ''
+        this.$refs.planSendOrdersWdModal.title = '完单记录'
       },
       // 导出反馈excel
-      handleExportXls (fileName) {
+      handleExportXls(fileName) {
         if (!fileName || typeof fileName != 'string') {
           fileName = '导出文件'
         }
-        let param = { ...this.queryParam }
+        let param = {...this.queryParam}
         if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
           param['selections'] = this.selectedRowKeys.join(',')
         }
@@ -509,10 +485,10 @@
             return
           }
           if (typeof window.navigator.msSaveBlob !== 'undefined') {
-            window.navigator.msSaveBlob(new Blob([data], { type: 'application/vnd.ms-excel' }), fileName + '.xls')
+            window.navigator.msSaveBlob(new Blob([data], {type: 'application/vnd.ms-excel'}), fileName + '.xls')
             this.plan3ExportModal_visible = false
           } else {
-            let url = window.URL.createObjectURL(new Blob([data], { type: 'application/vnd.ms-excel' }))
+            let url = window.URL.createObjectURL(new Blob([data], {type: 'application/vnd.ms-excel'}))
             let link = document.createElement('a')
             link.style.display = 'none'
             link.href = url
@@ -525,10 +501,10 @@
           }
         })
       },
-      showExportPlan3Modal () {
+      showExportPlan3Modal() {
         this.plan3ExportModal_visible = true
       },
-      handleCancelExportPlan3Modal () {
+      handleCancelExportPlan3Modal() {
         this.plan3ExportModal_visible = false
       },
       /* 导入前操作 */
@@ -542,7 +518,7 @@
         }
       },
       /* 导入后操作 */
-      handleImportExcel (info) {
+      handleImportExcel(info) {
         if (info.file.status !== 'uploading') {
           console.log(info.file, info.fileList)
         }
@@ -550,89 +526,97 @@
           if (info.file.response.success) {
             // this.$message.success(`${info.file.name} 文件上传成功`);
             if (info.file.response.code === 201) {
-              let { message, result: { msg, fileUrl, fileName } } = info.file.response
+              let {message, result: {msg, fileUrl, fileName}} = info.file.response
               let href = window._CONFIG['domianURL'] + fileUrl
               this.$warning({
-                title: message,
-                content: (
-                  < div>
-                    < span> {msg} < /span><br/ >
-                      < span > 具体详情请 < a href={href} target='_blank' download={fileName}> 点击下载 < /a> </span>
-                    < /div>
-                      )
-                      })
-                      } else {
-                      this.$message.success(info.file.response.message || `${info.file.name} 文件上传成功`)
-                      this.visible = false
-                      this.loadData()
-                    }
-                      } else {
-                      this.$message.error(`${info.file.name} ${info.file.response.message}.`)
-                    }
-                      } else if (info.file.status === 'error') {
-                      //this.$message.error(`文件上传失败: ${info.file.msg} `);
-                      this.visible = false
-                      this.loadData()
-                    }
-                      },
-                      showImportModal() {
-                      this.visible = true
-                    },
-                      handleCancel() {
-                      this.visible = false
-                    },
-                      /**
-                      * 合并派单
-                      */
-                      mergePlan() {
-                      let ids = this.selectedRowKeys
-                      if(ids.length == 0)
-                      return this.$message.warning('请选择合并派单项目!')
+                  title: message,
+                  content: (
+                    < div >
+                    < span > {msg} < /span><br/ >
+                    < span > 具体详情请 < a href = {href} target = '_blank' download = {fileName} > 点击下载 < /a> </span >
+                < /div>
+              )
+            })
+            } else {
+              this.$message.success(info.file.response.message || `${info.file.name} 文件上传成功`)
+              this.visible = false
+              this.loadData()
+            }
+          } else {
+            this.$message.error(`${info.file.name} ${info.file.response.message}.`)
+          }
+        } else if (info.file.status === 'error') {
+          //this.$message.error(`文件上传失败: ${info.file.msg} `);
+          this.visible = false
+          this.loadData()
+        }
+      },
+      showImportModal() {
+        this.visible = true
+      },
+      handleCancel() {
+        this.visible = false
+      },
+      /**
+       * 今日派单
+       */
+      TheSameDay() {
+        console.log("今日派单")
+        this.$refs.planSendOrdersTheSameDayModal.theSameDays()
+        this.$refs.planSendOrdersTheSameDayModal.title = '今日派单'
+      },
+      /**
+       * 合并派单
+       */
+      mergePlan() {
+        let ids = this.selectedRowKeys
+        if (ids.length == 0)
+          return this.$message.warning('请选择合并派单项目!')
 
-                      console.log('点击了合并派单', ids)
-                      //TODO 打开合并派单页面
-                      this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids,3)
-                      this.$refs.MergePlanModelPlan1.title = '合并派单'
-                      // this.$refs.MergePlan.mergePlanModelShow(ids,3)
-                      // this.$refs.MergePlan.title = '合并派单'
-                    },
-                      assigns(val) {
-                      console.log('派单')
-                      this.$refs.MergePlanModelPlan1.mergePlanModelShow(val.id,3)
-                      // this.$refs.planSendOrdersModal.dakpd(val, 3)
-                      this.$refs.planSendOrdersModal.title = ''
-                    },
-                      //完单操作
-                      accomplish(val) {
-                      console.log('完单')
-                      this.$refs.CompletePlan3Model.completePlanModelShow(val.id)
-                      this.$refs.CompletePlan3Model.title = '合并完单'
-                      // this.$refs.planAccomplishModal.dakwd(val, 3)
-                      // this.$refs.planAccomplishModal.title = ''
-                    },
-                      completeStateList() {
-                      getAction('/sys/dictItem/selectCompleteState').then((res) => {
-                        if (res.success) {
-                          this.completeStates = res.result
-                        }
-                      })
-                    },
-                      /**
-                      * 查询所有计划3的字典信息
-                      */
-                      getPlan3TypeList() {
-                      getAction('/sys/dictItem/getSysDictItemCommon', { commonText: 'plan3_type' }).then((res) => {
-                        if (res.success) {
-                          this.plan3TypeList = res.result
-                        }
-                      })
-                    }
-                      },
-                      created() {
-                      this.completeStateList()
-                      this.getPlan3TypeList()
-                    }
-                      }
+        console.log("点击了合并派单", ids)
+        //TODO 打开合并派单页面
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(ids, 3)
+        this.$refs.MergePlanModelPlan1.title = '合并派单'
+        // this.$refs.MergePlan.mergePlanModelShow(ids,3)
+        // this.$refs.MergePlan.title = '合并派单'
+      },
+      assigns(val) {
+        console.log('派单')
+        this.$refs.MergePlanModelPlan1.mergePlanModelShow(val.id, 3)
+        // this.$refs.planSendOrdersModal.dakpd(val, 3)
+        this.$refs.planSendOrdersModal.title = ''
+      },
+      //完单操作
+      accomplish(val) {
+        console.log('完单')
+        this.$refs.CompletePlan3Model.completePlanModelShow(val.id)
+        this.$refs.CompletePlan3Model.title = '合并完单'
+        // this.$refs.planAccomplishModal.dakwd(val, 3)
+        // this.$refs.planAccomplishModal.title = ''
+      },
+      completeStateList() {
+        getAction('/sys/dictItem/selectCompleteState').then((res) => {
+          if (res.success) {
+            this.completeStates = res.result
+          }
+        })
+      },
+      /**
+       * 查询所有计划3的字典信息
+       */
+      getPlan3TypeList() {
+        getAction('/sys/dictItem/getSysDictItemCommon', {commonText: 'plan3_type'}).then((res) => {
+          if (res.success) {
+            this.plan3TypeList = res.result
+          }
+        })
+      }
+    },
+    created() {
+      this.completeStateList()
+      this.getPlan3TypeList()
+    }
+  }
 </script>
 <style scoped>
   @import '~@assets/less/common.less';

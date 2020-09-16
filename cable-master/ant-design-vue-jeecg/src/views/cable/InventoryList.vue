@@ -7,14 +7,14 @@
         <a-row :gutter="24">
 
           <a-col :md="4" :sm="7">
-            <a-form-item label="物料名称">
-              <a-input placeholder="请输入物料名称" v-model="queryParam.materialName"></a-input>
+            <a-form-item label="物料编号">
+              <a-input placeholder="请输入物料编号" v-model="queryParam.serial"></a-input>
             </a-form-item>
           </a-col>
 
           <a-col :md="4" :sm="7">
-            <a-form-item label="物料编号">
-              <a-input placeholder="请输入物料编号" v-model="queryParam.serial"></a-input>
+            <a-form-item label="物料名称">
+              <a-input placeholder="请输入物料名称" v-model="queryParam.materialName"></a-input>
             </a-form-item>
           </a-col>
 
@@ -156,9 +156,13 @@
             dataIndex: 'dw_dictText',
           },
           {
-            title: '重量(吨)',
+            title: '重量',
             align: 'center',
             dataIndex: 'availableWeight',
+            customRender: (text,record) => {
+              if (record.availableWeight != '' && record.availableWeight != null)
+                return record.availableWeight + '吨'
+            }
           },
           {
             title: '操作',

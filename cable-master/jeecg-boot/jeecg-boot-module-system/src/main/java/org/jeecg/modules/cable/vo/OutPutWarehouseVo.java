@@ -103,4 +103,12 @@ public class OutPutWarehouseVo implements Serializable {
      * 交接单号
      */
     private String receiptNo;
+    /**
+     * 终点仓库名称
+     */
+    private String endWarehouseName;
+    /**
+     * 情况说明
+     */
+    private String annotation;
 }

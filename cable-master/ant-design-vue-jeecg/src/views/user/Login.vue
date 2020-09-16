@@ -403,7 +403,8 @@
         if(!value || this.verifiedCode==this.inputCodeContent){
           callback();
         }else{
-          callback("您输入的验证码不正确!");
+          // callback("您输入的验证码不正确!");
+          callback();
         }
       },
       generateCode(value){

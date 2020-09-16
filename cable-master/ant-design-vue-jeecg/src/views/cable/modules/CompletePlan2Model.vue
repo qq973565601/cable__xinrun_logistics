@@ -198,6 +198,13 @@
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
               validateRules: [{ required: true, message: '请选择${title}' }]
+            },
+            {
+              title: '说明',
+              key: 'annotation',
+              width: '10%',
+              type: FormTypes.input_pop,
+              placeholder: '请输入${title}'
             }
           ]
         },
@@ -285,6 +292,13 @@
               dictCode: 'warehouse,name,id',
               placeholder: '请选择${title}',
               validateRules: [{ required: true, message: '请选择${title}' }]
+            },
+            {
+              title: '说明',
+              key: 'annotation',
+              width: '10%',
+              type: FormTypes.input_pop,
+              placeholder: '请输入${title}'
             }
           ]
         },
@@ -347,7 +361,7 @@
               validateRules: [{ required: true, message: '请输入${title}' }]
             },
             {
-              title: '目标仓库',
+              title: '自家仓库',
               key: 'warehouseId',
               width: '10%',
               type: FormTypes.select,

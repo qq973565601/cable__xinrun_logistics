@@ -331,7 +331,7 @@
         confirmLoading: false,
         validatorRules: {
           operatorSchema: {rules: [{required: true, message: '请选择派单类型'}]},
-          warehouseId: {rules: [{required: true, message: '请选择目标仓库'}]},
+          warehouseId: {rules: [{required: true, message: '请选择自家仓库'}]},
           endWarehouseId: {rules: [{required: true, message: '请选择终点仓库'}]},
           storageLocationId: {rules: [{required: true, message: '请选择库位'}]},
           taskTime: {rules: [{required: true, message: '请选择任务时间'}]}
@@ -478,7 +478,7 @@
           }
         })
       },
-      mergePlanModelShow(ids,paln) {
+      mergePlanModelShow111(ids,paln) {
         this.ids = ids.toString()
         this.paln = paln
         let url = '';

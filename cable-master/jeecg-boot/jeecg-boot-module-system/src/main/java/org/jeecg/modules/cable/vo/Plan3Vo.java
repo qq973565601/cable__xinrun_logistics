@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.jeecg.modules.cable.entity.Plan3;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class Plan3Vo extends Plan3 implements Serializable {
     /**
      * 可出库数量[批量完单操作时使用此属性] ----2020/8/26 bai
      */
-    private int inventoryQuantity;
+    private BigDecimal inventoryQuantity;
     /**
      * 批量完单的计划 id集合
      */
@@ -59,6 +60,18 @@ public class Plan3Vo extends Plan3 implements Serializable {
      * 合并完单填写的数据集
      */
     private List<?> completeOrderList;
+    /**
+     * 入库数量
+     */
+    private String warehousingNum;
+    /**
+     * 出库数量
+     */
+    private String warehouseOutNum;
+    /**
+     * 单位
+     */
+    private String itemText;
 }
 
 

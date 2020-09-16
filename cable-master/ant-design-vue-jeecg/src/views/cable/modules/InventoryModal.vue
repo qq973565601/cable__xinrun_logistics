@@ -186,12 +186,14 @@
               </a-form-item>
             </a-col>
 <!--            toggleSearchStatus-->
-            <template v-if="true">
+            <template v-if="columns1flag">
               <a-col :md="4" :sm="24">
                 <a-form-item label="资产编号">
                   <a-input placeholder="请输入资产编号" v-model="queryParam.pAssetNo"></a-input>
                 </a-form-item>
               </a-col>
+            </template>
+              <template v-if="columns3flag">
               <a-col :md="4" :sm="24">
                 <a-form-item label="采购订单号">
                   <a-input placeholder="请输入采单号" v-model="queryParam.proTheorderNo"></a-input>
@@ -280,6 +282,10 @@
         queryParam: {},
         /* 查询折叠 */
         toggleSearchStatus: false,
+        //资产编号
+        columns1flag :false,
+        //采购订单号
+        columns3flag :false,
         id: '',
         ipagination: {
             pageNo: 1,
@@ -410,6 +416,15 @@
             dataIndex: 'dw_dictText',
           },
           {
+            title: '重量',
+            align: 'center',
+            dataIndex: 'availableWeight',
+            customRender: (text,record) => {
+              if (record.availableWeight != '' && record.availableWeight != null)
+                return record.availableWeight + '吨'
+            }
+          },
+          {
             title: '仓库名称',
             align: 'center',
             dataIndex: 'warehouseName'
@@ -447,10 +462,12 @@
             console.log("this.type",type)
             if (type == '3') {
               this.columns = this.columns3
+              this.columns3flag = true
             } else if (type == '4' || type == null) {
               this.columns = this.columns4
             }else if(type == '1' || type == '2'){
               this.columns = this.columns1
+              this.columns1flag = true
             }
           } else {
             this.$message.warning(res.message)
@@ -475,6 +492,10 @@
         this.columns = []
         this.visible = false
         this.toggleSearchStatus = false
+        //资产编号
+        this.columns1flag = false
+        //采购订单号
+        this.columns3flag = false
       },
       handleTableChange(pagination, filters, sorter) {
           //TODO 筛选

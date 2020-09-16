@@ -12,7 +12,9 @@ import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
 import org.jeecg.modules.cable.mapper.Plan3Mapper;
 import org.jeecg.modules.cable.service.*;
+import org.jeecg.modules.cable.vo.Plan3ExcelVo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +109,7 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                     } else {
                         plan3.setAlreadyDeliverStorage(plan3.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }
-                    boolean res = this.updateById(plan3);
+                    boolean res = plan3Service.updateById(plan3);
                     System.err.println("计划3更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -150,7 +152,7 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
                     Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
                     receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
-                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("warehouse_id", warehouse.getId()).eq("storage_location_name", map.get("storageLocationName").toString()));
                     receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
                     receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
@@ -160,6 +162,7 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
                     receivingStorage.setState(1);
                     receivingStorage.setReceiptPhotos(receiptPhotos);
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime));
+                    receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date());
                     LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     receivingStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername());
@@ -243,9 +246,16 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
     }
 
     @Override
-    public List<Plan3> idsqueryPageList3(List<String> ids) {
+    public List<Plan3> idsqueryRuList(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan3> list = baseMapper.selectBatchIds(ids);
+        return list;
+    }
+
+    @Override
+    public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
         return list;
     }
 
@@ -274,6 +284,28 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
             // 设置导出返回日期
             p.setFeedbackDateTime(new Date());
         }
+        return list;
+    }
+
+
+    /**
+     * 计划表3新品统计
+     *
+     * @return
+     */
+    @Override
+    public IPage<Plan3Vo> selectNewproducts(String materialDescribe,String beginTime, String endTime,  String planType, Page<Plan3Vo> page) {
+        return page.setRecords(baseMapper.selectNewproducts(materialDescribe,beginTime, endTime, planType,page));
+    }
+
+    /**
+     *   计划表3新品统计数据导出
+     *
+     * @return
+     */
+    @Override
+    public List<Plan3ExcelVo> exportPlan2(Plan3ExcelVo plan3ExcelVo) {
+        List<Plan3ExcelVo> list = baseMapper.exportPlan2(plan3ExcelVo);
         return list;
     }
 }

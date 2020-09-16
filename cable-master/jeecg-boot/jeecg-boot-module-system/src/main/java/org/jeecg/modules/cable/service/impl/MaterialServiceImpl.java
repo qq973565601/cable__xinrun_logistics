@@ -82,7 +82,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, String assetNo, Page<AnnualReportVo> page) {
-        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo, assetNo, page);
+        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo,assetNo, page);
         for (AnnualReportVo annualReportVo : list) {
             BigDecimal m10 = annualReportVo.getM10();
             BigDecimal m20 = annualReportVo.getM20();
@@ -164,9 +164,11 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         List<OutPutWarehouseVo> list = baseMapper.getOutPutWarehouseList(vo, page);
         for (OutPutWarehouseVo item : list) {
             for (SysDictItem u : units) {
-                if (u.getItemValue().equals(item.getAccomplishNumUnit().toString())) {
-                    // 以 / 拼接操作数量和单位
-                    item.setAccomplishNumConcatUnit(item.getAccomplishNum().toString().concat("/").concat(u.getItemText()));
+                if (item.getAccomplishNumUnit() != null) {
+                    if (u.getItemValue().equals(item.getAccomplishNumUnit().toString())) {
+                        // 以 / 拼接操作数量和单位
+                        item.setAccomplishNumConcatUnit(item.getAccomplishNum().toString().concat("/").concat(u.getItemText()));
+                    }
                 }
             }
             // 以 / 拼接操作重量和单位

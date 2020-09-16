@@ -11,7 +11,9 @@ import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan2Im;
 import org.jeecg.modules.cable.mapper.*;
 import org.jeecg.modules.cable.service.*;
+import org.jeecg.modules.cable.vo.IndexBPTJVo;
 import org.jeecg.modules.cable.vo.Plan2Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +105,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     } else {
                         plan2.setAlreadyDeliverStorage(plan2.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                     }
-                    boolean res = this.updateById(plan2);
+                    boolean res = plan2Service.updateById(plan2);
                     System.err.println("计划2更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -146,7 +148,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
                     Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
                     receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
-                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("warehouse_id", warehouse.getId()).eq("storage_location_name", map.get("storageLocationName").toString()));
                     receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
                     receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
                     receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
@@ -156,6 +158,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     receivingStorage.setState(1);
                     receivingStorage.setReceiptPhotos(receiptPhotos);
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime));
+                    receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date());
                     LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     receivingStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername());
@@ -241,9 +244,16 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
     }
 
     @Override
-    public List<Plan2> idsqueryPageList2(List<String> ids) {
+    public List<Plan2> idsqueryRuList(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan2> list = baseMapper.selectBatchIds(ids);
+        return list;
+    }
+
+    @Override
+    public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
         return list;
     }
 
@@ -263,5 +273,10 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
             plan2Im.setAnnotation(explain);
         }
         return list;
+    }
+
+    @Override
+    public List<IndexBPTJVo> getBPTJList(IndexBPTJVo vo) {
+        return baseMapper.getBPTJList(vo);
     }
 }

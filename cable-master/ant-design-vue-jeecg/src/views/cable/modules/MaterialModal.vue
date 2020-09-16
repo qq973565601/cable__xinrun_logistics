@@ -14,10 +14,13 @@
         </a-form-item>
         <a-form-item label="物料名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="['name',validatorRules.name]" placeholder="请输入物料名称"></a-input>
-        </a-form-item>
-        <a-form-item label="规格型号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="['ations',validatorRules.ations]" placeholder="请输入规格型号"></a-input>
-        </a-form-item>
+          </a-form-item>
+          <a-form-item label="物料简称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="['backup1',validatorRules.backup1]" placeholder="请输入物料简称"></a-input>
+          </a-form-item>
+          <a-form-item label="规格型号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="['ations',validatorRules.ations]" placeholder="请输入规格型号"></a-input>
+          </a-form-item>
         <a-form-item label="供应商名" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="['supplier',validatorRules.supplier]" placeholder="请输入供应商名称"></a-input>
         </a-form-item>

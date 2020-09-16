@@ -7,6 +7,7 @@ import org.jeecg.modules.cable.entity.Plan2;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Plan2Vo extends Plan2 implements Serializable {
     /**
      * 可出库数量[批量完单操作时使用此属性]
      */
-    private int inventoryQuantity;
+    private BigDecimal inventoryQuantity;
     /**
      * 批量完单的计划id集合
      */

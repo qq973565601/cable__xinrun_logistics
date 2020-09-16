@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
@@ -11,7 +12,9 @@ import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
 import org.jeecg.modules.cable.mapper.Plan4Mapper;
 import org.jeecg.modules.cable.service.*;
+import org.jeecg.modules.cable.vo.Plan4ExcelVo;
 import org.jeecg.modules.cable.vo.Plan4Vo;
+import org.jeecg.modules.cable.vo.SendOrdersVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,12 +108,14 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     wrapper.eq("project_no", plan4.getProjectNo());
                     wrapper.eq("material_id", material == null ? null : material.getId());
                     wrapper.eq("recycling_specifications", plan4MaterialName);
+                    wrapper.eq("backup1", ids.get(i));
+                    wrapper.eq("backup2", 4);
                     if (plan4.getAlreadyDeliverStorage() == null) {
-                        plan4.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
+                        plan4.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
                     } else {
-                        plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                        plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
                     }
-                    boolean res = this.updateById(plan4);
+                    boolean res = plan4Service.updateById(plan4);
                     System.err.println("计划4更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -156,25 +161,30 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     receivingStorage.setPlanId(Integer.parseInt(ids.get(i).toString()));
                     receivingStorage.setPlanType(4);
                     // 计划4拼接后的物料名称
-                    String plan4MaterialName = map.get("recyclingSpecifications").toString().concat(" ").concat(map.get("texture").toString());
-                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", plan4MaterialName));
+                    // String plan4MaterialName = map.get("recyclingSpecifications").toString().concat(" ").concat(map.get("texture").toString());
+                    Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("cableCross")));
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
                     Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
                     receivingStorage.setWarehouseId(warehouse == null ? null : warehouse.getId()); // 仓库id
-                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("storage_location_name", map.get("storageLocationName").toString()));
+                    StorageLocation storageLocation = storageLocationService.getOne(new QueryWrapper<StorageLocation>().eq("warehouse_id", warehouse.getId()).eq("storage_location_name", map.get("storageLocationName").toString()));
                     receivingStorage.setStorageLocationId(storageLocation == null ? null : storageLocation.getId()); // 库位id
                     receivingStorage.setBackup1(Integer.parseInt(map.get("endWarehouseId").toString())); // 终点仓库id
-                    receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                    receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
+                    if (map.containsKey("accomplishNum") && StringUtils.isNotBlank(map.get("accomplishNum").toString())) {
+                        receivingStorage.setAccomplishNum(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
+                    }
+                    if (map.containsKey("unit") && StringUtils.isNotBlank(map.get("unit").toString())) {
+                        receivingStorage.setAccomplishNumUnit(Integer.parseInt(map.get("unit").toString()));
+                    }
                     receivingStorage.setAccomplishWeight(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
                     receivingStorage.setAccomplishWeightUnit(2);//电缆重量默认吨
                     receivingStorage.setAccomplishVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
-                    receivingStorage.setRecyclingSpecifications(map.get("recyclingSpecifications").toString());
-                    receivingStorage.setTexture(map.get("texture").toString());
+                    receivingStorage.setRecyclingSpecifications(map.get("cableCross").toString().split(" ")[0] + map.get("cableCross").toString().split(" ")[1]);
+                    receivingStorage.setTexture(map.get("cableCross").toString().split(" ")[2]);
                     receivingStorage.setReceiptNo(receiptNo);
                     receivingStorage.setState(1);
                     receivingStorage.setReceiptPhotos(receiptPhotos);
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime));
+                    receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date());
                     LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     receivingStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername());
@@ -186,39 +196,49 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     Plan4 plan4 = this.getOne(new QueryWrapper<Plan4>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan4.getProjectNo());
                     wrapper.eq("material_id", material != null ? material.getId() : null);
-                    wrapper.eq("recycling_specifications", plan4MaterialName);
-                    if (plan4.getAlreadyReceivingStorage() == null) {
-                        plan4.setAlreadyReceivingStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                    } else {
-                        plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                    wrapper.eq("recycling_specifications", map.get("cableCross"));
+                    wrapper.eq("backup1", ids.get(i));
+                    wrapper.eq("backup2", 4);
+                    if (StringUtils.isNotBlank(map.get("accomplishWeight").toString())) {
+                        if (plan4.getAlreadyReceivingStorage() == null) {
+                            plan4.setAlreadyReceivingStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
+                        } else {
+                            plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
+                        }
+                        boolean res = plan4Service.updateById(plan4);
+                        System.err.println("计划4更新数据是否成功:" + res);
                     }
-                    boolean res = plan4Service.updateById(plan4);
-                    System.err.println("计划4更新数据是否成功:" + res);
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         if (inventory.getInventoryQuantity() == null || inventory.getBackup4() == null || inventory.getBackup5() == null) {
                             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("该库存数量或该库存容积或该库存电缆重量不存在,无法进行出库操作");
                         }
-                        int result = inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
                         int result2 = inventory.getBackup4().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         int result3 = inventory.getBackup5().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                        if (result == 0 || result > 0) {
-                            inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                        if (result3 == 0 || result3 > 0) {
+                            // 减去库存重量
+                            inventory.setBackup5(inventory.getBackup5().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
                             if (result2 == 0 || result2 > 0) {
+                                // 减去库存容积
                                 inventory.setBackup4(inventory.getBackup4().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                                if (result3 == 0 || result3 > 0) {
-                                    inventory.setBackup5(inventory.getBackup5().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
-                                    boolean flag = inventoryService.updateById(inventory);
-                                    System.err.println("出库是否成功:" + flag + ",出库后库存数为[" + inventory.getInventoryQuantity() + "]");
-                                    if (inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(0)) == 0) {
-                                        //todo 库存数为0时删除此库存记录
-                                        inventoryService.removeById(inventory.getId());
-                                        System.err.println("删除库存记录成功");
+                                // 前端是否输入出库数量
+                                if (StringUtils.isNotBlank(map.get("accomplishNum").toString())) {
+                                    int result = inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
+                                    if (result == 0 || result > 0) {
+                                        // 减去库存数量
+                                        inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
+                                    } else {
+                                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
+                                        return Result.error("库存数量不足,无法进行出库操作");
                                     }
-                                } else {
-                                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
-                                    return Result.error("库存电缆重量不足,无法进行出库操作");
+                                }
+                                boolean flag = inventoryService.updateById(inventory);
+                                System.err.println("出库是否成功:" + flag + ",出库后库存数为[" + inventory.getInventoryQuantity() + "]");
+                                if (inventory.getBackup5().compareTo(BigDecimal.valueOf(0)) == 0) {
+                                    //todo 库存数为0时删除此库存记录
+                                    inventoryService.removeById(inventory.getId());
+                                    System.err.println("删除库存记录成功");
                                 }
                             } else {
                                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
@@ -226,7 +246,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                             }
                         } else {
                             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
-                            return Result.error("库存数量不足,无法进行出库操作");
+                            return Result.error("库存电缆重量不足,无法进行出库操作");
                         }
                     } else {
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
@@ -265,9 +285,16 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     }
 
     @Override
-    public List<Plan4> idsqueryPageList4(List<String> ids) {
+    public List<Plan4> idsqueryRuList(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
         List<Plan4> list = baseMapper.selectBatchIds(ids);
+        return list;
+    }
+
+    @Override
+    public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
+        //TODO 构造条件，根据id的集合做条件查询
+        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
         return list;
     }
 
@@ -278,8 +305,8 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     }
 
     @Override
-    public List<Plan4Im> exportPlan4(Plan4 plan4, String explain) {
-        List<Plan4Im> list = baseMapper.exportPlan4(plan4);
+    public List<Plan4Im> exportPlan4(Plan4 plan4, String explain, String beginTime, String endTime) {
+        List<Plan4Im> list = baseMapper.exportPlan4(plan4, beginTime, endTime);
         for (Plan4Im plan4Im : list) {
             // 设置反馈说明
             plan4Im.setFeedback(explain);
@@ -291,4 +318,26 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
     public List<Plan4Vo> exportFeedbackSummary(Plan4Vo plan4Vo) {
         return baseMapper.exportFeedbackSummary(plan4Vo);
     }
+
+    /**
+     * 计划表4配变电统计
+     *
+     * @return
+     */
+    @Override
+    public IPage<Plan4Vo> selectCable(String voltageGrade, String beginTime, String endTime, String planType, Page<Plan4Vo> page) {
+        return page.setRecords(baseMapper.selectCable(voltageGrade, beginTime, endTime, planType, page));
+    }
+
+    /**
+     * 电缆统计导出
+     *
+     * @return
+     */
+    @Override
+    public List<Plan4ExcelVo> exportPlan3(Plan4ExcelVo plan4ExcelVo) {
+        List<Plan4ExcelVo> list = baseMapper.exportPlan3(plan4ExcelVo);
+        return list;
+    }
+
 }
