@@ -219,7 +219,7 @@
           <div class="span_title">
             <div class="span_title_icon"></div>
             <span class="span_title_span">临措统计</span>
-            <a-select class="span_title_select" size="small" default-value="lucy" style="width: 120px"
+            <!--<a-select class="span_title_select" size="small" default-value="lucy" style="width: 120px"
                       @change="handleChange">
               <a-select-option value="jack">
                 本周
@@ -233,7 +233,8 @@
               <a-select-option value="Yiminghe">
                 本周
               </a-select-option>
-            </a-select>
+            </a-select>-->
+            <a-range-picker class="span_title_select" size="small" @change="lctjTimeChange" style="width: 280px"/>
           </div>
           <div class="span_hx"></div>
           <div style="height:260px;margin-top:35px" id="lctj"></div>
@@ -264,7 +265,7 @@
 import IndexChart from './IndexChart'
 import IndexTask from './IndexTask'
 import IndexBdc from './IndexBdc'
-import { Line, Column, GroupedColumn, PercentStackedColumn, Donut } from '@antv/g2plot'
+import { Line, Column, GroupedColumn, PercentStackedColumn, StackedColumn, Donut } from '@antv/g2plot'
 import * as G2 from '@antv/g2'
 import { getAction } from '@api/manage'
 
@@ -368,9 +369,7 @@ export default {
         {},
         {},
       ],
-      // 备品统计所需 G2 charts
-      bptj_chart: null,
-      // 备品统计所需数据源
+      bptj_chart: null, // 备品统计所需 G2 charts
       bptj_data: [
         { country: '其他', type: '出', value: 0 },
         { country: '其他', type: '入', value: 0 },
@@ -382,14 +381,10 @@ export default {
         { country: '柜子', type: '入', value: 0 },
         { country: '变压器', type: '出', value: 0 },
         { country: '变压器', type: '入', value: 0 },
-      ],
-      // 备品统计查询条件 开始日期
-      bptj_beginTime: null,
-      // 备品统计查询条件 结束日期
-      bptj_endTime: null,
-      // 线路统计所需 分组柱状图 --- GroupedColumn
-      xltj_columnPlot: null,
-      // 线路统计所需数据源
+      ], // 备品统计所需数据源
+      bptj_beginTime: null, // 备品统计查询条件 开始日期
+      bptj_endTime: null, // 备品统计查询条件 结束日期
+      xltj_columnPlot: null, // 线路统计所需 分组柱状图 --- GroupedColumn
       xltj_data: [
         { name: '计划数量', 物料简称: '钢线路', 数量: 0 },
         { name: '计划数量', 物料简称: '铝线路', 数量: 0 },
@@ -399,11 +394,22 @@ export default {
         { name: '入库', 物料简称: '铝线路', 数量: 0 },
         { name: '入库', 物料简称: '变压器', 数量: 0 },
         { name: '入库', 物料简称: '倒刀', 数量: 0 }
-      ],
-      // 线路统计查询条件 开始日期
-      xltj_beginTime: null,
-      // 线路统计查询条件 结束日期
-      xltj_endTime: null,
+      ], // 线路统计所需数据源
+      xltj_beginTime: null, // 线路统计查询条件 开始日期
+      xltj_endTime: null, // 线路统计查询条件 结束日期
+      lctj_columnPlot: null, // 临措统计所需 堆叠柱状图 -- StackedColumn
+      lctj_data: [
+        { states: '出', name: '电缆', value: 0, },
+        { states: '出', name: '电缆配件', value: 0, },
+        { states: '出', name: '变压器', value: 0, },
+        { states: '出', name: '其他', value: 0, },
+        { states: '入', name: '电缆', value: 0, },
+        { states: '入', name: '电缆配件', value: 0, },
+        { states: '入', name: '变压器', value: 0, },
+        { states: '入', name: '其他', value: 0 }
+      ], // 临措统计所需数据源
+      lctj_beginTime: null, // 临措统计查询条件 开始日期
+      lctj_endTime: null, // 临措统计查询条件 结束日期
     }
   },
   mounted () {
@@ -795,7 +801,7 @@ export default {
       })
     },
     // 线路统计时间 change 事件 bai 2020/9/17
-    xltjTimeChange (data, dateString) {
+    xltjTimeChange (date, dateString) {
       let _this = this
       console.log('线路统计时间 change 事件', dateString)
       _this.xltj_beginTime = dateString[0]
@@ -805,6 +811,135 @@ export default {
       }
       _this.xltj_columnPlot.destroy() // 销毁线路统计柱状图
       _this.xltj()
+    },
+    // 临措统计 bai 2020/9/17
+    lctj () {
+      let _this = this
+      let data = _this.lctj_data
+      let req = {
+        'beginTime': _this.lctj_beginTime,
+        'endTime': _this.lctj_endTime
+      }
+      getAction('/index/getLCTJList', req).then(res => {
+        console.log('首页临措统计模块', res)
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].name == '电缆') {
+            if (data[i].states == '出') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '电缆') {
+                  data[i].value = res.result[j].receivingNum
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '电缆') {
+                  data[i].value = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].name == '电缆配件') {
+            if (data[i].states == '出') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '电缆配件') {
+                  data[i].value = res.result[j].receivingNum
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '电缆配件') {
+                  data[i].value = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].name == '变压器') {
+            if (data[i].states == '出') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '变压器') {
+                  data[i].value = res.result[j].receivingNum
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '变压器') {
+                  data[i].value = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].name == '其他') {
+            if (data[i].states == '出') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 != '电缆' && res.result[j].backup1 != '电缆配件' && res.result[j].backup1 != '变压器') {
+                  data[i].value = res.result[j].receivingNum
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 != '电缆' && res.result[j].backup1 != '电缆配件' && res.result[j].backup1 != '变压器') {
+                  data[i].value = res.result[j].deliverNum
+                }
+              }
+            }
+          }
+        }
+        console.log('临措统计图所需数据源为', data)
+
+        _this.lctj_columnPlot = new StackedColumn(document.getElementById('lctj'), {
+          title: {
+            visible: false
+          },
+          forceFit: true,
+          data,
+          xField: 'name',
+          yField: 'value',
+          stackField: 'states',
+          columnSize: 14,
+          color: ['#CEE8E8', '#63A3E0'],
+          columnStyle: (b) => {
+            if (b === '入') {
+              return { fill: 'l(90) 0:#63A3E0 1:#1CC09E' }
+            } else if (b === '出') {
+              return { fill: '#CEE8E8' }
+            }
+          },
+          yAxis: {
+            line: {
+              visible: true
+            },
+            tickLine: {
+              visible: true
+            },
+            label: {
+              visible: true,
+            },
+            title: {
+              visible: false
+            }
+          },
+          xAxis: {
+            title: {
+              visible: false
+            }
+          },
+          legend: {
+            position: 'top-right',
+          }
+        })
+        _this.lctj_columnPlot.render()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // 临措统计时间 change 事件 bai 2020/9/17
+    lctjTimeChange (date, dateString) {
+      let _this = this
+      console.log('临措统计时间 change 事件', dateString)
+      _this.lctj_beginTime = dateString[0]
+      _this.lctj_endTime = dateString[1]
+      for (let i = 0; i < _this.lctj_data.length; i++) {
+        _this.lctj_data[i].value = 0  // 将临措统计中的数量设置为 0
+      }
+      _this.lctj_columnPlot.destroy() // 销毁临措统计堆叠柱状图
+      _this.lctj()
     },
 
     ckrj () {
@@ -878,102 +1013,6 @@ export default {
             }
           }
         },
-      })
-      columnPlot.render()
-    },
-    lctj () {
-      const data = [ //先出后入
-        {
-          states: '出',
-          name: '物料1',
-          value: 90,
-        },
-        {
-          states: '出',
-          name: '物料2',
-          value: 80,
-        },
-        {
-          states: '出',
-          name: '物料3',
-          value: 70,
-        },
-        {
-          states: '出',
-          name: '物料4',
-          value: 60,
-        },
-        {
-          states: '出',
-          name: '其他',
-          value: 50,
-        },
-        {
-          states: '入',
-          name: '物料1',
-          value: 10,
-        },
-        {
-          states: '入',
-          name: '物料2',
-          value: 20,
-        },
-        {
-          states: '入',
-          name: '物料3',
-          value: 30,
-        },
-        {
-          states: '入',
-          name: '物料4',
-          value: 40,
-        },
-        {
-          states: '入',
-          name: '其他',
-          value: 50,
-        },
-      ]
-      const columnPlot = new PercentStackedColumn(document.getElementById('lctj'), {
-        title: {
-          visible: false
-        },
-        forceFit: true,
-        data,
-        xField: 'name',
-        yField: 'value',
-        stackField: 'states',
-        columnSize: 14,
-        color: ['#CEE8E8', '#63A3E0'],
-        columnStyle: (b) => {
-          if (b === '入') {
-            return { fill: 'l(90) 0:#63A3E0 1:#1CC09E' }
-          } else if (b === '出') {
-            return { fill: '#CEE8E8' }
-          }
-        },
-        yAxis: {
-          line: {
-            visible: true
-          },
-          tickLine: {
-            visible: true
-          },
-          label: {
-            visible: true,
-          },
-          title: {
-            visible: false
-          }
-        },
-        xAxis: {
-          title: {
-            visible: false
-          }
-        },
-        legend: {
-          position: 'top-right',
-        }
       })
       columnPlot.render()
     },

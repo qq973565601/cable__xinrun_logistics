@@ -166,11 +166,11 @@
         LEFT JOIN deliver_storage d ON p.id = d.plan_id AND d.plan_type = 2
         LEFT JOIN material m ON p.backup3 = m.serial
         <where>
-            m.backup1 = '变压器'
+            (m.backup1 = '变压器'
             OR m.backup1 = '柜子'
             OR m.backup1 = '箱变'
             OR m.backup1 = '屏'
-            OR m.backup1 = '其他'
+            OR m.backup1 = '其他')
             <if test="vo.beginTime != null">
                 AND r.receiving_time &gt;= #{vo.beginTime}
                 AND d.deliver_time &gt;= #{vo.beginTime}

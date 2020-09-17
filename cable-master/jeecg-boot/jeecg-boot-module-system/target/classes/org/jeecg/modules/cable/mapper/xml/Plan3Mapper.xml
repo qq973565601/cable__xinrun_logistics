@@ -153,15 +153,17 @@
     </select>
     <!-- 计划表3新品统计 -->
     <select id="selectNewproducts" resultType="org.jeecg.modules.cable.vo.Plan3Vo">
-        SELECT  eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num) warehouse_out_num,item_text
+        SELECT eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num)
+        warehouse_out_num,item_text
         from plan3 p1
         INNER JOIN deliver_storage ds1 on p1.id=ds1.plan_id
         INNER JOIN receiving_storage rs1 on p1.id=rs1.plan_id
-        INNER JOIN (SELECT item_text,item_value from sys_dict sd  INNER JOIN sys_dict_item  sdi on sd.id=sdi.dict_id WHERE dict_code='unit' ) as sd1 on ds1.accomplish_num_unit=sd1.item_value
+        INNER JOIN (SELECT item_text,item_value from sys_dict sd INNER JOIN sys_dict_item sdi on sd.id=sdi.dict_id WHERE
+        dict_code='unit' ) as sd1 on ds1.accomplish_num_unit=sd1.item_value
 
         <where>
             <if test="null != planType">
-                AND  p1.plan_type=#{planType}
+                AND p1.plan_type=#{planType}
             </if>
             <if test="null != materialDescribe and '' != materialDescribe">
                 AND material_describe like CONCAT('%',#{materialDescribe},'%')
@@ -179,11 +181,13 @@
     </select>
     <!-- 导出汇总 -->
     <select id="exportPlan2" resultType="org.jeecg.modules.cable.vo.Plan3ExcelVo">
-        SELECT  eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num) warehouse_out_num,item_text
+        SELECT eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num)
+        warehouse_out_num,item_text
         from plan3 p1
         INNER JOIN deliver_storage ds1 on p1.id=ds1.plan_id
         INNER JOIN receiving_storage rs1 on p1.id=rs1.plan_id
-        INNER JOIN (SELECT item_text,item_value from sys_dict sd  INNER JOIN sys_dict_item  sdi on sd.id=sdi.dict_id WHERE dict_code='unit' ) as sd1 on ds1.accomplish_num_unit=sd1.item_value
+        INNER JOIN (SELECT item_text,item_value from sys_dict sd INNER JOIN sys_dict_item sdi on sd.id=sdi.dict_id WHERE
+        dict_code='unit' ) as sd1 on ds1.accomplish_num_unit=sd1.item_value
 
         <where>
             p1.plan_type='新品'
@@ -197,5 +201,65 @@
             </if>
         </where>
         GROUP BY eng_name
+    </select>
+
+    <!-- 首页临措统计 bai 2020/9/17 -->
+    <select id="getLCTJList" resultType="org.jeecg.modules.cable.vo.IndexLCTJVo">
+        SELECT
+        result.backup1,
+        SUM( result.deliverNum ) AS deliverNum,
+        result.deliver_time,
+        SUM( result.receivingNum ) AS receivingNum,
+        result.receiving_time
+        FROM
+        (
+        SELECT
+        m.backup1,
+        SUM( d.accomplish_num ) AS deliverNum,
+        d.deliver_time,
+        SUM( r.accomplish_num ) AS receivingNum,
+        r.receiving_time
+        FROM
+        plan3 p
+        LEFT JOIN deliver_storage d ON p.id = d.plan_id
+        AND d.plan_type = 3
+        LEFT JOIN receiving_storage r ON p.id = r.plan_id
+        AND r.plan_type = 3
+        LEFT JOIN material m ON p.material_code = m.serial
+        WHERE
+        p.plan_type = '临措'
+        AND m.backup1 IN ( '电缆', '电缆配件', '变压器' )
+        GROUP BY
+        m.backup1 UNION ALL
+        SELECT
+        m.backup1,
+        SUM( d.accomplish_num ) AS deliverNum,
+        d.deliver_time,
+        SUM( r.accomplish_num ) AS receivingNum,
+        r.receiving_time
+        FROM
+        plan3 p
+        LEFT JOIN deliver_storage d ON p.id = d.plan_id
+        AND d.plan_type = 3
+        LEFT JOIN receiving_storage r ON p.id = r.plan_id
+        AND r.plan_type = 3
+        LEFT JOIN material m ON p.material_code = m.serial
+        WHERE
+        p.plan_type = '临措'
+        AND m.backup1 NOT IN ( '电缆', '电缆配件', '变压器' )
+        GROUP BY
+        m.backup1
+        ) result
+        <where>
+            <if test="vo.beginTime != null">
+                AND deliver_time &gt;= #{vo.beginTime}
+                AND receiving_time &gt;= #{vo.beginTime}
+            </if>
+            <if test="vo.endTime != null">
+                AND deliver_time &lt;= #{vo.endTime}
+                AND receiving_time &lt;= #{vo.endTime}
+            </if>
+        </where>
+        GROUP BY result.backup1
     </select>
 </mapper>

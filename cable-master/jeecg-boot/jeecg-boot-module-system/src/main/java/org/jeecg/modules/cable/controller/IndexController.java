@@ -6,7 +6,9 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.service.IPlan1Service;
 import org.jeecg.modules.cable.service.IPlan2Service;
+import org.jeecg.modules.cable.service.IPlan3Service;
 import org.jeecg.modules.cable.vo.IndexBPTJVo;
+import org.jeecg.modules.cable.vo.IndexLCTJVo;
 import org.jeecg.modules.cable.vo.IndexXLTJVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,8 @@ public class IndexController {
     private IPlan1Service plan1Service;
     @Autowired
     private IPlan2Service plan2Service;
+    @Autowired
+    private IPlan3Service plan3Service;
 
     /**
      * 首页备品统计
@@ -54,6 +58,19 @@ public class IndexController {
     @GetMapping(value = "/getXLTJList")
     public Result<?> getXLTJList(IndexXLTJVo vo) {
         List<IndexXLTJVo> list = plan1Service.getXLTJList(vo);
+        return Result.ok(list);
+    }
+
+    /**
+     * 首页临措统计
+     * bai 2020/9/17
+     *
+     * @param vo 查询条件
+     * @return 临措统计数据
+     */
+    @GetMapping(value = "/getLCTJList")
+    public Result<?> getLCTJList(IndexLCTJVo vo) {
+        List<IndexLCTJVo> list = plan3Service.getLCTJList(vo);
         return Result.ok(list);
     }
 }

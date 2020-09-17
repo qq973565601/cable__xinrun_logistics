@@ -12,6 +12,7 @@ import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
 import org.jeecg.modules.cable.mapper.Plan3Mapper;
 import org.jeecg.modules.cable.service.*;
+import org.jeecg.modules.cable.vo.IndexLCTJVo;
 import org.jeecg.modules.cable.vo.Plan3ExcelVo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.cable.vo.SendOrdersVo;
@@ -294,12 +295,12 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
      * @return
      */
     @Override
-    public IPage<Plan3Vo> selectNewproducts(String materialDescribe,String beginTime, String endTime,  String planType, Page<Plan3Vo> page) {
-        return page.setRecords(baseMapper.selectNewproducts(materialDescribe,beginTime, endTime, planType,page));
+    public IPage<Plan3Vo> selectNewproducts(String materialDescribe, String beginTime, String endTime, String planType, Page<Plan3Vo> page) {
+        return page.setRecords(baseMapper.selectNewproducts(materialDescribe, beginTime, endTime, planType, page));
     }
 
     /**
-     *   计划表3新品统计数据导出
+     * 计划表3新品统计数据导出
      *
      * @return
      */
@@ -307,5 +308,10 @@ public class Plan3ServiceImpl extends ServiceImpl<Plan3Mapper, Plan3> implements
     public List<Plan3ExcelVo> exportPlan2(Plan3ExcelVo plan3ExcelVo) {
         List<Plan3ExcelVo> list = baseMapper.exportPlan2(plan3ExcelVo);
         return list;
+    }
+
+    @Override
+    public List<IndexLCTJVo> getLCTJList(IndexLCTJVo vo) {
+        return baseMapper.getLCTJList(vo);
     }
 }

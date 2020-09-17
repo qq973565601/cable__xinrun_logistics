@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.cable.entity.Plan3;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
+import org.jeecg.modules.cable.vo.IndexLCTJVo;
 import org.jeecg.modules.cable.vo.Plan3ExcelVo;
 import org.jeecg.modules.cable.vo.Plan3Vo;
 import org.jeecg.modules.cable.vo.SendOrdersVo;
@@ -60,15 +61,26 @@ public interface Plan3Mapper extends BaseMapper<Plan3> {
      * @return
      */
     List<Plan3Im> exportPlan3(@Param("plan3") Plan3 plan3);
+
     /**
      * 计划表3新品统计
      *
      * @return
      */
-    List<Plan3Vo> selectNewproducts(@Param("materialDescribe")String materialDescribe, @Param("beginTime")String beginTime,  @Param("endTime")String endTime, @Param("planType")String planType, @Param("page") Page<Plan3Vo> page);
+    List<Plan3Vo> selectNewproducts(@Param("materialDescribe") String materialDescribe, @Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("planType") String planType, @Param("page") Page<Plan3Vo> page);
+
     /**
      * 导出数据
+     *
      * @return
      */
     List<Plan3ExcelVo> exportPlan2(@Param("plan3ExcelVo") Plan3ExcelVo plan3ExcelVo);
+
+    /**
+     * 首页临措统计
+     * bai 2020/9/17
+     *
+     * @return 临措统计数据
+     */
+    List<IndexLCTJVo> getLCTJList(@Param("vo") IndexLCTJVo vo);
 }
