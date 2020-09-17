@@ -643,25 +643,48 @@
     <!-- 首页线路统计 bai 2020/9/17 -->
     <select id="getXLTJList" resultType="org.jeecg.modules.cable.vo.IndexXLTJVo">
         SELECT
+        *
+        FROM
+        (
+        SELECT
         m.backup1,
         SUM( d.deliverNum ) AS deliverNum,
-        d.deliver_time,
+        d.deliver_time AS deliverTime,
         SUM( p.num_receipts ) AS numReceipts
         FROM
         plan1 p
         LEFT JOIN ( SELECT plan_id, plan_type, SUM( accomplish_num ) AS deliverNum, deliver_time FROM deliver_storage GROUP BY plan_id ) d ON p.id = d.plan_id
         AND d.plan_type = 1
         LEFT JOIN material m ON p.waste_material_code = m.serial
+        WHERE
+        p.plan_type = '线路'
+        AND m.backup1 IN ( '导线', '开关', '变压器' )
+        GROUP BY
+        m.backup1 UNION ALL
+        SELECT
+        '其他' as backup1,
+        SUM( d.deliverNum ) AS deliverNum,
+        d.deliver_time AS deliverTime,
+        SUM( p.num_receipts ) AS numReceipts
+        FROM
+        plan1 p
+        LEFT JOIN ( SELECT plan_id, plan_type, SUM( accomplish_num ) AS deliverNum, deliver_time FROM deliver_storage GROUP BY plan_id ) d ON p.id = d.plan_id
+        AND d.plan_type = 1
+        LEFT JOIN material m ON p.waste_material_code = m.serial
+        WHERE
+        p.plan_type = '线路'
+        AND m.backup1 NOT IN ( '导线', '开关', '变压器' )
+        GROUP BY
+        m.backup1
+        ) `result`
         <where>
-            p.plan_type = '线路'
-            AND ( m.backup1 = '导线' OR m.backup1 = '开关' OR m.backup1 = '变压器' OR m.backup1 = '其他' )
             <if test="vo.beginTime != null">
-                AND d.deliver_time &gt;= #{vo.beginTime}
+                AND `result`.deliverTime &gt;= #{vo.beginTime}
             </if>
             <if test="vo.endTime != null">
-                AND d.deliver_time &lt;= #{vo.endTime}
+                AND `result`.deliverTime &lt;= #{vo.endTime}
             </if>
         </where>
-        GROUP BY m.backup1
+        GROUP BY `result`.backup1
     </select>
 </mapper>

@@ -386,14 +386,14 @@ export default {
       bptj_endTime: null, // 备品统计查询条件 结束日期
       xltj_columnPlot: null, // 线路统计所需 分组柱状图 --- GroupedColumn
       xltj_data: [
-        { name: '计划数量', 物料简称: '钢线路', 数量: 0 },
-        { name: '计划数量', 物料简称: '铝线路', 数量: 0 },
+        { name: '计划数量', 物料简称: '导线', 数量: 0 },
+        { name: '计划数量', 物料简称: '开关', 数量: 0 },
         { name: '计划数量', 物料简称: '变压器', 数量: 0 },
-        { name: '计划数量', 物料简称: '倒刀', 数量: 0 },
-        { name: '入库', 物料简称: '钢线路', 数量: 0 },
-        { name: '入库', 物料简称: '铝线路', 数量: 0 },
+        { name: '计划数量', 物料简称: '其他', 数量: 0 },
+        { name: '入库', 物料简称: '导线', 数量: 0 },
+        { name: '入库', 物料简称: '开关', 数量: 0 },
         { name: '入库', 物料简称: '变压器', 数量: 0 },
-        { name: '入库', 物料简称: '倒刀', 数量: 0 }
+        { name: '入库', 物料简称: '其他', 数量: 0 }
       ], // 线路统计所需数据源
       xltj_beginTime: null, // 线路统计查询条件 开始日期
       xltj_endTime: null, // 线路统计查询条件 结束日期
@@ -687,30 +687,30 @@ export default {
       getAction('/index/getXLTJList', req).then(res => {
         console.log('首页线路统计模块', res)
         for (let i = 0; i < data.length; i++) {
-          if (data[i].物料简称 == '钢线路') {
+          if (data[i].物料简称 == '导线') {
             if (data[i].name == '计划数量') {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '钢线路') {
+                if (res.result[j].backup1 == '导线') {
                   data[i].数量 = res.result[j].numReceipts
                 }
               }
             } else {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '钢线路') {
+                if (res.result[j].backup1 == '导线') {
                   data[i].数量 = res.result[j].deliverNum
                 }
               }
             }
-          } else if (data[i].物料简称 == '铝线路') {
+          } else if (data[i].物料简称 == '开关') {
             if (data[i].name == '计划数量') {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '铝线路') {
+                if (res.result[j].backup1 == '开关') {
                   data[i].数量 = res.result[j].numReceipts
                 }
               }
             } else {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '铝线路') {
+                if (res.result[j].backup1 == '开关') {
                   data[i].数量 = res.result[j].deliverNum
                 }
               }
@@ -729,16 +729,16 @@ export default {
                 }
               }
             }
-          } else if (data[i].物料简称 == '倒刀') {
+          } else if (data[i].物料简称 == '其他') {
             if (data[i].name == '计划数量') {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '倒刀') {
+                if (res.result[j].backup1 == '其他') {
                   data[i].数量 = res.result[j].numReceipts
                 }
               }
             } else {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 == '倒刀') {
+                if (res.result[j].backup1 == '其他') {
                   data[i].数量 = res.result[j].deliverNum
                 }
               }
@@ -868,13 +868,13 @@ export default {
           } else if (data[i].name == '其他') {
             if (data[i].states == '出') {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 != '电缆' && res.result[j].backup1 != '电缆配件' && res.result[j].backup1 != '变压器') {
+                if (res.result[j].backup1 == '其他') {
                   data[i].value = res.result[j].receivingNum
                 }
               }
             } else {
               for (let j = 0; j < res.result.length; j++) {
-                if (res.result[j].backup1 != '电缆' && res.result[j].backup1 != '电缆配件' && res.result[j].backup1 != '变压器') {
+                if (res.result[j].backup1 == '其他') {
                   data[i].value = res.result[j].deliverNum
                 }
               }

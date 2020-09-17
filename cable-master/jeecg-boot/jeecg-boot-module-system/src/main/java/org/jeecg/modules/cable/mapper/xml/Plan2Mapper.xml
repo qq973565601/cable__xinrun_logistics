@@ -154,32 +154,56 @@
     <!-- 首页备品统计物料出入库数量 bai 2020/9/16 -->
     <select id="getBPTJList" resultType="org.jeecg.modules.cable.vo.IndexBPTJVo">
         SELECT
+        *
+        FROM
+        (
+        SELECT
         p.id,
         m.backup1,
-        SUM(r.accomplish_num) as receivingNum,
-        r.receiving_time as receivingTime,
-        SUM(d.accomplish_num) as deliverNum,
-        d.deliver_time as deliverTime
+        SUM( r.accomplish_num ) AS receivingNum,
+        r.receiving_time AS receivingTime,
+        SUM( d.accomplish_num ) AS deliverNum,
+        d.deliver_time AS deliverTime
         FROM
         plan2 p
-        LEFT JOIN receiving_storage r ON p.id = r.plan_id AND r.plan_type = 2
-        LEFT JOIN deliver_storage d ON p.id = d.plan_id AND d.plan_type = 2
+        LEFT JOIN receiving_storage r ON p.id = r.plan_id
+        AND r.plan_type = 2
+        LEFT JOIN deliver_storage d ON p.id = d.plan_id
+        AND d.plan_type = 2
         LEFT JOIN material m ON p.backup3 = m.serial
+        WHERE
+        m.backup1 IN ( '变压器', '柜子', '箱变', '屏' )
+        GROUP BY
+        m.backup1 UNION ALL
+        SELECT
+        p.id,
+        '其他' as backup1,
+        SUM( r.accomplish_num ) AS receivingNum,
+        r.receiving_time AS receivingTime,
+        SUM( d.accomplish_num ) AS deliverNum,
+        d.deliver_time AS deliverTime
+        FROM
+        plan2 p
+        LEFT JOIN receiving_storage r ON p.id = r.plan_id
+        AND r.plan_type = 2
+        LEFT JOIN deliver_storage d ON p.id = d.plan_id
+        AND d.plan_type = 2
+        LEFT JOIN material m ON p.backup3 = m.serial
+        WHERE
+        m.backup1 NOT IN ( '变压器', '柜子', '箱变', '屏' )
+        GROUP BY
+        m.backup1
+        ) `result`
         <where>
-            (m.backup1 = '变压器'
-            OR m.backup1 = '柜子'
-            OR m.backup1 = '箱变'
-            OR m.backup1 = '屏'
-            OR m.backup1 = '其他')
             <if test="vo.beginTime != null">
-                AND r.receiving_time &gt;= #{vo.beginTime}
-                AND d.deliver_time &gt;= #{vo.beginTime}
+                AND `result`.receivingTime &gt;= #{vo.beginTime}
+                AND `result`.deliverTime &gt;= #{vo.beginTime}
             </if>
             <if test="vo.endTime != null">
-                AND r.receiving_time &lt;= #{vo.endTime}
-                AND d.deliver_time &lt;= #{vo.endTime}
+                AND `result`.receivingTime &lt;= #{vo.endTime}
+                AND `result`.deliverTime &lt;= #{vo.endTime}
             </if>
         </where>
-        GROUP BY m.backup1
+        GROUP BY `result`.backup1
     </select>
 </mapper>

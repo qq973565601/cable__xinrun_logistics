@@ -206,19 +206,15 @@
     <!-- 首页临措统计 bai 2020/9/17 -->
     <select id="getLCTJList" resultType="org.jeecg.modules.cable.vo.IndexLCTJVo">
         SELECT
-        result.backup1,
-        SUM( result.deliverNum ) AS deliverNum,
-        result.deliver_time,
-        SUM( result.receivingNum ) AS receivingNum,
-        result.receiving_time
+        *
         FROM
         (
         SELECT
         m.backup1,
         SUM( d.accomplish_num ) AS deliverNum,
-        d.deliver_time,
+        d.deliver_time AS deliverTime,
         SUM( r.accomplish_num ) AS receivingNum,
-        r.receiving_time
+        r.receiving_time AS receivingTime
         FROM
         plan3 p
         LEFT JOIN deliver_storage d ON p.id = d.plan_id
@@ -232,11 +228,11 @@
         GROUP BY
         m.backup1 UNION ALL
         SELECT
-        m.backup1,
+        '其他' as backup1,
         SUM( d.accomplish_num ) AS deliverNum,
-        d.deliver_time,
+        d.deliver_time AS deliverTime,
         SUM( r.accomplish_num ) AS receivingNum,
-        r.receiving_time
+        r.receiving_time AS receivingTime
         FROM
         plan3 p
         LEFT JOIN deliver_storage d ON p.id = d.plan_id
@@ -249,17 +245,17 @@
         AND m.backup1 NOT IN ( '电缆', '电缆配件', '变压器' )
         GROUP BY
         m.backup1
-        ) result
+        ) `result`
         <where>
             <if test="vo.beginTime != null">
-                AND deliver_time &gt;= #{vo.beginTime}
-                AND receiving_time &gt;= #{vo.beginTime}
+                AND `result`.receivingTime &gt;= #{vo.beginTime}
+                AND `result`.deliverTime &gt;= #{vo.beginTime}
             </if>
             <if test="vo.endTime != null">
-                AND deliver_time &lt;= #{vo.endTime}
-                AND receiving_time &lt;= #{vo.endTime}
+                AND `result`.receivingTime &lt;= #{vo.endTime}
+                AND `result`.deliverTime &lt;= #{vo.endTime}
             </if>
         </where>
-        GROUP BY result.backup1
+        GROUP BY `result`.backup1
     </select>
 </mapper>
