@@ -54,7 +54,6 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
     @Autowired
     private IPlan1Service plan1Service;
 
-
     @Override
     public List<Plan1> idsqueryRuList(List<String> ids) {
         //TODO 构造条件，根据id的集合做条件查询
@@ -316,11 +315,12 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
      * @return
      */
     @Override
-    public IPage<Plan1Vo> selectSubstation(String wasteMaterialText,String beginTime,String endTime,String planType,Page<Plan1Vo> page) {
-        return page.setRecords(baseMapper.selectSubstation(wasteMaterialText, beginTime, endTime,planType,page));
+    public IPage<Plan1Vo> selectSubstation(String wasteMaterialText, String beginTime, String endTime, String planType, Page<Plan1Vo> page) {
+        return page.setRecords(baseMapper.selectSubstation(wasteMaterialText, beginTime, endTime, planType, page));
     }
+
     /**
-     *   变电/导线统计导出
+     * 变电/导线统计导出
      *
      * @return
      */
@@ -330,5 +330,8 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
         return list;
     }
 
-
+    @Override
+    public List<IndexXLTJVo> getXLTJList(IndexXLTJVo vo) {
+        return baseMapper.getXLTJList(vo);
+    }
 }

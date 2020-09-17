@@ -4,8 +4,10 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.cable.service.IPlan1Service;
 import org.jeecg.modules.cable.service.IPlan2Service;
 import org.jeecg.modules.cable.vo.IndexBPTJVo;
+import org.jeecg.modules.cable.vo.IndexXLTJVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +27,12 @@ import java.util.List;
 @Slf4j
 public class IndexController {
     @Autowired
+    private IPlan1Service plan1Service;
+    @Autowired
     private IPlan2Service plan2Service;
 
     /**
-     * 首页备品统计物料出入库数量
+     * 首页备品统计
      * bai 2020/9/16
      *
      * @param vo 查询条件
@@ -37,6 +41,19 @@ public class IndexController {
     @GetMapping(value = "/getBTPJList")
     public Result<?> getBTPJList(IndexBPTJVo vo) {
         List<IndexBPTJVo> list = plan2Service.getBPTJList(vo);
+        return Result.ok(list);
+    }
+
+    /**
+     * 首页线路统计
+     * bai 2020/9/17
+     *
+     * @param vo 查询条件
+     * @return 线路统计数据
+     */
+    @GetMapping(value = "/getXLTJList")
+    public Result<?> getXLTJList(IndexXLTJVo vo) {
+        List<IndexXLTJVo> list = plan1Service.getXLTJList(vo);
         return Result.ok(list);
     }
 }

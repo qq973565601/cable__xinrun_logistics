@@ -70,15 +70,27 @@ public interface Plan1Mapper extends BaseMapper<Plan1> {
 
     List<SettleAccountsDetailsVo> selectSettleAccountsDetails(@Param("projectNo") String projectNo,
                                                               @Param("page") Page<SettleAccountsDetailsVo> page);
+
     /**
      * 计划表1配变电/线路统计
      *
      * @return
      */
-    List<Plan1Vo> selectSubstation(@Param("wasteMaterialText")String wasteMaterialText,@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("planType")String planType,@Param("page") Page<Plan1Vo> page);
+    List<Plan1Vo> selectSubstation(@Param("wasteMaterialText") String wasteMaterialText, @Param("beginTime") String beginTime, @Param("endTime") String endTime, @Param("planType") String planType, @Param("page") Page<Plan1Vo> page);
+
     /**
      * 导出数据
+     *
      * @return
      */
     List<Plan1ExcelVo> exportPlan2(@Param("plan1ExcelVo") Plan1ExcelVo plan1ExcelVo);
+
+    /**
+     * 首页线路统计
+     * bai 2020/9/17
+     *
+     * @param vo 查询条件
+     * @return 线路统计数据
+     */
+    List<IndexXLTJVo> getXLTJList(@Param("vo") IndexXLTJVo vo);
 }

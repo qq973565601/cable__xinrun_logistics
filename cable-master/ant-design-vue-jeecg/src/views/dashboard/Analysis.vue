@@ -207,6 +207,8 @@
           <div class="span_title">
             <div class="span_title_icon"></div>
             <span class="span_title_span">线路统计</span>
+            <a-range-picker class="span_title_span" size="small" @change="xltjTimeChange"
+                            style="width: 280px; margin-left: 10px;"/>
           </div>
           <div class="span_hx"></div>
           <div style="height:260px;margin-top:35px" id="xltj"></div>
@@ -382,9 +384,26 @@ export default {
         { country: '变压器', type: '入', value: 0 },
       ],
       // 备品统计查询条件 开始日期
-      beginTime: null,
+      bptj_beginTime: null,
       // 备品统计查询条件 结束日期
-      endTime: null,
+      bptj_endTime: null,
+      // 线路统计所需 分组柱状图 --- GroupedColumn
+      xltj_columnPlot: null,
+      // 线路统计所需数据源
+      xltj_data: [
+        { name: '计划数量', 物料简称: '钢线路', 数量: 0 },
+        { name: '计划数量', 物料简称: '铝线路', 数量: 0 },
+        { name: '计划数量', 物料简称: '变压器', 数量: 0 },
+        { name: '计划数量', 物料简称: '倒刀', 数量: 0 },
+        { name: '入库', 物料简称: '钢线路', 数量: 0 },
+        { name: '入库', 物料简称: '铝线路', 数量: 0 },
+        { name: '入库', 物料简称: '变压器', 数量: 0 },
+        { name: '入库', 物料简称: '倒刀', 数量: 0 }
+      ],
+      // 线路统计查询条件 开始日期
+      xltj_beginTime: null,
+      // 线路统计查询条件 结束日期
+      xltj_endTime: null,
     }
   },
   mounted () {
@@ -462,12 +481,12 @@ export default {
     },
     /** 这里是新品统计查看操作的打开方法  */
 
-    // 备品统计
+    // 备品统计 bai 2020/9/16
     bptj () {
       let _this = this
       let req = {
-        'beginTime': this.beginTime,
-        'endTime': this.endTime
+        'beginTime': _this.bptj_beginTime,
+        'endTime': _this.bptj_endTime
       }
       getAction('/index/getBTPJList', req).then(res => {
         console.log('首页备品统计模块', res)
@@ -628,8 +647,8 @@ export default {
           _this.$router.push({
             name: 'cable-OutPutWarehouseList', // 跳转组件名称
             query: { // 携带参数
-              beginTime: _this.beginTime,
-              endTime: _this.endTime,
+              beginTime: _this.bptj_beginTime,
+              endTime: _this.bptj_endTime,
               planType: '备品'
             }
           })
@@ -639,17 +658,153 @@ export default {
         console.log(err)
       })
     },
-    // 备品统计时间 change 事件
+    // 备品统计时间 change 事件 bai 2020/9/16
     bptjTimeChange (date, dateString) {
       let _this = this
       console.log('备品统计时间 change 事件', dateString)
-      _this.beginTime = dateString[0]
-      _this.endTime = dateString[1]
+      _this.bptj_beginTime = dateString[0]
+      _this.bptj_endTime = dateString[1]
       for (let i = 0; i < _this.bptj_data.length; i++) {
         _this.bptj_data[i].value = 0 // 将备品统计中的数量设置为 0
       }
       _this.bptj_chart.destroy() // 销毁备品统计图表
       _this.bptj()
+    },
+    // 线路统计 bai 2020/9/17
+    xltj () {
+      let _this = this
+      let data = _this.xltj_data
+      let req = {
+        'beginTime': _this.xltj_beginTime,
+        'endTime': _this.xltj_endTime
+      }
+      getAction('/index/getXLTJList', req).then(res => {
+        console.log('首页线路统计模块', res)
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].物料简称 == '钢线路') {
+            if (data[i].name == '计划数量') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '钢线路') {
+                  data[i].数量 = res.result[j].numReceipts
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '钢线路') {
+                  data[i].数量 = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].物料简称 == '铝线路') {
+            if (data[i].name == '计划数量') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '铝线路') {
+                  data[i].数量 = res.result[j].numReceipts
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '铝线路') {
+                  data[i].数量 = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].物料简称 == '变压器') {
+            if (data[i].name == '计划数量') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '变压器') {
+                  data[i].数量 = res.result[j].numReceipts
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '变压器') {
+                  data[i].数量 = res.result[j].deliverNum
+                }
+              }
+            }
+          } else if (data[i].物料简称 == '倒刀') {
+            if (data[i].name == '计划数量') {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '倒刀') {
+                  data[i].数量 = res.result[j].numReceipts
+                }
+              }
+            } else {
+              for (let j = 0; j < res.result.length; j++) {
+                if (res.result[j].backup1 == '倒刀') {
+                  data[i].数量 = res.result[j].deliverNum
+                }
+              }
+            }
+          }
+        }
+        console.log('线路统计图所需数据源为', data)
+
+        // GroupedColumn 是分组柱状图
+        _this.xltj_columnPlot = new GroupedColumn(document.getElementById('xltj'), {
+          title: {
+            visible: false,
+          },
+          forceFit: true,
+          data,
+          xField: '物料简称',
+          yField: '数量',
+          color: ['#FFC858', '#09C5CE'],
+          columnStyle: (d) => {
+            if (d === '入库') {
+              return { fill: 'l(90) 0:#09C5CE 1:#4DDAC5' }
+            } else if (d === '计划数量') {
+              return { fill: 'l(90) 0:#FFC858 1:#FDAC51' }
+            }
+          },
+          yAxis: {
+            min: 0,
+            max: 100,
+            tickInterval: 20,
+            line: {
+              visible: true
+            },
+            title: {
+              visible: false
+            },
+            grid: {
+              visible: false
+            }
+          },
+          xAxis: {
+            title: {
+              visible: false
+            }
+          },
+          legend: {
+            visible: true,
+            position: 'top-right',
+            title: {
+              style: {
+                fontSize: 14
+              }
+            },
+            flipPage: true
+          },
+          groupField: 'name',
+        })
+        _this.xltj_columnPlot.render()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // 线路统计时间 change 事件 bai 2020/9/17
+    xltjTimeChange (data, dateString) {
+      let _this = this
+      console.log('线路统计时间 change 事件', dateString)
+      _this.xltj_beginTime = dateString[0]
+      _this.xltj_endTime = dateString[1]
+      for (let i = 0; i < _this.xltj_data.length; i++) {
+        _this.xltj_data[i].数量 = 0  // 将线路统计中的数量设置为 0
+      }
+      _this.xltj_columnPlot.destroy() // 销毁线路统计柱状图
+      _this.xltj()
     },
 
     ckrj () {
@@ -723,99 +878,6 @@ export default {
             }
           }
         },
-      })
-      columnPlot.render()
-    },
-    xltj () {
-      const data = [
-        {
-          name: '计划数量',
-          线路: '钢线路',
-          线路数量: 40
-        },
-        {
-          name: '计划数量',
-          线路: '铝线路',
-          线路数量: 40
-        },
-        {
-          name: '计划数量',
-          线路: '变压器',
-          线路数量: 90
-        },
-        {
-          name: '计划数量',
-          线路: '倒刀',
-          线路数量: 25
-        },
-        {
-          name: '入库',
-          线路: '钢线路',
-          线路数量: 40
-        },
-        {
-          name: '入库',
-          线路: '铝线路',
-          线路数量: 30
-        },
-        {
-          name: '入库',
-          线路: '变压器',
-          线路数量: 20
-        },
-        {
-          name: '入库',
-          线路: '倒刀',
-          线路数量: 10
-        }
-      ]
-
-      const columnPlot = new GroupedColumn(document.getElementById('xltj'), {
-        title: {
-          visible: false,
-        },
-        forceFit: true,
-        data,
-        xField: '线路',
-        yField: '线路数量',
-        color: ['#FFC858', '#09C5CE'],
-        columnStyle: (d) => {
-          if (d === '入库') {
-            return { fill: 'l(90) 0:#09C5CE 1:#4DDAC5' }
-          } else if (d === '计划数量') {
-            return { fill: 'l(90) 0:#FFC858 1:#FDAC51' }
-          }
-        },
-        yAxis: {
-          min: 0,
-          max: 100,
-          tickInterval: 20,
-          line: {
-            visible: true
-          },
-          title: {
-            visible: false
-          },
-          grid: {
-            visible: false
-          }
-        },
-        xAxis: {
-          title: {
-            visible: false
-          }
-        },
-        legend: {
-          visible: true,
-          position: 'top-right',
-          title: {
-            style: {
-              fontSize: 14
-            }
-          },
-          flipPage: true
-        },
-        groupField: 'name',
       })
       columnPlot.render()
     },

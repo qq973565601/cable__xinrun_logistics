@@ -98,12 +98,14 @@ public interface IPlan1Service extends IService<Plan1> {
     IPage<SettleAccountsVo> selectSettleAccounts(String backup1, String planType, String projectNo, Page<SettleAccountsVo> page);
 
     IPage<SettleAccountsDetailsVo> selectSettleAccountsDetails(String projectNo, Page<SettleAccountsDetailsVo> page);
+
     /**
      * 计划表1配变电/线路统计
      *
      * @return
      */
-    IPage<Plan1Vo> selectSubstation(String wasteMaterialText,String beginTime,String endTime,String planType,Page<Plan1Vo> page);
+    IPage<Plan1Vo> selectSubstation(String wasteMaterialText, String beginTime, String endTime, String planType, Page<Plan1Vo> page);
+
     /**
      * 导出变电/导线统计数据
      *
@@ -111,4 +113,12 @@ public interface IPlan1Service extends IService<Plan1> {
      */
     List<Plan1ExcelVo> exportPlan2(Plan1ExcelVo plan1ExcelVo);
 
+    /**
+     * 首页线路统计
+     * bai 2020/9/17
+     *
+     * @param vo 查询条件
+     * @return 线路统计数据
+     */
+    List<IndexXLTJVo> getXLTJList(IndexXLTJVo vo);
 }
