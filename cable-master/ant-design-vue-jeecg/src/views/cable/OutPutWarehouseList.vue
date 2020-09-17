@@ -258,12 +258,54 @@
         },
         // 操作类型
         operatorSchema: [],
+        // 加载路由参数方法类型
+        loadRouteType: false
       }
     },
     created () {
       this.getOperatorSchemaList()
+      this.loadData(1)
     },
     methods: {
+      // 接收首页备品统计 echart 点击事件的参数
+      getIndexBPTJdata() {
+        let _this = this;
+        // 赋值操作
+        _this.queryParam.startTime = _this.$route.query.beginTime;
+        _this.queryParam.endTime = _this.$route.query.endTime;
+        _this.queryParam.planType = _this.$route.query.planType;
+        console.log("_this.queryParam.startTime", _this.queryParam.startTime);
+        console.log("_this.queryParam.endTime", _this.queryParam.endTime);
+        console.log("_this.queryParam.planType", _this.queryParam.planType);
+      },
+      loadData(arg) {
+        if (this.loadRouteType == false) {
+          this.getIndexBPTJdata()
+          this.loadRouteType = true
+        }
+        //清空勾选
+        this.selectedRowKeys = []
+        if(!this.url.list){
+          //this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
       /**
        * 查询字典操作类型
        */

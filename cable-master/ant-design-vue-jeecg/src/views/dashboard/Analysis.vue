@@ -370,16 +370,16 @@ export default {
       bptj_chart: null,
       // 备品统计所需数据源
       bptj_data: [
-        { country: '变压器', type: '出', value: 0 },
-        { country: '变压器', type: '入', value: 0 },
-        { country: '柜子', type: '出', value: 0 },
-        { country: '柜子', type: '入', value: 0 },
-        { country: '箱变', type: '出', value: 0 },
-        { country: '箱变', type: '入', value: 0 },
-        { country: '屏', type: '出', value: 0 },
-        { country: '屏', type: '入', value: 0 },
         { country: '其他', type: '出', value: 0 },
         { country: '其他', type: '入', value: 0 },
+        { country: '屏', type: '出', value: 0 },
+        { country: '屏', type: '入', value: 0 },
+        { country: '箱变', type: '出', value: 0 },
+        { country: '箱变', type: '入', value: 0 },
+        { country: '柜子', type: '出', value: 0 },
+        { country: '柜子', type: '入', value: 0 },
+        { country: '变压器', type: '出', value: 0 },
+        { country: '变压器', type: '入', value: 0 },
       ],
       // 备品统计查询条件 开始日期
       beginTime: null,
@@ -576,7 +576,7 @@ export default {
         })
         _this.bptj_chart.annotation().text({
           position: ['60%', '5%'],
-          content: '其他',
+          content: '变压器',
           style: {
             fill: '#656D92',
             fontSize: 14
@@ -584,7 +584,7 @@ export default {
         })
         _this.bptj_chart.annotation().text({
           position: ['60%', '22%'],
-          content: '屏',
+          content: '柜子',
           style: {
             fill: '#656D92',
             fontSize: 14
@@ -600,7 +600,7 @@ export default {
         })
         _this.bptj_chart.annotation().text({
           position: ['60%', '59%'],
-          content: '柜子',
+          content: '屏',
           style: {
             fill: '#656D92',
             fontSize: 14
@@ -608,17 +608,33 @@ export default {
         })
         _this.bptj_chart.annotation().text({
           position: ['60%', '79%'],
-          content: '变压器',
+          content: '其他',
           style: {
             fill: '#656D92',
             fontSize: 14
           }
         })
-        // _this.bptj_chart.annotation().line({
-        //   start: ['50%', '0%'],
-        //   end: ['50%', '90%']
-        // })
+        _this.bptj_chart.annotation().line({
+          start: ['50%', '0%'],
+          end: ['50%', '90%']
+        })
         _this.bptj_chart.render()
+        /**
+         * G2.chart 图标绑定单击事件
+         * @param ev 单击的图表参数
+         */
+        _this.bptj_chart.on('click', ev => {
+          console.log('备品统计 echart 单击事件入参>>>', ev)
+          _this.$router.push({
+            name: 'cable-OutPutWarehouseList', // 跳转组件名称
+            query: { // 携带参数
+              beginTime: _this.beginTime,
+              endTime: _this.endTime,
+              planType: '备品'
+            }
+          })
+          // window.location.href = 'http://www.baidu.com' // Vue 跳转至外界页面
+        })
       }).catch(err => {
         console.log(err)
       })
