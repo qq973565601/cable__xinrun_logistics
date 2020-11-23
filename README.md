@@ -20,6 +20,11 @@
 - [JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
 
 #### 新手必看启动教学
+##### 0. 数据库配置
+###### 0.1 首先在本地创建 cable 数据库，选择好字符集编码
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1123/134217_192e4886_5459645.jpeg "1606109571(1).jpg")
+###### 0.2 然后在创建好的 cable 数据库下执行 cable.sql 脚本即可
+![输入图片说明](https://images.gitee.com/uploads/images/2020/1123/134333_0de565fa_5459645.jpeg "1606109947(1).jpg")
 ##### 1. 前端项目可以使用 WebStorm 开发工具打开,后端项目可以使用 IDEA 开发工具打开,也可以使用 IDEA 一个工具来进行开发。
 ##### 2. 进入 IDEA 工具后设置 Maven 依赖下载设置
 更改自己的 Maven 安装路径，用来下载项目所需的 jar 包
