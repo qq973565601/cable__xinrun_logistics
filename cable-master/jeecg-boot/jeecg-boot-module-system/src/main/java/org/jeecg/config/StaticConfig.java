@@ -11,17 +11,16 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class StaticConfig {
-
     @Value("${jeecg.sms.accessKeyId}")
     private String accessKeyId;
-
     @Value("${jeecg.sms.accessKeySecret}")
     private String accessKeySecret;
-
     @Value(value = "${spring.mail.username}")
     private String emailFrom;
 
-
+    /**
+     * 初始化
+     */
     @Bean
     public void initStatic() {
         DySmsHelper.setAccessKeyId(accessKeyId);

@@ -30,20 +30,27 @@ import java.util.Map;
  * @date: 2018/2/7
  * @description: shiro 配置类
  */
-
 @Slf4j
 @Configuration
 public class ShiroConfig {
-
+    /**
+     * shiro将要过滤的接口Api
+     */
     @Value("${jeecg.shiro.excludeUrls}")
     private String excludeUrls;
-
+    /**
+     * redis 端口号
+     */
     @Value("${spring.redis.port}")
     private String port;
-
+    /**
+     * redis IP地址
+     */
     @Value("${spring.redis.host}")
     private String host;
-
+    /**
+     * redis 密码
+     */
     @Value("${spring.redis.password}")
     private String redisPassword;
 
@@ -53,6 +60,7 @@ public class ShiroConfig {
      * 1、一个URL可以配置多个Filter，使用逗号分隔
      * 2、当设置多个过滤器时，全部验证通过，才视为通过
      * 3、部分过滤器可指定参数，如perms，roles
+     * </p>
      */
     @Bean("shiroFilter")
     public ShiroFilterFactoryBean shiroFilter(SecurityManager securityManager) {
@@ -66,8 +74,7 @@ public class ShiroConfig {
                 filterChainDefinitionMap.put(url, "anon");
             }
         }
-
-        //cas验证登录
+        // cas验证登录
         filterChainDefinitionMap.put("/wx/**", "anon"); //微信小程序接口排除
         filterChainDefinitionMap.put("/cas/client/validateLogin", "anon");
         // 配置不会被拦截的链接 顺序判断
@@ -99,48 +106,31 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.jpg", "anon");
         filterChainDefinitionMap.put("/**/*.png", "anon");
         filterChainDefinitionMap.put("/**/*.ico", "anon");
-
-        // update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀
         filterChainDefinitionMap.put("/**/*.ttf", "anon");
         filterChainDefinitionMap.put("/**/*.woff", "anon");
         filterChainDefinitionMap.put("/**/*.woff2", "anon");
-        // update-begin--Author:sunjianlei Date:20190813 for：排除字体格式的后缀
-
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
         filterChainDefinitionMap.put("/swagger**/**", "anon");
         filterChainDefinitionMap.put("/webjars/**", "anon");
         filterChainDefinitionMap.put("/v2/**", "anon");
-
-        //性能监控
+        // 性能监控
         filterChainDefinitionMap.put("/actuator/metrics/**", "anon");
         filterChainDefinitionMap.put("/actuator/httptrace/**", "anon");
         filterChainDefinitionMap.put("/actuator/redis/**", "anon");
-
-        //大屏设计器排除
+        // 大屏设计器排除
         filterChainDefinitionMap.put("/big/screen/**", "anon");
-
-        //测试示例
+        // 测试示例
         filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
         filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
-
-        //websocket排除
+        // websocket排除
         filterChainDefinitionMap.put("/websocket/**", "anon");
-
-        //2020-9-7测试
-//    filterChainDefinitionMap.put("/cable/plan1/**", "anon");
-//    filterChainDefinitionMap.put("/cable/sendOrders/**", "anon");
-//    filterChainDefinitionMap.put("/cable/material/**", "anon");
-//    filterChainDefinitionMap.put("/cable/storageLocation/**", "anon");
-//    filterChainDefinitionMap.put("/cable/inventory/**", "anon");
-
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
         filterMap.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
-        // <!-- 过滤链定义，从上向下顺序执行，一般将/**放在最为下边
+        // 过滤链定义，从上向下顺序执行，一般将/**放在最为下边
         filterChainDefinitionMap.put("/**", "jwt");
-
         // 未授权界面返回JSON
         shiroFilterFactoryBean.setUnauthorizedUrl("/sys/common/403");
         shiroFilterFactoryBean.setLoginUrl("/sys/common/403");
@@ -152,7 +142,6 @@ public class ShiroConfig {
     public DefaultWebSecurityManager securityManager(ShiroRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(myRealm);
-
         /*
          * 关闭shiro自带的session，详情见文档
          * http://shiro.apache.org/session-management.html#SessionManagement-
@@ -170,18 +159,12 @@ public class ShiroConfig {
 
     /**
      * 下面的代码是添加注解支持
-     *
-     * @return
      */
     @Bean
     @DependsOn("lifecycleBeanPostProcessor")
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
         DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
         defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
-        /**
-         * 解决重复代理问题 github#994
-         * 添加前缀判断 不匹配 任何Advisor
-         */
         defaultAdvisorAutoProxyCreator.setUsePrefix(true);
         defaultAdvisorAutoProxyCreator.setAdvisorBeanNamePrefix("_no_advisor");
         return defaultAdvisorAutoProxyCreator;
@@ -203,7 +186,7 @@ public class ShiroConfig {
      * cacheManager 缓存 redis实现
      * 使用的是shiro-redis开源插件
      *
-     * @return
+     * @return RedisCacheManager
      */
     public RedisCacheManager redisCacheManager() {
         log.info("===============(1)创建缓存管理器RedisCacheManager");
@@ -220,7 +203,7 @@ public class ShiroConfig {
      * 配置shiro redisManager
      * 使用的是shiro-redis开源插件
      *
-     * @return
+     * @return RedisManager
      */
     @Bean
     public RedisManager redisManager() {
@@ -234,5 +217,4 @@ public class ShiroConfig {
         }
         return redisManager;
     }
-
 }

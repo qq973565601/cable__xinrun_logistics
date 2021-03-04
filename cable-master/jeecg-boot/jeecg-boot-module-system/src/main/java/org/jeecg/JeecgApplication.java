@@ -20,7 +20,6 @@ import java.net.UnknownHostException;
 public class JeecgApplication {
 
   public static void main(String[] args) throws UnknownHostException {
-
     ConfigurableApplicationContext application = SpringApplication.run(JeecgApplication.class, args);
     Environment env = application.getEnvironment();
     String ip = InetAddress.getLocalHost().getHostAddress();
@@ -32,7 +31,6 @@ public class JeecgApplication {
         "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
         "Swagger-UI: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
         "----------------------------------------------------------");
-
   }
 
   /**
