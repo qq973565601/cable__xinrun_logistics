@@ -28,7 +28,6 @@ import java.util.List;
  */
 @Slf4j
 public class OnlineInterceptor implements HandlerInterceptor {
-
     @Autowired
     private ISysPermissionService sysPermissionService;
 
@@ -95,16 +94,13 @@ public class OnlineInterceptor implements HandlerInterceptor {
 
     /**
      * 地址过滤
-     *
-     * @param requestPath
-     * @return
      */
     private String filterUrl(String requestPath) {
         String url = "";
         if (oConvertUtils.isNotEmpty(requestPath)) {
             url = requestPath.replace("\\", "/");
             url = requestPath.replace("//", "/");
-            if (url.indexOf("//") >= 0) {
+            if (url.contains("//")) {
                 url = filterUrl(url);
             }
         }
@@ -113,17 +109,12 @@ public class OnlineInterceptor implements HandlerInterceptor {
 
     /**
      * 返回一个错误信息
-     *
-     * @param response
-     * @param authKey
      */
     private void backError(HttpServletResponse response, String authKey) {
-        PrintWriter writer = null;
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         response.setHeader("auth", "fail");
-        try {
-            writer = response.getWriter();
+        try (PrintWriter writer = response.getWriter()) {
             if ("exportXls".equals(authKey)) {
                 writer.print("");
             } else {
@@ -132,10 +123,6 @@ public class OnlineInterceptor implements HandlerInterceptor {
             }
         } catch (IOException e) {
             log.error(e.getMessage());
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 }

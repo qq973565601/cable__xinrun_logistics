@@ -16,7 +16,6 @@ import java.io.InputStream;
 @RestController
 @RequestMapping("/test/minio")
 public class MinioController {
-
     //minio服务的IP端口
     private static String url = "http://111.225.222.176:9000";
     private static String accessKey = "admin";
@@ -74,8 +73,7 @@ public class MinioController {
     public String getUrl() {
         try {
             MinioClient minioClient = new MinioClient(url, accessKey, secretKey);
-            String url = minioClient.presignedGetObject(bucketName, "11.jpg");
-            return url;
+            return minioClient.presignedGetObject(bucketName, "11.jpg");
         } catch (Exception e) {
             e.printStackTrace();
             return "获取失败";

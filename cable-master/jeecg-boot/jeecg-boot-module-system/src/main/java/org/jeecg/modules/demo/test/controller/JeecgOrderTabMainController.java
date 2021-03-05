@@ -41,7 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/test/order")
 public class JeecgOrderTabMainController {
-
     @Autowired
     private IJeecgOrderMainService jeecgOrderMainService;
     @Autowired

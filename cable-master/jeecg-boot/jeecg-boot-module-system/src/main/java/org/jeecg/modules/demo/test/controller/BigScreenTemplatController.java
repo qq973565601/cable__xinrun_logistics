@@ -21,7 +21,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/big/screen/templat")
 public class BigScreenTemplatController extends JeecgController<JeecgDemo, IJeecgDemoService> {
-
     /**
      * @param modelAndView
      * @return
@@ -40,6 +39,7 @@ public class BigScreenTemplatController extends JeecgController<JeecgDemo, IJeec
 
     /**
      * 生产销售监控模版
+     *
      * @param modelAndView
      * @return
      */
@@ -51,6 +51,7 @@ public class BigScreenTemplatController extends JeecgController<JeecgDemo, IJeec
 
     /**
      * 智慧物流监控模版
+     *
      * @param modelAndView
      * @return
      */

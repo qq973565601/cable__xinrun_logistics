@@ -12,7 +12,6 @@ public enum UrlMatchEnum {
     CGREPORT_DATA("/online/cgreport/api/getColumnsAndData/", "/online/cgreport/"),
     CGREPORT_EXCEL_DATA("/online/cgreport/api/exportXls/", "/online/cgreport/");
 
-
     UrlMatchEnum(String url, String match_url) {
         this.url = url;
         this.match_url = match_url;
@@ -29,9 +28,6 @@ public enum UrlMatchEnum {
 
     /**
      * 根据req url 获取到菜单配置路径（前端页面路由URL）
-     *
-     * @param url
-     * @return
      */
     public static String getMatchResultByUrl(String url) {
         //获取到枚举
@@ -39,7 +35,7 @@ public enum UrlMatchEnum {
         //加强for循环进行遍历操作
         for (UrlMatchEnum lr : values) {
             //如果遍历获取的type和参数type一致
-            if (url.indexOf(lr.url) != -1) {
+            if (url.contains(lr.url)) {
                 //返回type对象的desc
                 return url.replace(lr.url, lr.match_url);
             }
@@ -47,12 +43,7 @@ public enum UrlMatchEnum {
         return null;
     }
 
-
     public static void main(String[] args) {
-        /**
-         * 比如request真实请求URL: /online/cgform/api/getData/81fcf7d8922d45069b0d5ba983612d3a
-         * 转换匹配路由URL后（对应配置的菜单路径）:/online/cgformList/81fcf7d8922d45069b0d5ba983612d3a
-         */
         System.out.println(UrlMatchEnum.getMatchResultByUrl("/online/cgform/api/getData/81fcf7d8922d45069b0d5ba983612d3a"));
     }
 }

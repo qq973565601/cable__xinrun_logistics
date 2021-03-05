@@ -59,7 +59,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/test/jeecgOrderMain")
 @Slf4j
 public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJeecgOrderMainService> {
-
     @Autowired
     private IJeecgOrderMainService jeecgOrderMainService;
     @Autowired

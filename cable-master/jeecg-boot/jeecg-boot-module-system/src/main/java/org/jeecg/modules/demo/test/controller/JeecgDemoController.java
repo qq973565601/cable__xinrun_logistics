@@ -54,7 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoService> {
     @Autowired
     private IJeecgDemoService jeecgDemoService;
-
     @Autowired
     private RedisUtil redisUtil;
 
@@ -70,11 +69,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @ApiOperation(value = "获取Demo数据列表", notes = "获取所有Demo数据列表")
     @GetMapping(value = "/list")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
-    public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                          HttpServletRequest req) {
+    public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());
         Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
-
         IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
         log.info("查询当前页：" + pageList.getCurrent());
         log.info("查询当前页数量：" + pageList.getSize());
@@ -174,8 +171,6 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return super.importExcel(request, response, JeecgDemo.class);
     }
 
-    // =====Redis 示例===============================================================================================
-
     /**
      * redis操作 -- set
      */
@@ -224,8 +219,6 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return t;
     }
 
-    // ===Freemaker示例================================================================================
-
     /**
      * freemaker方式 【页面路径： src/main/resources/templates】
      *
@@ -244,15 +237,11 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         return modelAndView;
     }
 
-
-    // ==========================================动态表单 JSON接收测试===========================================
     @PostMapping(value = "/testOnlineAdd")
     public Result<?> testOnlineAdd(@RequestBody JSONObject json) {
         log.info(json.toJSONString());
         return Result.ok("添加成功！");
     }
-
-    /*----------------------------------------外部获取权限示例------------------------------------*/
 
     /**
      * 【数据权限示例 - 编程】mybatisPlus java类方式加载权限
@@ -264,8 +253,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @GetMapping(value = "/mpList")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
-    public Result<?> loadMpPermissonList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                         HttpServletRequest req) {
+    public Result<?> loadMpPermissonList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = new QueryWrapper<JeecgDemo>();
         //编程方式，给queryWrapper装载数据权限规则
         QueryGenerator.installAuthMplus(queryWrapper, JeecgDemo.class);
@@ -285,11 +273,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @GetMapping(value = "/sqlList")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
-    public Result<?> loadSqlPermissonList(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                          HttpServletRequest req) {
+    public Result<?> loadSqlPermissonList(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         IPage<JeecgDemo> pageList = jeecgDemoService.queryListWithPermission(pageSize, pageNo);
         return Result.ok(pageList);
     }
-    /*----------------------------------------外部获取权限示例------------------------------------*/
 
 }

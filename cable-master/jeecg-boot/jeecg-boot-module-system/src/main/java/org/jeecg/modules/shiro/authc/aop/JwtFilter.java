@@ -20,14 +20,8 @@ import lombok.extern.slf4j.Slf4j;
  **/
 @Slf4j
 public class JwtFilter extends BasicHttpAuthenticationFilter {
-
     /**
      * 执行登录认证
-     *
-     * @param request
-     * @param response
-     * @param mappedValue
-     * @return
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -39,9 +33,6 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         }
     }
 
-    /**
-     *
-     */
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
