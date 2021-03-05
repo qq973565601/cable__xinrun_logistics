@@ -13,8 +13,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class PmsUtil {
-
-
     private static String uploadPath;
 
     @Value("${jeecg.path.upload}")
@@ -41,7 +39,7 @@ public class PmsUtil {
             for (String s : msg) {
                 //写数据
                 if (s.indexOf("_") > 0) {
-                    String arr[] = s.split("_");
+                    String[] arr = s.split("_");
                     bw.write("第" + arr[0] + "行:" + arr[1]);
                 } else {
                     bw.write(s);
@@ -57,5 +55,4 @@ public class PmsUtil {
         }
         return saveDir + name + ".txt";
     }
-
 }

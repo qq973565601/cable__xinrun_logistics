@@ -1,7 +1,6 @@
 package org.jeecg.modules.cable.entity;
 
 import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -18,19 +17,21 @@ import lombok.experimental.Accessors;
 /**
  * @Description: 入库/完单表
  * @Author: jeecg-boot
- * @Date:   2020-05-22
+ * @Date: 2020-05-22
  * @Version: V1.0
  */
 @Data
 @TableName("deliver_storage")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="deliver_storage对象", description="入库/完单表")
+@ApiModel(value = "deliver_storage对象", description = "入库/完单表")
 public class DeliverStorage implements Serializable {
     private static final long serialVersionUID = 1L;
 
-	/**id*/
-	@TableId(type = IdType.AUTO)
+    /**
+     * id
+     */
+    @TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "id")
     private Integer id;
 
@@ -38,55 +39,73 @@ public class DeliverStorage implements Serializable {
 
     private Integer planType;
 
-	/**派单id*/
-	@Excel(name = "派单id", width = 15)
+    /**
+     * 派单id
+     */
+    @Excel(name = "派单id", width = 15)
     @ApiModelProperty(value = "派单id")
     private Integer sendOrdersId;
 
-	/**物料id*/
-	@Excel(name = "物料id", width = 15)
+    /**
+     * 物料id
+     */
+    @Excel(name = "物料id", width = 15)
     @ApiModelProperty(value = "物料id")
     private Integer materialId;
 
-	/**仓库id*/
-	@Excel(name = "仓库id", width = 15)
+    /**
+     * 仓库id
+     */
+    @Excel(name = "仓库id", width = 15)
     @ApiModelProperty(value = "仓库id")
     private Integer warehouseId;
 
-	/**库位id*/
-	@Excel(name = "库位id", width = 15)
+    /**
+     * 库位id
+     */
+    @Excel(name = "库位id", width = 15)
     @ApiModelProperty(value = "库位id")
     private Integer storageLocationId;
 
-	/**完单数量*/
-	@Excel(name = "完单数量", width = 15)
+    /**
+     * 完单数量
+     */
+    @Excel(name = "完单数量", width = 15)
     @ApiModelProperty(value = "完单数量")
     private java.math.BigDecimal accomplishNum;
 
-    /**完单数量单位（字典）*/
+    /**
+     * 完单数量单位（字典）
+     */
     @Excel(name = "完单数量单位（字典）", width = 15)
     @ApiModelProperty(value = "完单数量单位（字典）")
     private Integer accomplishNumUnit;
 
-	/**完单重量*/
+    /**
+     * 完单重量
+     */
     @Excel(name = "完单重量", width = 15)
     @ApiModelProperty(value = "完单重量")
     private java.math.BigDecimal accomplishWeight;
 
-    /**完单重量完单重量（字典）*/
+    /**
+     * 完单重量完单重量（字典）
+     */
     @Excel(name = "完单重量完单重量（字典）", width = 15)
     @ApiModelProperty(value = "完单重量完单重量（字典）")
     private Integer accomplishWeightUnit;
 
-    /**完单容积*/
+    /**
+     * 完单容积
+     */
     @Excel(name = "完单容积", width = 15)
     @ApiModelProperty(value = "完单容积")
     private java.math.BigDecimal accomplishVolume;
 
-	/*回收规格*/
+    /*回收规格*/
     @Excel(name = "回收规格", width = 15)
     @ApiModelProperty(value = "回收规格")
-	private String recyclingSpecifications;
+    private String recyclingSpecifications;
 
     /*材质（定死，铜，铝）*/
     @Excel(name = "材质（定死，铜，铝）", width = 15)
@@ -118,91 +137,127 @@ public class DeliverStorage implements Serializable {
     @ApiModelProperty(value = "完单状态")
     private Integer state;
 
-	/**是否异常(字典0正常 1异常)*/
-	@Excel(name = "是否异常(字典0正常 1异常)", width = 15)
+    /**
+     * 是否异常(字典0正常 1异常)
+     */
+    @Excel(name = "是否异常(字典0正常 1异常)", width = 15)
     @ApiModelProperty(value = "是否异常(字典0正常 1异常)")
     private Integer sceneSituation;
 
-	/**异常原因*/
-	@Excel(name = "异常原因", width = 15)
+    /**
+     * 异常原因
+     */
+    @Excel(name = "异常原因", width = 15)
     @ApiModelProperty(value = "异常原因")
     private String anomalousCause;
 
-	/**现场照片路径(路径用逗号隔开)*/
-	@Excel(name = "现场照片路径(路径用逗号隔开)", width = 15)
+    /**
+     * 现场照片路径(路径用逗号隔开)
+     */
+    @Excel(name = "现场照片路径(路径用逗号隔开)", width = 15)
     @ApiModelProperty(value = "现场照片路径(路径用逗号隔开)")
     private String scenePhotos;
 
-	/**回单照片路径(路径用逗号隔开)*/
-	@Excel(name = "回单照片路径(路径用逗号隔开)", width = 15)
+    /**
+     * 回单照片路径(路径用逗号隔开)
+     */
+    @Excel(name = "回单照片路径(路径用逗号隔开)", width = 15)
     @ApiModelProperty(value = "回单照片路径(路径用逗号隔开)")
     private String receiptPhotos;
 
-    /**施工队*/
+    /**
+     * 施工队
+     */
     @Excel(name = "施工队", width = 15)
     @ApiModelProperty(value = "施工队")
     private String constructionTeam;
 
-    /**联系人*/
+    /**
+     * 联系人
+     */
     @Excel(name = "联系人", width = 15)
     @ApiModelProperty(value = "联系人")
     private String linkman;
 
-    /**电话*/
+    /**
+     * 电话
+     */
     @Excel(name = "电话", width = 15)
     @ApiModelProperty(value = "电话")
     private String phone;
 
-	/**入库日期*/
-	@Excel(name = "入库日期", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    /**
+     * 入库日期
+     */
+    @Excel(name = "入库日期", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "入库日期")
     private java.util.Date deliverTime;
 
-	/**说明*/
-	@Excel(name = "说明", width = 15)
+    /**
+     * 说明
+     */
+    @Excel(name = "说明", width = 15)
     @ApiModelProperty(value = "说明")
     private String annotation;
 
-	/**创建时间*/
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    /**
+     * 创建时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "创建时间")
     private java.util.Date createTime;
 
-	/**更新时间*/
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    /**
+     * 更新时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "更新时间")
     private java.util.Date updateTime;
 
-	/**创建人*/
+    /**
+     * 创建人
+     */
     @ApiModelProperty(value = "创建人")
     private String createBy;
 
-	/**更新人*/
+    /**
+     * 更新人
+     */
     @ApiModelProperty(value = "更新人")
     private String updateBy;
 
-	/**backup1*/
-	@Excel(name = "backup1", width = 15)
+    /**
+     * backup1
+     */
+    @Excel(name = "backup1", width = 15)
     @ApiModelProperty(value = "backup1")
     private String backup1;
-	/**backup2*/
-	@Excel(name = "backup2", width = 15)
+    /**
+     * backup2
+     */
+    @Excel(name = "backup2", width = 15)
     @ApiModelProperty(value = "backup2")
     private String backup2;
-	/**backup3*/
-	@Excel(name = "backup3", width = 15)
+    /**
+     * backup3
+     */
+    @Excel(name = "backup3", width = 15)
     @ApiModelProperty(value = "backup3")
     private String backup3;
-	/**backup4*/
-	@Excel(name = "backup4", width = 15)
+    /**
+     * backup4
+     */
+    @Excel(name = "backup4", width = 15)
     @ApiModelProperty(value = "backup4")
     private String backup4;
-	/**backup5*/
-	@Excel(name = "backup5", width = 15)
+    /**
+     * backup5
+     */
+    @Excel(name = "backup5", width = 15)
     @ApiModelProperty(value = "backup5")
     private String backup5;
 

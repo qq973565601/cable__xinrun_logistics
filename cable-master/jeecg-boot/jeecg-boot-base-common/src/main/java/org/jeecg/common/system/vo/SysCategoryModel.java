@@ -1,7 +1,5 @@
 package org.jeecg.common.system.vo;
 
-import org.jeecgframework.poi.excel.annotation.Excel;
-
 /**
  * @Author qinfeng
  * @Date 2020/2/19 12:01
@@ -9,13 +7,21 @@ import org.jeecgframework.poi.excel.annotation.Excel;
  * @Version 1.0
  */
 public class SysCategoryModel {
-    /**主键*/
+    /**
+     * 主键
+     */
     private java.lang.String id;
-    /**父级节点*/
+    /**
+     * 父级节点
+     */
     private java.lang.String pid;
-    /**类型名称*/
+    /**
+     * 类型名称
+     */
     private java.lang.String name;
-    /**类型编码*/
+    /**
+     * 类型编码
+     */
     private java.lang.String code;
 
     public String getId() {

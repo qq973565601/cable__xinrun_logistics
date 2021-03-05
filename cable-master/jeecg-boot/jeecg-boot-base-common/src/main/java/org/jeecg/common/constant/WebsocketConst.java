@@ -6,8 +6,6 @@ package org.jeecg.common.constant;
  * @date: 2020年03月23日
  */
 public class WebsocketConst {
-
-
     /**
      * 消息json key:cmd
      */
@@ -52,5 +50,4 @@ public class WebsocketConst {
      * 消息类型 meetingsign 会议签到
      */
     public static final String CMD_SIGN = "sign";
-
 }

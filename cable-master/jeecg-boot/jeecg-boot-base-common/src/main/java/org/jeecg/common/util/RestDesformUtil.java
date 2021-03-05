@@ -30,7 +30,7 @@ public class RestDesformUtil {
      * @param token
      * @return
      */
-    public static Result queryOne(String desformCode, String dataId, String token) {
+    public static Result<?> queryOne(String desformCode, String dataId, String token) {
         String url = getBaseUrl(desformCode, dataId).toString();
         HttpHeaders headers = getHeaders(token);
         ResponseEntity<JSONObject> result = RestUtil.request(url, HttpMethod.GET, headers, null, null, JSONObject.class);
@@ -45,7 +45,7 @@ public class RestDesformUtil {
      * @param token
      * @return
      */
-    public static Result addOne(String desformCode, JSONObject formData, String token) {
+    public static Result<?> addOne(String desformCode, JSONObject formData, String token) {
         return addOrEditOne(desformCode, formData, token, HttpMethod.POST);
     }
 
@@ -57,11 +57,11 @@ public class RestDesformUtil {
      * @param token
      * @return
      */
-    public static Result editOne(String desformCode, JSONObject formData, String token) {
+    public static Result<?> editOne(String desformCode, JSONObject formData, String token) {
         return addOrEditOne(desformCode, formData, token, HttpMethod.PUT);
     }
 
-    private static Result addOrEditOne(String desformCode, JSONObject formData, String token, HttpMethod method) {
+    private static Result<?> addOrEditOne(String desformCode, JSONObject formData, String token, HttpMethod method) {
         String url = getBaseUrl(desformCode).toString();
         HttpHeaders headers = getHeaders(token);
         ResponseEntity<JSONObject> result = RestUtil.request(url, method, headers, null, formData, JSONObject.class);
@@ -76,14 +76,14 @@ public class RestDesformUtil {
      * @param token
      * @return
      */
-    public static Result removeOne(String desformCode, String dataId, String token) {
+    public static Result<?> removeOne(String desformCode, String dataId, String token) {
         String url = getBaseUrl(desformCode, dataId).toString();
         HttpHeaders headers = getHeaders(token);
         ResponseEntity<JSONObject> result = RestUtil.request(url, HttpMethod.DELETE, headers, null, null, JSONObject.class);
         return packageReturn(result);
     }
 
-    private static Result packageReturn(ResponseEntity<JSONObject> result) {
+    private static Result<?> packageReturn(ResponseEntity<JSONObject> result) {
         if (result.getBody() != null) {
             return result.getBody().toJavaObject(Result.class);
         }

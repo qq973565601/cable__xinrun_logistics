@@ -4,18 +4,17 @@ import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.ArrayUtils;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.ReflectHelper;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Spring JDBC 实时数据库访问
@@ -54,7 +53,7 @@ public class DynamicDBUtil {
 
         log.info("******************************************");
         log.info("*                                        *");
-        log.info("*====【"+dbSource.getCode()+"】=====Druid连接池已启用 ====*");
+        log.info("*====【" + dbSource.getCode() + "】=====Druid连接池已启用 ====*");
         log.info("*                                        *");
         log.info("******************************************");
         return dataSource;
@@ -76,10 +75,10 @@ public class DynamicDBUtil {
             return cacheDbSource;
         } else {
             DruidDataSource dataSource = getJdbcDataSource(dbSource);
-            if(dataSource!=null && dataSource.isEnable()){
+            if (dataSource.isEnable()) {
                 DataSourceCachePool.putCacheBasicDataSource(dbKey, dataSource);
-            }else{
-                throw new JeecgBootException("动态数据源连接失败，dbKey："+dbKey);
+            } else {
+                throw new JeecgBootException("动态数据源连接失败，dbKey：" + dbKey);
             }
             log.info("--------getDbSourceBydbKey------------------创建DB数据库连接-------------------");
             return dataSource;
@@ -95,7 +94,7 @@ public class DynamicDBUtil {
     public static void closeDbKey(final String dbKey) {
         DruidDataSource dataSource = getDbSourceByDbKey(dbKey);
         try {
-            if (dataSource != null && !dataSource.isClosed()) {
+            if (!dataSource.isClosed()) {
                 dataSource.getConnection().commit();
                 dataSource.getConnection().close();
                 dataSource.close();
@@ -141,7 +140,7 @@ public class DynamicDBUtil {
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
         //根据模板获取sql
         sql = FreemarkerParseFactory.parseTemplateContent(sql, data);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(Objects.requireNonNull(jdbcTemplate.getDataSource()));
         effectCount = namedParameterJdbcTemplate.update(sql, data);
         return effectCount;
     }
@@ -233,7 +232,7 @@ public class DynamicDBUtil {
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
         //根据模板获取sql
         sql = FreemarkerParseFactory.parseTemplateContent(sql, data);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(Objects.requireNonNull(jdbcTemplate.getDataSource()));
         list = namedParameterJdbcTemplate.queryForList(sql, data);
         return list;
     }
@@ -265,7 +264,7 @@ public class DynamicDBUtil {
         JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
         //根据模板获取sql
         sql = FreemarkerParseFactory.parseTemplateContent(sql, data);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(Objects.requireNonNull(jdbcTemplate.getDataSource()));
         list = namedParameterJdbcTemplate.queryForList(sql, data, clazz);
         return list;
     }

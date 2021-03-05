@@ -13,5 +13,4 @@ package org.jeecg.modules.cable.config;
 public interface DictConfig {
     //负责部门
     String depart_name_id = "1262617675946389506";
-
 }

@@ -17,7 +17,6 @@ import java.util.Map;
  * @author sunjianlei
  */
 public class RestUtil {
-
     private static String domain = null;
 
     public static String getDomain() {
@@ -209,16 +208,16 @@ public class RestUtil {
      * 获取JSON请求头
      */
     private static HttpHeaders getHeaderApplicationJson() {
-        return getHeader(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        return getHeader();
     }
 
     /**
      * 获取请求头
      */
-    private static HttpHeaders getHeader(String mediaType) {
+    private static HttpHeaders getHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(mediaType));
-        headers.add("Accept", mediaType);
+        headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_JSON_UTF8_VALUE));
+        headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
         return headers;
     }
 

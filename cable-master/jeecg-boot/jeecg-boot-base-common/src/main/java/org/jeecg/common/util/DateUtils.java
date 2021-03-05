@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
  * @Version 1.0
  */
 public class DateUtils extends PropertyEditorSupport {
-
     public static ThreadLocal<SimpleDateFormat> date_sdf = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
@@ -96,11 +95,6 @@ public class DateUtils extends PropertyEditorSupport {
         return cal;
     }
 
-    // ////////////////////////////////////////////////////////////////////////////
-    // getDate
-    // 各种方式获取的Date
-    // ////////////////////////////////////////////////////////////////////////////
-
     /**
      * 当前日期
      *
@@ -174,9 +168,6 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String date2Str(SimpleDateFormat date_sdf) {
         Date date = getDate();
-        if (null == date) {
-            return null;
-        }
         return date_sdf.format(date);
     }
 
@@ -221,9 +212,6 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static String getDate(String format) {
         Date date = new Date();
-        if (null == date) {
-            return null;
-        }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.format(date);
     }
@@ -291,14 +279,8 @@ public class DateUtils extends PropertyEditorSupport {
         Date dt = new Date();
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = df.format(dt);
-        java.sql.Timestamp buydate = java.sql.Timestamp.valueOf(nowTime);
-        return buydate;
+        return Timestamp.valueOf(nowTime);
     }
-
-    // ////////////////////////////////////////////////////////////////////////////
-    // getMillis
-    // 各种方式获取的Millis
-    // ////////////////////////////////////////////////////////////////////////////
 
     /**
      * 系统时间的毫秒数
@@ -339,11 +321,6 @@ public class DateUtils extends PropertyEditorSupport {
     public static long getMillis(Timestamp ts) {
         return ts.getTime();
     }
-
-    // ////////////////////////////////////////////////////////////////////////////
-    // formatDate
-    // 将日期按照一定的格式转化为字符串
-    // ////////////////////////////////////////////////////////////////////////////
 
     /**
      * 默认方式表示的系统当前日期，具体格式：年-月-日
@@ -432,11 +409,6 @@ public class DateUtils extends PropertyEditorSupport {
         return getSDFormat(pattern).format(date);
     }
 
-    // ////////////////////////////////////////////////////////////////////////////
-    // formatTime
-    // 将日期按照一定的格式转化为字符串
-    // ////////////////////////////////////////////////////////////////////////////
-
     /**
      * 默认方式表示的系统当前日期，具体格式：年-月-日 时：分
      *
@@ -476,11 +448,6 @@ public class DateUtils extends PropertyEditorSupport {
         return time_sdf.get().format(date);
     }
 
-    // ////////////////////////////////////////////////////////////////////////////
-    // formatShortTime
-    // 将日期按照一定的格式转化为字符串
-    // ////////////////////////////////////////////////////////////////////////////
-
     /**
      * 默认方式表示的系统当前日期，具体格式：时：分
      *
@@ -519,13 +486,6 @@ public class DateUtils extends PropertyEditorSupport {
     public static String formatShortTime(Date date) {
         return short_time_sdf.get().format(date);
     }
-
-    // ////////////////////////////////////////////////////////////////////////////
-    // parseDate
-    // parseCalendar
-    // parseTimestamp
-    // 将字符串按照一定的格式转化为日期或时间
-    // ////////////////////////////////////////////////////////////////////////////
 
     /**
      * 根据指定的格式将字符串转换成Date 如输入：2003-11-19 11:20:20将按照这个转成时间
@@ -576,11 +536,6 @@ public class DateUtils extends PropertyEditorSupport {
         return new Timestamp(date.getTime());
     }
 
-    // ////////////////////////////////////////////////////////////////////////////
-    // dateDiff
-    // 计算两个日期之间的差值
-    // ////////////////////////////////////////////////////////////////////////////
-
     /**
      * 计算两个时间之间的差值，根据标志的不同而不同
      *
@@ -624,7 +579,7 @@ public class DateUtils extends PropertyEditorSupport {
     public void setAsText(String text) throws IllegalArgumentException {
         if (StringUtils.hasText(text)) {
             try {
-                if (text.indexOf(":") == -1 && text.length() == 10) {
+                if (!text.contains(":") && text.length() == 10) {
                     setValue(DateUtils.date_sdf.get().parse(text));
                 } else if (text.indexOf(":") > 0 && text.length() == 19) {
                     setValue(DateUtils.datetimeFormat.get().parse(text));
@@ -632,9 +587,7 @@ public class DateUtils extends PropertyEditorSupport {
                     throw new IllegalArgumentException("Could not parse date, date format is error ");
                 }
             } catch (ParseException ex) {
-                IllegalArgumentException iae = new IllegalArgumentException("Could not parse date: " + ex.getMessage());
-                iae.initCause(ex);
-                throw iae;
+                throw new IllegalArgumentException("Could not parse date: " + ex.getMessage(), ex);
             }
         } else {
             setValue(null);
@@ -646,5 +599,4 @@ public class DateUtils extends PropertyEditorSupport {
         calendar.setTime(getDate());
         return calendar.get(Calendar.YEAR);
     }
-
 }

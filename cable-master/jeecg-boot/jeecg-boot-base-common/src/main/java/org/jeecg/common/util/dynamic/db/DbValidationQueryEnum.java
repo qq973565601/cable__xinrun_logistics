@@ -3,7 +3,7 @@ package org.jeecg.common.util.dynamic.db;
 public enum DbValidationQueryEnum {
     ORACLE("oracle", "SELECT 1 FROM DUAL"),
     MYSQL("mysql", "select 1"),
-    SQLSERVER("sqlserver", "SELECT 1 FROM DUAL"),;
+    SQL_SERVER("sqlserver", "SELECT 1 FROM DUAL");
 
     DbValidationQueryEnum(String dbType, String validationQuerySql) {
         this.dbType = dbType;

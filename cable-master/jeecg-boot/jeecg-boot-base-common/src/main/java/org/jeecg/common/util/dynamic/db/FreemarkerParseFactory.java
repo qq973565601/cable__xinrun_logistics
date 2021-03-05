@@ -23,13 +23,11 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class FreemarkerParseFactory {
-
     private static final String ENCODE = "utf-8";
     /**
      * 参数格式化工具类
      */
     private static final String MINI_DAO_FORMAT = "DaoFormat";
-
     /**
      * 文件缓存
      */
@@ -42,12 +40,10 @@ public class FreemarkerParseFactory {
     private static StringTemplateLoader stringTemplateLoader = new StringTemplateLoader();
 
     // 使用内嵌的(?ms)打开单行和多行模式
-    private final static Pattern p = Pattern
-            .compile("(?ms)/\\*.*?\\*/|^\\s*//.*?$");
+    private final static Pattern p = Pattern.compile("(?ms)/\\*.*?\\*/|^\\s*//.*?$");
 
     static {
-        _tplConfig.setClassForTemplateLoading(
-                new FreemarkerParseFactory().getClass(), "/");
+        _tplConfig.setClassForTemplateLoading(FreemarkerParseFactory.class, "/");
         _tplConfig.setNumberFormat("0.#####################");
         _sqlConfig.setTemplateLoader(stringTemplateLoader);
         _sqlConfig.setNumberFormat("0.#####################");
@@ -67,13 +63,11 @@ public class FreemarkerParseFactory {
                 return false;
             }
         } catch (Exception e) {
-            //update-begin--Author:scott  Date:20180320 for：解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误-----
             if (e instanceof ParseException) {
                 log.error(e.getMessage(), e.fillInStackTrace());
                 throw new Exception(e);
             }
             log.debug("----isExistTemplate----" + e.toString());
-            //update-end--Author:scott  Date:20180320 for：解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误------
             return false;
         }
         return true;
@@ -102,8 +96,6 @@ public class FreemarkerParseFactory {
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             log.error("发送一次的模板key:{ " + tplName + " }");
-            //System.err.println(e.getMessage());
-            //System.err.println("模板名:{ "+ tplName +" }");
             throw new RuntimeException("解析SQL模板异常");
         }
     }
@@ -115,8 +107,7 @@ public class FreemarkerParseFactory {
      * @param paras      参数
      * @return String 模板解析后内容
      */
-    public static String parseTemplateContent(String tplContent,
-                                              Map<String, Object> paras) {
+    public static String parseTemplateContent(String tplContent, Map<String, Object> paras) {
         try {
             StringWriter swriter = new StringWriter();
             if (stringTemplateLoader.findTemplateSource("sql_" + tplContent.hashCode()) == null) {
@@ -134,8 +125,6 @@ public class FreemarkerParseFactory {
         } catch (Exception e) {
             log.error(e.getMessage(), e.fillInStackTrace());
             log.error("发送一次的模板key:{ " + tplContent + " }");
-            //System.err.println(e.getMessage());
-            //System.err.println("模板内容:{ "+ tplContent +" }");
             throw new RuntimeException("解析SQL模板异常");
         }
     }
@@ -156,13 +145,13 @@ public class FreemarkerParseFactory {
         int index = 0;
         while ((index = StringUtils.indexOfIgnoreCase(sql, "where and", index)) != -1) {
             sql = sql.substring(0, index + 5)
-                    + sql.substring(index + 9, sql.length());
+                    + sql.substring(index + 9);
         }
         // 去掉 , where 这样的问题
         index = 0;
         while ((index = StringUtils.indexOfIgnoreCase(sql, ", where", index)) != -1) {
             sql = sql.substring(0, index)
-                    + sql.substring(index + 1, sql.length());
+                    + sql.substring(index + 1);
         }
         // 去掉 最后是 ,这样的问题
         if (sql.endsWith(",") || sql.endsWith(", ")) {

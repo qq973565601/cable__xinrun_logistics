@@ -6,7 +6,6 @@ package org.jeecg.common.es;
  * @author sunjianlei
  */
 public class QueryStringBuilder {
-
     StringBuilder builder;
 
     public QueryStringBuilder(String field, String str, boolean not, boolean addQuot) {
@@ -66,14 +65,15 @@ public class QueryStringBuilder {
     }
 
     /**
-    * 添加双引号（模糊查询，不能加双引号）
-    */
+     * 添加双引号（模糊查询，不能加双引号）
+     */
     private QueryStringBuilder addQuot(String str, boolean addQuot) {
         return this.addQuotEffect(this.builder, str, addQuot);
     }
 
     /**
      * 是否在两边加上双引号
+     *
      * @param builder
      * @param str
      * @param addQuot
@@ -94,5 +94,4 @@ public class QueryStringBuilder {
     public String toString() {
         return builder.append(")").toString();
     }
-
 }

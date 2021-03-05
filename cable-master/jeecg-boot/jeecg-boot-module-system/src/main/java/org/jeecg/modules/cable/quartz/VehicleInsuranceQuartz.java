@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.cable.entity.Insurance;
-import org.jeecg.modules.cable.entity.StorageLocation;
 import org.jeecg.modules.cable.entity.Warehouse;
 import org.jeecg.modules.cable.service.IInsuranceService;
 import org.jeecg.modules.cable.service.IStorageLocationService;
@@ -19,11 +18,6 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +69,7 @@ public class VehicleInsuranceQuartz implements Job {
                     log.info(insurance.getLicense() + ">>>>>>>>车辆交强险将要到期！");
                     //"车辆交强险"
                     //"车牌号为："+insurance.getLicense()+"\n车辆交强险即将过期"
-                        addmsg("车辆交强险","车牌号为："+insurance.getLicense()+" 车辆交强险即将过期");
+                    addmsg("车辆交强险", "车牌号为：" + insurance.getLicense() + " 车辆交强险即将过期");
 
 
                 }
@@ -94,7 +88,7 @@ public class VehicleInsuranceQuartz implements Job {
                 if (nowDate.before(insurance.getInsuranceDateEnd()) && nowDate.after(twoWeekTime)) {
                     log.info(insurance.getLicense() + ">>>>>>>>车辆商业险将要到期！");
 
-                    addmsg("车辆商业险","车牌号为："+insurance.getLicense()+" 车辆商业险将要到期");
+                    addmsg("车辆商业险", "车牌号为：" + insurance.getLicense() + " 车辆商业险将要到期");
                 }
             }
         }
@@ -106,14 +100,14 @@ public class VehicleInsuranceQuartz implements Job {
                 log.info(storageLocationVo.getStorageLocationName() + ">>>>>>>>>>>>>>>>>>>>库位容积已达到80%");
 
                 Warehouse byId = warehouseService.getById(storageLocationVo.getWarehouseId());
-                addmsg("库位容积",byId.getName()+"下"+storageLocationVo.getStorageLocationName()+" 库位容积已达到80%");
+                addmsg("库位容积", byId.getName() + "下" + storageLocationVo.getStorageLocationName() + " 库位容积已达到80%");
             } else {
                 continue;
             }
         }
     }
 
-    public void addmsg(String title,String text){
+    public void addmsg(String title, String text) {
         SysAnnouncement sysAnnouncement = new SysAnnouncement();
         sysAnnouncement.setTitile(title);
         sysAnnouncement.setMsgContent(text);

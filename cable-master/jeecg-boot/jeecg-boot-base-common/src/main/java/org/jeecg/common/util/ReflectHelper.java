@@ -14,14 +14,10 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class ReflectHelper {
-
-    private Class cls;
-
     /**
      * 传过来的对象
      */
     private Object obj;
-
     /**
      * 存放get方法
      */
@@ -47,7 +43,7 @@ public class ReflectHelper {
     public void initMethods() {
         getMethods = new Hashtable<String, Method>();
         setMethods = new Hashtable<String, Method>();
-        cls = obj.getClass();
+        Class<?> cls = obj.getClass();
         Method[] methods = cls.getMethods();
         // 定义正则表达式，从方法中过滤出getter / setter 函数.
         String gs = "get(\\w+)";
@@ -57,8 +53,7 @@ public class ReflectHelper {
         // 把方法中的"set" 或者 "get" 去掉
         String rapl = "$1";
         String param;
-        for (int i = 0; i < methods.length; ++i) {
-            Method m = methods[i];
+        for (Method m : methods) {
             String methodName = m.getName();
             if (Pattern.matches(gs, methodName)) {
                 param = getM.matcher(methodName).replaceAll(rapl).toLowerCase();
@@ -66,8 +61,6 @@ public class ReflectHelper {
             } else if (Pattern.matches(ss, methodName)) {
                 param = setM.matcher(methodName).replaceAll(rapl).toLowerCase();
                 setMethods.put(param, m);
-            } else {
-                // logger.info(methodName + " 不是getter,setter方法！");
             }
         }
     }
@@ -75,19 +68,16 @@ public class ReflectHelper {
     /**
      * @desc 调用set方法
      */
-    public boolean setMethodValue(String property, Object object) {
+    public void setMethodValue(String property, Object object) {
         Method m = setMethods.get(property.toLowerCase());
         if (m != null) {
             try {
                 // 调用目标类的setter函数
                 m.invoke(obj, object);
-                return true;
             } catch (Exception ex) {
                 log.info("invoke getter on " + property + " error: " + ex.toString());
-                return false;
             }
         }
-        return false;
     }
 
     /**
@@ -101,8 +91,7 @@ public class ReflectHelper {
                 /*
                  * 调用obj类的setter函数
                  */
-                value = m.invoke(obj, new Object[]{});
-
+                value = m.invoke(obj);
             } catch (Exception ex) {
                 log.info("invoke getter on " + property + " error: " + ex.toString());
             }
@@ -114,16 +103,14 @@ public class ReflectHelper {
      * 把map中的内容全部注入到obj中
      *
      * @param data
-     * @return
      */
-    public Object setAll(Map<String, Object> data) {
+    public void setAll(Map<String, Object> data) {
         if (data == null || data.keySet().size() <= 0) {
-            return null;
+            return;
         }
         for (Entry<String, Object> entry : data.entrySet()) {
             this.setMethodValue(entry.getKey(), entry.getValue());
         }
-        return obj;
     }
 
     /**
@@ -183,9 +170,8 @@ public class ReflectHelper {
         try {
             String firstLetter = fieldName.substring(0, 1).toUpperCase();
             String getter = "get" + firstLetter + fieldName.substring(1);
-            Method method = o.getClass().getMethod(getter, new Class[]{});
-            Object value = method.invoke(o, new Object[]{});
-            return value;
+            Method method = o.getClass().getMethod(getter);
+            return method.invoke(o);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -199,7 +185,6 @@ public class ReflectHelper {
         Field[] fields = o.getClass().getDeclaredFields();
         String[] fieldNames = new String[fields.length];
         for (int i = 0; i < fields.length; i++) {
-            //log.info(fields[i].getType());
             fieldNames[i] = fields[i].getName();
         }
         return fieldNames;
@@ -208,16 +193,16 @@ public class ReflectHelper {
     /**
      * 获取属性类型(type)，属性名(name)，属性值(value)的map组成的list
      */
-    public static List<Map> getFiledsInfo(Object o) {
+    public static List<Map<String, Object>> getFiledsInfo(Object o) {
         Field[] fields = o.getClass().getDeclaredFields();
         String[] fieldNames = new String[fields.length];
-        List<Map> list = new ArrayList<Map>();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         Map<String, Object> infoMap = null;
-        for (int i = 0; i < fields.length; i++) {
+        for (Field field : fields) {
             infoMap = new HashMap<String, Object>();
-            infoMap.put("type", fields[i].getType().toString());
-            infoMap.put("name", fields[i].getName());
-            infoMap.put("value", getFieldValueByName(fields[i].getName(), o));
+            infoMap.put("type", field.getType().toString());
+            infoMap.put("name", field.getName());
+            infoMap.put("value", getFieldValueByName(field.getName(), o));
             list.add(infoMap);
         }
         return list;

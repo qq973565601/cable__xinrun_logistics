@@ -17,7 +17,6 @@ public class SqlUtils {
     public static final String DATABSE_TYPE_ORACLE = "oracle";
     public static final String DATABSE_TYPE_SQLSERVER = "sqlserver";
 
-
     /**
      * 分页SQL
      */
@@ -45,7 +44,6 @@ public class SqlUtils {
     /*
      * 判断数据库类型
      */
-
     public static boolean dbTypeIsMySQL(String dbType) {
         return dbTypeIf(dbType, DATABSE_TYPE_MYSQL, DataBaseConstant.DB_TYPE_MYSQL_NUM);
     }

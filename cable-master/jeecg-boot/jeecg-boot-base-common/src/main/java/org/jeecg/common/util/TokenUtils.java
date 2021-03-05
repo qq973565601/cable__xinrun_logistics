@@ -67,11 +67,12 @@ public class TokenUtils {
 
     /**
      * 刷新token（保证用户在线操作不掉线）
-     * @param token
-     * @param userName
-     * @param passWord
-     * @param redisUtil
-     * @return
+     *
+     * @param token     token 码
+     * @param userName  用户名
+     * @param passWord  密码
+     * @param redisUtil redis
+     * @return boolean
      */
     private static boolean jwtTokenRefresh(String token, String userName, String passWord, RedisUtil redisUtil) {
         String cacheToken = String.valueOf(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN + token));
@@ -79,17 +80,10 @@ public class TokenUtils {
             // 校验token有效性
             if (!JwtUtil.verify(cacheToken, userName, passWord)) {
                 String newAuthorization = JwtUtil.sign(userName, passWord);
-                // 设置Toekn缓存有效时间
+                // 设置Token缓存有效时间
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
-                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
             }
-            //update-begin--Author:scott  Date:20191005  for：解决每次请求，都重写redis中 token缓存问题
-//            else {
-//                redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, cacheToken);
-//                // 设置超时时间
-//                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
-//            }
-            //update-end--Author:scott  Date:20191005  for：解决每次请求，都重写redis中 token缓存问题
             return true;
         }
         return false;

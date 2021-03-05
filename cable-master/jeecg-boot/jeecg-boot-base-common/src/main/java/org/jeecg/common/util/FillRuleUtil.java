@@ -17,7 +17,6 @@ import org.jeecg.common.handler.IFillRuleHandler;
  */
 @Slf4j
 public class FillRuleUtil {
-
     /**
      * @param ruleCode ruleCode
      * @return
