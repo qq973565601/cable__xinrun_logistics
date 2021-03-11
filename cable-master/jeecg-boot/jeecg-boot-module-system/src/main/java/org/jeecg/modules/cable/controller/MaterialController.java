@@ -6,15 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan2;
 import org.jeecg.modules.cable.entity.Plan3;
-import org.jeecg.modules.cable.importpackage.MaterialIm;
 import org.jeecg.modules.cable.service.IMaterialService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -28,11 +25,9 @@ import org.jeecg.modules.cable.service.IPlan3Service;
 import org.jeecg.modules.cable.vo.AnnualReportVo;
 import org.jeecg.modules.cable.vo.MaterialOutPutAccountVo;
 import org.jeecg.modules.cable.vo.MaterialRemainingAccountVo;
-import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,8 +50,6 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class MaterialController extends JeecgController<Material, IMaterialService> {
     @Autowired
     private IMaterialService materialService;
-    @Autowired
-    private ISysDictItemService sysDictItemService;
     @Autowired
     private IPlan1Service plan1Service;
     @Autowired

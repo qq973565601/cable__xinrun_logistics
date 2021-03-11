@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan4Im;
 import org.jeecg.modules.cable.mapper.Plan4Mapper;

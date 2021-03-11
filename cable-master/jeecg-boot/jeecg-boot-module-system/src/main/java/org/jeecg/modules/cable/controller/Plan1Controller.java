@@ -10,7 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan1Im;
 import org.jeecg.modules.cable.service.*;
@@ -39,8 +39,6 @@ import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
-
-import static org.jeecgframework.poi.excel.ExcelExportUtil.exportExcel;
 
 /**
  * @Description: 计划表1

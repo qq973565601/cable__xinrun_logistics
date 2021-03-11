@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Inventory;
 import org.jeecg.modules.cable.service.IInventoryService;
 

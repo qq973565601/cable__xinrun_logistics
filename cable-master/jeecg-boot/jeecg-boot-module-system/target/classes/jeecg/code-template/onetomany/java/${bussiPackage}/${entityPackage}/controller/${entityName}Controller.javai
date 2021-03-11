@@ -44,6 +44,7 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.SysUserConstant;
 
  /**
  * @Description: ${tableVo.ftlDescription}
@@ -185,7 +186,6 @@ public class ${entityName}Controller {
   public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
       // Step.1 组装查询条件
       QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
-      SysUserConstant.SYS_USER.getUsername();
 
       //Step.2 获取导出数据
       List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();
@@ -203,7 +203,7 @@ public class ${entityName}Controller {
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
       mv.addObject(NormalExcelConstants.FILE_NAME, "${tableVo.ftlDescription}");
       mv.addObject(NormalExcelConstants.CLASS, ${entityName}Page.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}数据", "导出人:"+sysUser.getRealname(), "${tableVo.ftlDescription}"));
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}数据", "导出人:"+SysUserConstant.SYS_USER.getRealname(), "${tableVo.ftlDescription}"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
   }

@@ -1,4 +1,4 @@
-package org.jeecg.constant;
+package org.jeecg.common.constant;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;

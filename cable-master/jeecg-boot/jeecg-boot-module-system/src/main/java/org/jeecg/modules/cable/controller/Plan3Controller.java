@@ -7,13 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.StrUtil;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
-import org.jeecg.modules.cable.entity.Plan2;
 import org.jeecg.modules.cable.entity.Plan3;
 import org.jeecg.modules.cable.importpackage.Plan3Im;
 import org.jeecg.modules.cable.service.IMaterialService;

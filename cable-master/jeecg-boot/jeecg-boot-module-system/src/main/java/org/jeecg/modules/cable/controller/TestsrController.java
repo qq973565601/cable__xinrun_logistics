@@ -11,7 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.config.DictConfig;
 import org.jeecg.modules.cable.service.IMaterialService;
 import org.jeecg.modules.cable.service.IWarehouseService;

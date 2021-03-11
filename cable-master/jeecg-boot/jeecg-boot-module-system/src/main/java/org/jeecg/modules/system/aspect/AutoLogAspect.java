@@ -15,7 +15,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.constant.SysUserConstant;
+import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.system.entity.SysLog;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
