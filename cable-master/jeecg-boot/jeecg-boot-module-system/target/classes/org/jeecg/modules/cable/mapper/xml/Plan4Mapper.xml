@@ -22,7 +22,6 @@
             #{id}
         </foreach>
     </select>
-    <!--    CONCAT(p.voltage_grade,' ',p.cable_cross) AS wasteMaterialText,-->
 
     <!-- 查询计划4批量出库完单的数据 -->
     <select id="getPlan4ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan4Vo">
@@ -47,7 +46,6 @@
             #{id}
         </foreach>
     </select>
-    <!--    CONCAT(p.voltage_grade,' ',p.cable_cross) as cableCross,-->
 
     <!-- 查询计划4批量入库完单的数据 -->
     <select id="getPlan4DeliverStorage" resultType="org.jeecg.modules.cable.entity.Plan4">
@@ -86,7 +84,7 @@
     </select>
 
     <!-- 导出计划表4数据 -->
-    <select id="exportPlan4" resultType="org.jeecg.modules.cable.importpackage.Plan4Im">
+    <select id="exportPlan4" resultType="org.jeecg.modules.cable.dto.Plan4Im">
         SELECT
         plan4.id,
         plan4.eng_name,
@@ -197,16 +195,7 @@
 
         GROUP BY ds1.recycling_specifications
     </select>
-   <!--             select concat(concat(voltage_grade,' '),cable_cross) as voltage_grade,ds1.texture,Sum(ds1.accomplish_num) length,Sum(ds1.accomplish_weight) weight,Sum(rs1.accomplish_weight) retrieval_weight from plan4   p1
-                INNER JOIN deliver_storage ds1 on p1.id=ds1.plan_id
-                INNER JOIN receiving_storage rs1 on p1.id=rs1.plan_id
-            <where>
-                p1.plan_type=#{planType}
-                <if test="null != voltageGrade and '' != voltageGrade">
-                    AND voltage_grade like CONCAT('%',#{voltageGrade},'%')
-                </if>
-            </where>
-                GROUP BY concat(concat(voltage_grade,' '),cable_cross)-->
+
     <!-- 导出汇总 -->
     <select id="exportPlan3" resultType="org.jeecg.modules.cable.vo.Plan4ExcelVo">
         SELECT ds1.recycling_specifications as voltage_grade,eng_name,ds1.texture,Sum(ds1.accomplish_num) length,Sum(ds1.accomplish_weight) weight,Sum(rs1.accomplish_weight) retrieval_weight
@@ -226,5 +215,4 @@
         </where>
         GROUP BY ds1.recycling_specifications
     </select>
-
 </mapper>

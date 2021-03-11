@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.cable.mapper.MaterialMapper">
-
     <select id="getMaterialOutPutAccountList" resultType="org.jeecg.modules.cable.vo.MaterialOutPutAccountVo">
         select
         m.id,
@@ -45,16 +44,16 @@
         material m
         ON m.id = b.material_id
         <where>
-            <if test = "null != materialOutPutAccountVo.startTime and '' != materialOutPutAccountVo.startTime" >
+            <if test="null != materialOutPutAccountVo.startTime and '' != materialOutPutAccountVo.startTime">
                 AND b.create_time <![CDATA[>=]]> #{materialOutPutAccountVo.startTime}
             </if>
-            <if test = "null != materialOutPutAccountVo.endTime and '' != materialOutPutAccountVo.endTime" >
+            <if test="null != materialOutPutAccountVo.endTime and '' != materialOutPutAccountVo.endTime">
                 AND b.create_time <![CDATA[<=]]> #{materialOutPutAccountVo.endTime}
             </if>
-            <if test = "null != materialOutPutAccountVo.materialSerial and '' != materialOutPutAccountVo.materialSerial" >
+            <if test="null != materialOutPutAccountVo.materialSerial and '' != materialOutPutAccountVo.materialSerial">
                 AND m.serial LIKE CONCAT('%',#{materialOutPutAccountVo.materialSerial},'%')
             </if>
-            <if test = "null != materialOutPutAccountVo.materialName and '' != materialOutPutAccountVo.materialName" >
+            <if test="null != materialOutPutAccountVo.materialName and '' != materialOutPutAccountVo.materialName">
                 AND m.name LIKE CONCAT('%',#{materialOutPutAccountVo.materialName},'%')
             </if>
         </where>
@@ -953,6 +952,7 @@
       ds.material_id = #{id}
       AND DATE_FORMAT( task_time, '%Y-%m-%d' ) = DATE_FORMAT( #{date}, '%Y-%m-%d' )
   </select>
+
     <select id="materialOutPutDayCList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">
     SELECT
         IFNULL( sum( IFNULL(accomplish_num,0) ) ,0) AS y
@@ -963,6 +963,7 @@
         rs.material_id = #{id}
         AND DATE_FORMAT( task_time, '%Y-%m-%d' ) = DATE_FORMAT( #{date}, '%Y-%m-%d' )
   </select>
+
     <select id="materialOutPutMonthRList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">
   SELECT
       IFNULL( sum( IFNULL(accomplish_num,0) ) ,0) AS y
@@ -973,6 +974,7 @@
       ds.material_id = #{id}
       AND DATE_FORMAT( task_time, '%Y-%m' ) = DATE_FORMAT( #{date}, '%Y-%m' )
   </select>
+
     <select id="materialOutPutMonthCList" resultType="org.jeecg.modules.cable.vo.StatisticalChartVo">
   SELECT
       IFNULL( sum( IFNULL(accomplish_num,0) ) ,0) AS y
