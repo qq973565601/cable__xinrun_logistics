@@ -91,7 +91,7 @@
     </select>
 
     <!-- 导出excel bai 2020/9/8 -->
-    <select id="exportPlan3" resultType="org.jeecg.modules.cable.importpackage.Plan3Im">
+    <select id="exportPlan3" resultType="org.jeecg.modules.cable.dto.Plan3Im">
         SELECT
         p.id,
         p.project_no,

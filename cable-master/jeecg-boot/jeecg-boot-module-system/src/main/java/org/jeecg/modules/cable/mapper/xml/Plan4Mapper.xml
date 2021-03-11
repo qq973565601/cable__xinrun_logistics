@@ -86,7 +86,7 @@
     </select>
 
     <!-- 导出计划表4数据 -->
-    <select id="exportPlan4" resultType="org.jeecg.modules.cable.importpackage.Plan4Im">
+    <select id="exportPlan4" resultType="org.jeecg.modules.cable.dto.Plan4Im">
         SELECT
         plan4.id,
         plan4.eng_name,
