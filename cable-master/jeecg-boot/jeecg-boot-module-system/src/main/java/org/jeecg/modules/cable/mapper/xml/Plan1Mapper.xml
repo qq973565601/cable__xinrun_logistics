@@ -111,7 +111,7 @@
     </select>
 
     <!-- 导出 plan1 bai 2020/9/7 -->
-    <select id="exportPlan1" resultType="org.jeecg.modules.cable.importpackage.Plan1Im">
+    <select id="exportPlan1" resultType="org.jeecg.modules.cable.dto.Plan1Im">
         SELECT
         p.id,
         p.item_slip,
