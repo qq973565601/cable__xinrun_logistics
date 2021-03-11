@@ -12,44 +12,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
- * @Description: 库存表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 库存表
  */
 @Data
 @TableName("inventory")
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
-@ApiModel(value = "inventory对象", description = "库存表")
 public class Inventory implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 带参构造
-     *
-     * @param warehouseId       仓库 Id
-     * @param storageLocationId 库位 id
-     * @param projectNo         项目编号
-     * @param projectName       项目名称
-     * @param materialId        物料 id
-     * @param inventoryQuantity 库存数量
-     * @param createTime        创建时间
-     * @param createBy          创建人
-     * @param backup1           计划 id
-     * @param backup2           计划表名(1\2\3\4)
-     * @param backup3           单位
-     * @param backup4           容积
-     * @param backup5           入库完单重量(电缆)
-     * @param assetNo           资产编号
-     */
     public Inventory(Integer warehouseId, Integer storageLocationId, String projectNo, String projectName, Integer materialId, BigDecimal inventoryQuantity, Date createTime, String createBy, Integer backup1, Integer backup2, Integer backup3, BigDecimal backup4, BigDecimal backup5, String assetNo) {
         this.warehouseId = warehouseId;
         this.storageLocationId = storageLocationId;

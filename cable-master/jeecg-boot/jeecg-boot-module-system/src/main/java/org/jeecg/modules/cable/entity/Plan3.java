@@ -12,22 +12,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
- * @Description: 计划表3
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 计划表3
  */
 @Data
 @TableName("plan3")
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "plan3对象", description = "计划表3")
 public class Plan3 implements Serializable {
     private static final long serialVersionUID = 1L;
 

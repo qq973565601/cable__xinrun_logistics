@@ -10,22 +10,13 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
- * @Description: 出库/完单表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 出库/完单表
  */
 @Data
 @TableName("receiving_storage")
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "receiving_storage对象", description = "出库/完单表")
 public class ReceivingStorage implements Serializable {
     private static final long serialVersionUID = 1L;
 

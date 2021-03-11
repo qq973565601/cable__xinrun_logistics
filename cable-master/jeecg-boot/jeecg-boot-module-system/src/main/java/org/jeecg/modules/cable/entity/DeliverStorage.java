@@ -10,19 +10,13 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
 /**
  * 入库/完单表
  */
 @Data
 @TableName("deliver_storage")
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "deliver_storage对象", description = "入库/完单表")
 public class DeliverStorage implements Serializable {
     private static final long serialVersionUID = 1L;
 
