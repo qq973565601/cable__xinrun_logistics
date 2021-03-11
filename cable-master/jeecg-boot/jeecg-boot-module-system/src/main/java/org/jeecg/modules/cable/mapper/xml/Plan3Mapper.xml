@@ -24,6 +24,7 @@
             #{id}
         </foreach>
     </select>
+
     <!-- 查询计划3批量出库完单的数据 -->
     <select id="getPlan3ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan3Vo">
         SELECT
@@ -151,6 +152,7 @@
         </where>
         ORDER BY p.id
     </select>
+
     <!-- 计划表3新品统计 -->
     <select id="selectNewproducts" resultType="org.jeecg.modules.cable.vo.Plan3Vo">
         SELECT eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num)
@@ -179,6 +181,7 @@
         </where>
         GROUP BY eng_name
     </select>
+
     <!-- 导出汇总 -->
     <select id="exportPlan2" resultType="org.jeecg.modules.cable.vo.Plan3ExcelVo">
         SELECT eng_name,material_describe,Sum(ds1.accomplish_num) warehousing_num,Sum(rs1.accomplish_num)

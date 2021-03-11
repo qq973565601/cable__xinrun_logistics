@@ -9,28 +9,18 @@ import org.jeecg.modules.cable.vo.PlanVo;
 import java.util.List;
 
 /**
- * @Description: 入库/完单表
- * @Author: jeecg-boot
- * @Date:   2020-05-22
- * @Version: V1.0
+ * 入库/完单表
  */
 public interface DeliverStorageMapper extends BaseMapper<DeliverStorage> {
-
     /**
-     *   根据项目编号查询入库完单信息
-     *
-     * @param projectNo
-     * @Author Xm
-     * @Date 2020/5/25 16:12
+     * 根据项目编号查询入库完单信息
      */
-    List<PlanVo> selectPlan2DS(@Param("projectNo") String projectNo, @Param("id")String id, @Param("planType")String planType,@Param("sendOrdersId")String sendOrdersId, @Param("page") Page<PlanVo> page);
+    List<PlanVo> selectPlan2DS(@Param("projectNo") String projectNo, @Param("id") String id,
+                               @Param("planType") String planType, @Param("sendOrdersId") String sendOrdersId,
+                               @Param("page") Page<PlanVo> page);
 
     /**
-    *   根据id修改入库信息
-    *
-    * @param planVo
-    * @Author Xm
-    * @Date 2020/5/27 11:10
-    */
+     * 根据id修改入库信息
+     */
     void updateDS(@Param("PlanVo") PlanVo planVo);
 }

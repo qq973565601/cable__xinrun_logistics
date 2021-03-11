@@ -8,6 +8,5 @@ import org.jeecg.modules.cable.vo.MaterialStorageLocationVo;
 import java.util.List;
 
 public interface MaterialStorageLocationVoMapper extends BaseMapper<MaterialStorageLocationVo> {
-
     List<MaterialStorageLocationVo> queryBySid(@Param("sId") Integer storageLocationId);
 }

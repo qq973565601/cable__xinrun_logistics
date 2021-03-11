@@ -37,6 +37,7 @@
             AND DATE_FORMAT( so.task_time, '%Y%m%d' ) = DATE_FORMAT( #{date}, '%Y%m%d' )
 	    GROUP BY so.plan_type,sos.type_id,so.operator_schema,wa.`name`,so.project_no,so.backup2
     </select>
+
     <select id="getPlan" resultType="org.jeecg.modules.cable.vo.SendOrdersTaskVo">
         SELECT
         plan_type,
@@ -61,6 +62,7 @@
         plan${name}
         WHERE id = #{id}
     </select>
+
     <insert id="saveSendOrders" keyProperty="sendOrdersVo.id" useGeneratedKeys="true">
         INSERT INTO send_orders ( operator_schema, warehouse_id, end_warehouse_id, storage_location_id, plan_id, plan_type, task_time, project_no,create_time,create_by )
         VALUES(#{sendOrdersVo.operatorSchema},#{sendOrdersVo.warehouseId},#{sendOrdersVo.endWarehouseId},#{sendOrdersVo.storageLocationId},#{sendOrdersVo.planId},#{sendOrdersVo.planType},#{sendOrdersVo.taskTime},#{sendOrdersVo.projectNo},#{date},#{name})
@@ -68,7 +70,7 @@
 
     <update id="updatePlanState">
         UPDATE plan${planType} SET send_orders_state = 1 WHERE id = #{planId}
-  </update>
+    </update>
 
     <!-- 今日派单 -->
     <select id="selectPlanSendOrdersTheSameDay" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
@@ -231,7 +233,8 @@
         LEFT JOIN warehouse wed ON wed.id = send_orders.end_warehouse_id
         LEFT JOIN storage_location ON storage_location.id =send_orders.storage_location_id
         LEFT JOIN plan${planType} AS p ON p.id = send_orders.plan_id
-        LEFT JOIN sys_user su ON send_orders_subtabulation.type_id = su.id AND send_orders_subtabulation.distribution_type = 1
+        LEFT JOIN sys_user su ON send_orders_subtabulation.type_id = su.id AND
+        send_orders_subtabulation.distribution_type = 1
         <where>
             <if test="planId!=null">
                 send_orders.plan_id in
@@ -247,30 +250,6 @@
         send_orders.id
         ORDER BY send_orders.task_time,send_orders.create_time DESC
     </select>
-
-    <!--send_orders.backup3 AS linkman,
-    send_orders.backup4 AS phone,
-    send_orders.backup2 AS address
-    <if test='planType=="1"'>
-        p.project_name,
-        p.engineering_address AS address,
-        p.project_contact AS linkman,
-        p.project_phone AS phone
-    </if>
-    <if test='planType=="2"'>
-        p.address
-    </if>
-    <if test='planType=="3"'>
-        p.eng_name AS project_name,
-        p.c_phone AS phone,
-        p.field_consignee AS linkman,
-        p.address
-    </if>
-    <if test='planType=="4"'>
-        p.eng_name AS project_name,
-        p.construc_contact AS linkman,
-        p.sampling_addres AS address
-    </if>-->
 
     <!-- 完单记录 -->
     <select id="selectSendOrdersWD" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
@@ -382,105 +361,4 @@
         ) AS a
         ORDER BY a.tasktime,a.create_time DESC
     </select>
-    <!--<select id="selectPlanSendOrdersTheSameDay" resultType="org.jeecg.modules.cable.vo.SendOrdersVo">
-        SELECT
-            so.id,
-            p.id AS plan_id,
-            p.plan_type AS p_plan_type,
-            so.plan_type,
-            p.project_name,
-            p.the_contact AS linkman,
-            p.the_phone AS phone,
-            p.engineering_address AS address,
-            DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 0, type_id, NULL )) AS a0,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
-        FROM
-            send_orders so
-            LEFT JOIN plan1 AS p ON p.id = so.plan_id
-            LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
-        WHERE
-            so.plan_type = 1
-            AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW() , '%Y-%m-%d' )
-        	GROUP BY so.id
-        UNION ALL
-        SELECT
-            so.id,
-            p.id AS plan_id,
-            '备品' AS p_plan_type,
-            so.plan_type,
-            p.equipment_name AS project_name,
-            p.equipment_owners AS linkman,
-            '' AS phone,
-            p.address,
-            DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 0, type_id, NULL )) AS a0,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
-        FROM
-            send_orders so
-            LEFT JOIN plan2 AS p ON p.id = so.plan_id
-            LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
-        WHERE
-            so.plan_type = 2
-            AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW() , '%Y-%m-%d' )
-        	GROUP BY so.id
-            UNION ALL
-        SELECT
-            so.id,
-            p.id AS plan_id,
-            p.plan_type AS p_plan_type,
-            so.plan_type,
-            p.eng_name AS project_name,
-            p.field_consignee AS linkman,
-            p.c_phone AS phone,
-            p.address,
-            DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 0, type_id, NULL )) AS a0,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
-        FROM
-            send_orders so
-            LEFT JOIN plan3 AS p ON p.id = so.plan_id
-            LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
-        WHERE
-            so.plan_type = 3
-            AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW() , '%Y-%m-%d' )
-        	GROUP BY so.id
-            UNION ALL
-        SELECT
-            so.id,
-            p.id AS plan_id,
-            '电缆2' AS p_plan_type,
-            so.plan_type,
-            p.eng_name AS project_name,
-            p.team_contact AS linkman,
-            '' AS phone,
-            p.sampling_addres AS address,
-            DATE_FORMAT( so.task_time, '%Y-%m-%d' ) AS task_time,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 0, type_id, NULL )) AS a0,
-            GROUP_CONCAT(
-        IF
-            ( sos.distribution_type = 1, type_id, NULL ) ) AS a1
-        FROM
-            send_orders so
-            LEFT JOIN plan4 AS p ON p.id = so.plan_id
-            LEFT JOIN send_orders_subtabulation AS sos ON sos.send_orders_id = so.id
-        WHERE
-            so.plan_type = 4
-            AND DATE_FORMAT( so.task_time, '%Y-%m-%d' ) = DATE_FORMAT( NOW() , '%Y-%m-%d' )
-        	GROUP BY so.id
-    </select>-->
 </mapper>

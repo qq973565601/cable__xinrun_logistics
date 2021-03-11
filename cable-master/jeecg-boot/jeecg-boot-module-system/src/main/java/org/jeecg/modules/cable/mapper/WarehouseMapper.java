@@ -13,14 +13,11 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @Description: 仓库表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 仓库表
  */
 public interface WarehouseMapper extends BaseMapper<Warehouse> {
-
-    List<InventoryIocationListVo> InventoryIocationListVoPage(@Param("inventoryIocationListVo") InventoryIocationListVo inventoryIocationListVo, @Param("page") Page<InventoryIocationListVo> page);
+    List<InventoryIocationListVo> InventoryIocationListVoPage(@Param("inventoryIocationListVo") InventoryIocationListVo inventoryIocationListVo,
+                                                              @Param("page") Page<InventoryIocationListVo> page);
 
     List<KuweiVo> keweiQuery(@Param("id") String id, @Param("type") String type, @Param("warehouseId") String warehouseId);
 
@@ -32,10 +29,6 @@ public interface WarehouseMapper extends BaseMapper<Warehouse> {
 
     /**
      * 根据项目编号查询对应的库存库位存储数量
-     * 2020/8/31 bai
-     *
-     * @param projectNo 项目编号
-     * @return 库存库位信息
      */
     @Select("SELECT " +
             "i.inventory_quantity, " +
@@ -45,5 +38,5 @@ public interface WarehouseMapper extends BaseMapper<Warehouse> {
             "LEFT JOIN storage_location s ON i.storage_location_id = s.id " +
             "WHERE i.project_no = #{projectNo}" +
             "AND i.material_id = #{materialId}")
-    List<KuweiVo> queryInventory(@Param("projectNo") Serializable projectNo,@Param("materialId") Serializable materialId);
+    List<KuweiVo> queryInventory(@Param("projectNo") Serializable projectNo, @Param("materialId") Serializable materialId);
 }

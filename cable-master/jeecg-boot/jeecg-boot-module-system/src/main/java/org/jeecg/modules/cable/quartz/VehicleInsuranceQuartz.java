@@ -15,6 +15,7 @@ import org.jeecg.modules.system.service.ISysAnnouncementService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -23,6 +24,7 @@ import java.util.List;
 /**
  * 物料容积 and 车辆保险—定时任务
  */
+@Component
 public class VehicleInsuranceQuartz implements Job {
     @Autowired
     private ISysAnnouncementService sysAnnouncementService;

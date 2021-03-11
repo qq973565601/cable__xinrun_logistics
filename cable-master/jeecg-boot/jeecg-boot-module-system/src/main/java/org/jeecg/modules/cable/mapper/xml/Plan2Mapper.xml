@@ -24,6 +24,7 @@
             #{id}
         </foreach>
     </select>
+
     <!-- 查询计划2批量出库完单的数据 -->
     <select id="getPlan2ReceivingStorageList" resultType="org.jeecg.modules.cable.vo.Plan2Vo">
         SELECT
@@ -71,9 +72,6 @@
     <select id="pageList" resultType="org.jeecg.modules.cable.entity.Plan2">
         SELECT * FROM plan2
         <where>
-            <!--<if test="null != plan2.planType">
-                AND plan2.plan_type = #{plan2.planType}
-            </if>-->
             <if test="null != plan2.site and '' != plan2.site">
                 AND plan2.site LIKE CONCAT('%',#{plan2.site},'%')
             </if>

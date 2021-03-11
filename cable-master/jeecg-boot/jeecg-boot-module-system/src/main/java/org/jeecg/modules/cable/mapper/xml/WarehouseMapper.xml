@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.cable.mapper.WarehouseMapper">
-
     <select id="InventoryIocationListVoPage" resultType="org.jeecg.modules.cable.vo.InventoryIocationListVo">
         SELECT
         CONCAT( p.id,'_', p.type ) as id ,
@@ -289,7 +288,6 @@
         ORDER BY iy.create_time DESC,ml.create_time DESC
     </select>
 
-
     <!-- 库存查询 -->
     <select id="selectPageinventory" resultType="org.jeecg.modules.cable.vo.InventoryVo">
         SELECT
@@ -318,110 +316,6 @@
         GROUP BY iy.recycling_specifications,ml.id
         ORDER BY iy.create_time DESC,ml.create_time DESC
     </select>
-
-    <!--<select id="selectPageinventory" resultType="org.jeecg.modules.cable.vo.InventoryVo">
-        SELECT
-        GROUP_CONCAT( inventory.id ) AS id,
-        p.planType AS p_type,
-        warehouse.`name` AS warehouse_name,
-        inventory.project_no,
-        p.project_name,
-        material.serial,
-        material.`name` AS material_name,
-        sum( inventory.inventory_quantity ) AS inventory_quantity,
-        inventory.backup3 AS dw,
-        p.itemSlip AS pItemSlip,
-        p.assetNo AS pAssetNo
-        FROM
-        inventory
-        LEFT JOIN (
-        SELECT
-        id,
-        project_no,
-        project_name,
-        1 AS type,
-        CASE
-        plan_type
-        WHEN '配变电' THEN
-        '配变电'
-        WHEN '线路' THEN
-        '线路'
-        WHEN '电缆' THEN
-        '电缆'
-        WHEN '其它' THEN
-        '其它' ELSE '未知'
-        END AS planType,
-        item_slip AS itemSlip,
-        asset_no AS assetNo
-        FROM
-        plan1 UNION ALL
-        SELECT
-        id,
-        project_no,
-        NULL AS project_name,
-        2 AS type,
-        '备品' AS planType,
-        NULL AS itemSlip,
-        asset_no AS assetNo
-        FROM
-        plan2 UNION ALL
-        SELECT
-        id,
-        project_no,
-        eng_name AS project_name,
-        3 AS type,
-        CASE
-        plan_type
-        WHEN '正常' THEN
-        '正常'
-        WHEN '抢修' THEN
-        '抢修'
-        WHEN '临措' THEN
-        '临措' ELSE '未知'
-        END AS planType,
-        NULL AS itemSlip,
-        NULL AS assetNo
-        FROM
-        plan3 UNION ALL
-        SELECT
-        id,
-        project_no,
-        eng_name project_name,
-        4 AS type,
-        '电缆' AS planType,
-        NULL AS itemSlip,
-        NULL AS assetNo
-        FROM
-        plan4
-        ) p ON p.id = inventory.backup1
-        AND p.type = inventory.backup2
-        LEFT JOIN warehouse ON warehouse.id = inventory.warehouse_id
-        LEFT JOIN material ON material.id = inventory.material_id
-        <where>
-            <if test="null != inventoryVo.pType and '' != inventoryVo.pType">
-                AND p.planType LIKE CONCAT('%',#{inventoryVo.pType},'%')
-            </if>
-            <if test="null != inventoryVo.projectNo and '' != inventoryVo.projectNo">
-                AND p.project_no LIKE CONCAT('%',#{inventoryVo.projectNo},'%')
-            </if>
-            <if test="null != inventoryVo.warehouseName and '' != inventoryVo.warehouseName">
-                AND warehouse.`name` LIKE CONCAT('%',#{inventoryVo.warehouseName},'%')
-            </if>
-            <if test="null != inventoryVo.materialName and '' != inventoryVo.materialName">
-                AND material.`name` LIKE CONCAT('%',#{inventoryVo.materialName},'%')
-            </if>
-            <if test="null != inventoryVo.serial and '' != inventoryVo.serial">
-                AND material.serial LIKE CONCAT('%',#{inventoryVo.serial},'%')
-            </if>
-            <if test="null != inventoryVo.pItemSlip and '' != inventoryVo.pItemSlip">
-                AND p.itemSlip LIKE CONCAT('%',#{inventoryVo.pItemSlip},'%')
-            </if>
-            <if test="null != inventoryVo.pAssetNo and '' != inventoryVo.pAssetNo">
-                AND p.assetNo LIKE CONCAT('%',#{inventoryVo.pAssetNo},'%')
-            </if>
-        </where>
-        group by inventory.backup1,inventory.backup2,inventory.backup3,material_id
-    </select>-->
 
     <select id="kewei" resultType="org.jeecg.modules.cable.vo.KuweiVo">
         <foreach item="id" collection="ids" separator="union all">
