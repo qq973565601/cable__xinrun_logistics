@@ -8,7 +8,6 @@ import org.jeecg.modules.cable.entity.Warehouse;
 import org.jeecg.modules.cable.mapper.MaterialMapper;
 import org.jeecg.modules.cable.mapper.WarehouseMapper;
 import org.jeecg.modules.cable.service.IWarehouseService;
-import org.jeecg.modules.cable.vo.InventoryIocationListVo;
 import org.jeecg.modules.cable.vo.InventoryVo;
 import org.jeecg.modules.cable.vo.KuweiVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,44 +19,26 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @Description: 仓库表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 仓库表
  */
 @Service
 public class WarehouseServiceImpl extends ServiceImpl<WarehouseMapper, Warehouse> implements IWarehouseService {
-
     @Autowired
-    MaterialMapper materialMapper;
-
-    @Override
-    public IPage<InventoryIocationListVo> InventoryIocationListVoPage(InventoryIocationListVo inventoryIocationListVo, Page<InventoryIocationListVo> page) {
-        List<InventoryIocationListVo> list = baseMapper.InventoryIocationListVoPage(inventoryIocationListVo, page);
-        return page.setRecords(list);
-    }
-
-    @Override
-    public List<KuweiVo> keweiQuery(String id, String type, String warehouseId) {
-        return baseMapper.keweiQuery(id, type, warehouseId);
-    }
+    private MaterialMapper materialMapper;
 
     @Override
     public IPage<InventoryVo> selectPageinventory(InventoryVo inventoryVo, Page<InventoryVo> page) {
-        List<InventoryVo> list = baseMapper.selectPageinventory(inventoryVo, page);
-        return page.setRecords(list);
+        return page.setRecords(baseMapper.selectPageinventory(inventoryVo, page));
     }
 
     @Override
     public IPage<InventoryVo> selectInfo(InventoryVo inventoryVo, Page<InventoryVo> page) {
-        List<InventoryVo> list = baseMapper.selectInfo(inventoryVo, page);
-        return page.setRecords(list);
+        return page.setRecords(baseMapper.selectInfo(inventoryVo, page));
     }
 
     @Override
     public List<KuweiVo> kewei(String id) {
-        String[] ids = id.split(",");
-        return baseMapper.kewei(ids);
+        return baseMapper.kewei(id.split(","));
     }
 
     @Override

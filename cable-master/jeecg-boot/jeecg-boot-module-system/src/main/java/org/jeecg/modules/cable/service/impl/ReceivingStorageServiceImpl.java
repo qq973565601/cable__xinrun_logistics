@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
- * @Description: 出库/完单表
- * @Author: jeecg-boot
- * @Date:   2020-05-22
- * @Version: V1.0
+ * 出库/完单表
  */
 @Service
 public class ReceivingStorageServiceImpl extends ServiceImpl<ReceivingStorageMapper, ReceivingStorage> implements IReceivingStorageService {

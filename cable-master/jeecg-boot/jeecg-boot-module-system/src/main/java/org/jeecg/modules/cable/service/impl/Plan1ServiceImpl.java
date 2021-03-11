@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.SysUserConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.dto.Plan1Im;
 import org.jeecg.modules.cable.mapper.Plan1Mapper;
@@ -29,10 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @Description: 计划表1
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 计划表1
  */
 @Service
 public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements IPlan1Service {
@@ -55,16 +53,12 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
 
     @Override
     public List<Plan1> idsqueryRuList(List<String> ids) {
-        //TODO 构造条件，根据id的集合做条件查询
-        List<Plan1> list = baseMapper.selectBatchIds(ids);
-        return list;
+        return baseMapper.selectBatchIds(ids);
     }
 
     @Override
     public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
-        //TODO 构造条件，根据id的集合做条件查询
-        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
-        return list;
+        return baseMapper.idsqueryChuList(ids);
     }
 
     @Override
@@ -105,6 +99,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     deliverStorage.setCreateTime(new Date()); // 创建时间
                     deliverStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername()); // 创建人
                     deliverStorageList.add(deliverStorage);
+
                     // 向库存表中存数据
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
@@ -116,38 +111,33 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     wrapper.eq("asset_no", plan1.getAssetNo()); // 资产编号
                     wrapper.eq("backup1", plan1Ids.get(i)); // 计划 Id
                     wrapper.eq("backup2", 1);  // 计划表1
-                    if (plan1.getAlreadyDeliverStorage() == null) {
+                    if (plan1.getAlreadyDeliverStorage() == null)
                         plan1.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                    } else {
+                    else
                         plan1.setAlreadyDeliverStorage(plan1.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())))); // 已入库数
-                    }
-                    boolean res = plan1Service.updateById(plan1);
-                    System.err.println("计划1更新数据是否成功:" + res);
+                    plan1Service.updateById(plan1);
+
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         // 存在库存,在原本的库存数上增加入库数量即可
                         inventory.setInventoryQuantity(inventory.getInventoryQuantity().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
-                        if (inventory.getBackup4() != null) {
+                        if (inventory.getBackup4() != null)
                             inventory.setBackup4(inventory.getBackup4().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                        } else {
+                        else
                             inventory.setBackup4(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
-                        }
-                        boolean flag = inventoryService.updateById(inventory);
-                        System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
+                        inventoryService.updateById(inventory);
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
                         Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan1.getProjectNo(), plan1.getProjectName(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername(), Integer.parseInt(plan1Ids.get(i).toString()), 1, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null, map.get("assetNo").toString());
-                        boolean flag = inventoryService.save(entity);
-                        System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");
+                        inventoryService.save(entity);
                     }
+
                     StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
-                    if (storageLocation.getTheCurrentVolume() == null) {
+                    if (storageLocation.getTheCurrentVolume() == null)
                         storageLocation.setTheCurrentVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
-                    } else {
+                    else
                         storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                    }
-                    boolean flag = storageLocationService.updateById(storageLocation);
-                    System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
+                    storageLocationService.updateById(storageLocation);
                 }
                 deliverStorageService.saveBatch(deliverStorageList);
                 return Result.ok("入库完单成功");
@@ -178,21 +168,21 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     receivingStorage.setCreateTime(new Date()); // 创建时间
                     receivingStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername()); // 创建人
                     receivingStorageList.add(receivingStorage);
+
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询此库存是否存在
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
-                    wrapper.eq("warehouse_id", warehouse == null ? null : warehouse.getId()); // 仓库id
+                    wrapper.eq("warehouse_id", warehouse.getId()); // 仓库id
                     wrapper.eq("storage_location_id", storageLocation == null ? null : storageLocation.getId()); // 库位id
                     Plan1 plan1 = this.getOne(new QueryWrapper<Plan1>().eq("id", plan1Ids.get(i).toString()));
                     wrapper.eq("project_no", plan1.getProjectNo()); // 项目编号
                     wrapper.eq("material_id", material == null ? null : material.getId()); // 物料编号
                     wrapper.eq("asset_no", plan1.getAssetNo()); // 资产编号
-                    if (plan1.getAlreadyReceivingStorage() == null) {
+                    if (plan1.getAlreadyReceivingStorage() == null)
                         plan1.setAlreadyReceivingStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())));
-                    } else {
+                    else
                         plan1.setAlreadyReceivingStorage(plan1.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())))); //TODO 已出库数
-                    }
-                    boolean res = plan1Service.updateById(plan1);
-                    System.err.println("计划1更新数据是否成功:" + res);
+                    plan1Service.updateById(plan1);
+
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         if (inventory.getInventoryQuantity() == null || inventory.getBackup4() == null) {
@@ -205,12 +195,9 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                             inventory.setInventoryQuantity(inventory.getInventoryQuantity().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
                             if (result2 == 0 || result2 > 0) {
                                 inventory.setBackup4(inventory.getBackup4().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                                boolean flag = inventoryService.updateById(inventory);
-                                System.err.println("出库是否成功:" + flag + ",出库后库存数为[" + inventory.getInventoryQuantity() + "]");
+                                inventoryService.updateById(inventory);
                                 if (inventory.getInventoryQuantity().compareTo(BigDecimal.valueOf(0)) == 0) {
-                                    //todo 库存数为0时删除此库存记录
                                     inventoryService.removeById(inventory.getId());
-                                    System.err.println("删除库存记录成功");
                                 }
                             } else {
                                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
@@ -224,12 +211,12 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                         return Result.error("此库存并不存在, 无法进行出库完单操作");
                     }
+
                     if (storageLocation != null) {
                         int result = storageLocation.getTheCurrentVolume().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         if (result == 0 || result > 0) {
                             storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                            boolean flag = storageLocationService.updateById(storageLocation);
-                            System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
+                            storageLocationService.updateById(storageLocation);
                         } else {
                             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("当前库存容积不足, 无法进行出库完单操作");
@@ -242,7 +229,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                 receivingStorageService.saveBatch(receivingStorageList);
                 return Result.ok("出库完单成功");
             default:
-                return Result.ok("完单操作失败");
+                throw new JeecgBootException("完单操作失败~");
         }
     }
 
@@ -258,14 +245,7 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
 
     @Override
     public IPage<Plan1> pageList(Plan1Vo plan1Vo, Page<Plan1> page) {
-        List<Plan1> list = baseMapper.pageList(plan1Vo, page);
-        return page.setRecords(list);
-    }
-
-    @Override
-    public IPage<StorageLocationListVo> StorageLocationListVoPage(StorageLocationListVo storageLocationListVo, Page<StorageLocationListVo> page) {
-        List<StorageLocationListVo> list = baseMapper.StorageLocationListVoPage(storageLocationListVo, page);
-        return page.setRecords(list);
+        return page.setRecords(baseMapper.pageList(plan1Vo, page));
     }
 
     @Override
@@ -287,18 +267,15 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     }
                 }
             }
-            // 设置反馈日期
-            p.setFeedbackDate(new Date());
-            // 设置反馈说明
-            p.setExplain(explain);
+            p.setFeedbackDate(new Date());// 设置反馈日期
+            p.setExplain(explain);// 设置反馈说明
         }
         return list;
     }
 
     @Override
     public IPage<SettleAccountsVo> selectSettleAccounts(String backup1, String planType, String projectNo, Page<SettleAccountsVo> page) {
-        List<SettleAccountsVo> list = baseMapper.selectSettleAccounts(backup1, planType, projectNo, page);
-        return page.setRecords(list);
+        return page.setRecords(baseMapper.selectSettleAccounts(backup1, planType, projectNo, page));
     }
 
     @Override
@@ -306,25 +283,14 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
         return page.setRecords(baseMapper.selectSettleAccountsDetails(projectNo, page));
     }
 
-    /**
-     * 计划表1配变电/线路统计
-     *
-     * @return
-     */
     @Override
     public IPage<Plan1Vo> selectSubstation(String wasteMaterialText, String beginTime, String endTime, String planType, Page<Plan1Vo> page) {
         return page.setRecords(baseMapper.selectSubstation(wasteMaterialText, beginTime, endTime, planType, page));
     }
 
-    /**
-     * 变电/导线统计导出
-     *
-     * @return
-     */
     @Override
     public List<Plan1ExcelVo> exportPlan2(Plan1ExcelVo plan1ExcelVo) {
-        List<Plan1ExcelVo> list = baseMapper.exportPlan2(plan1ExcelVo);
-        return list;
+        return baseMapper.exportPlan2(plan1ExcelVo);
     }
 
     @Override

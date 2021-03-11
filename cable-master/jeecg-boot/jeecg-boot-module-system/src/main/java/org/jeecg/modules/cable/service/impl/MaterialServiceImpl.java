@@ -1,9 +1,7 @@
 package org.jeecg.modules.cable.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.mapper.MaterialMapper;
 import org.jeecg.modules.cable.service.IMaterialService;
@@ -20,10 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * @Description: 物料表
- * @Author: jeecg-boot
- * @Date: 2020-05-18
- * @Version: V1.0
+ * 物料表
  */
 @Service
 public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
@@ -40,38 +35,28 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         List<MaterialRemainingAccountVo> list = baseMapper.getMaterialRemainingAccountList(serial, name, projectNo, page);
         for (MaterialRemainingAccountVo materialRemainingAccountVo : list) {
             BigDecimal bigDecimal = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow_0_0() != null) {
+            if (materialRemainingAccountVo.getNow_0_0() != null)
                 bigDecimal.add(materialRemainingAccountVo.getNow_0_0());
-            }
-            if (materialRemainingAccountVo.getNow_1_0() != null) {
+            if (materialRemainingAccountVo.getNow_1_0() != null)
                 bigDecimal.add(materialRemainingAccountVo.getNow_1_0());
-            }
-            if (materialRemainingAccountVo.getNow_2_0() != null) {
+            if (materialRemainingAccountVo.getNow_2_0() != null)
                 bigDecimal.add(materialRemainingAccountVo.getNow_2_0());
-            }
-            if (materialRemainingAccountVo.getNow_3_0() != null) {
+            if (materialRemainingAccountVo.getNow_3_0() != null)
                 bigDecimal.add(materialRemainingAccountVo.getNow_3_0());
-            }
-            if (materialRemainingAccountVo.getNow_4_0() != null) {
+            if (materialRemainingAccountVo.getNow_4_0() != null)
                 bigDecimal.add(materialRemainingAccountVo.getNow_4_0());
-            }
             materialRemainingAccountVo.setYlckNums(bigDecimal);
             BigDecimal bigDecimal1 = new BigDecimal(0);
-            if (materialRemainingAccountVo.getNow_0_1() != null) {
+            if (materialRemainingAccountVo.getNow_0_1() != null)
                 bigDecimal1.add(materialRemainingAccountVo.getNow_0_1());
-            }
-            if (materialRemainingAccountVo.getNow_1_1() != null) {
+            if (materialRemainingAccountVo.getNow_1_1() != null)
                 bigDecimal1.add(materialRemainingAccountVo.getNow_1_1());
-            }
-            if (materialRemainingAccountVo.getNow_2_1() != null) {
+            if (materialRemainingAccountVo.getNow_2_1() != null)
                 bigDecimal1.add(materialRemainingAccountVo.getNow_2_1());
-            }
-            if (materialRemainingAccountVo.getNow_3_1() != null) {
+            if (materialRemainingAccountVo.getNow_3_1() != null)
                 bigDecimal1.add(materialRemainingAccountVo.getNow_3_1());
-            }
-            if (materialRemainingAccountVo.getNow_4_1() != null) {
+            if (materialRemainingAccountVo.getNow_4_1() != null)
                 bigDecimal1.add(materialRemainingAccountVo.getNow_4_1());
-            }
             materialRemainingAccountVo.setYlrkNums(bigDecimal1);
         }
         return page.setRecords(list);
@@ -79,7 +64,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public IPage<AnnualReportVo> getAnnualAccountList(String planType, String dateTime, String serial, String name, String projectNo, String assetNo, Page<AnnualReportVo> page) {
-        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo,assetNo, page);
+        List<AnnualReportVo> list = baseMapper.getAnnualAccountList(planType, dateTime, serial, name, projectNo, assetNo, page);
         for (AnnualReportVo annualReportVo : list) {
             BigDecimal m10 = annualReportVo.getM10();
             BigDecimal m20 = annualReportVo.getM20();
@@ -135,23 +120,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     }
 
     @Override
-    public Integer saveMaterial(Material material) {
-        // 添加时首先判断物料编号是否已经存在
-        QueryWrapper<Material> wrapper = new QueryWrapper<>();
-        wrapper.eq("serial", material.getSerial());
-        Material entity = baseMapper.selectOne(wrapper);
-        if (null != entity) {
-            return 0;   // 如果 entity != null 证明存在此物料编号
-        }
-        // 添加操作
-        material.setCreateBy(SysUserConstant.SYS_USER.getUsername());    // 创建人
-        material.setCreateTime(new Date()); // 创建时间
-        return baseMapper.saveMaterial(material);
-    }
-
-    @Override
-    public Integer editMaterial(Material material) {
-        return baseMapper.editMaterial(material);
+    public void editMaterial(Material material) {
+        baseMapper.editMaterial(material);
     }
 
     @Override
@@ -161,16 +131,14 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         for (OutPutWarehouseVo item : list) {
             for (SysDictItem u : units) {
                 if (item.getAccomplishNumUnit() != null) {
-                    if (u.getItemValue().equals(item.getAccomplishNumUnit().toString())) {
-                        // 以 / 拼接操作数量和单位
+                    // 以 / 拼接操作数量和单位
+                    if (u.getItemValue().equals(item.getAccomplishNumUnit().toString()))
                         item.setAccomplishNumConcatUnit(item.getAccomplishNum().toString().concat("/").concat(u.getItemText()));
-                    }
                 }
             }
             // 以 / 拼接操作重量和单位
-            if (item.getAccomplishWeight() != null) {
+            if (item.getAccomplishWeight() != null)
                 item.setAccomplishWeightConcatUnit(item.getAccomplishWeight().toString().concat("/").concat("吨"));
-            }
         }
         return page.setRecords(list);
     }
@@ -182,28 +150,24 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         mapR.put("type", "入库");
         Map<String, String> mapC = new HashMap<>();
         mapC.put("type", "出库");
-        if (materialOutPutAccountVo.getWeek() != null && materialOutPutAccountVo.getWeek() != "") {
+        if (materialOutPutAccountVo.getWeek() != null && !materialOutPutAccountVo.getWeek().equals("")) {
             List<StatisticalChartVo> list1 = formattingWeek(materialOutPutAccountVo.getWeek());
             for (StatisticalChartVo statisticalChartVo : list1) {
                 StatisticalChartVo statisticalChartVo1 = baseMapper.materialOutPutDayRList(statisticalChartVo.getDate(), materialOutPutAccountVo.getId());
-                if (statisticalChartVo1 != null) {
-                    statisticalChartVo.setY(statisticalChartVo1.getY());
-                }
+                if (statisticalChartVo1 != null) statisticalChartVo.setY(statisticalChartVo1.getY());
                 mapR.put(statisticalChartVo.getX(), statisticalChartVo.getY());
             }
             List<StatisticalChartVo> list2 = formattingWeek(materialOutPutAccountVo.getWeek());
             for (StatisticalChartVo statisticalChartVo : list2) {
                 StatisticalChartVo statisticalChartVo1 = baseMapper.materialOutPutDayCList(statisticalChartVo.getDate(), materialOutPutAccountVo.getId());
-                if (statisticalChartVo1 != null) {
-                    statisticalChartVo.setY(statisticalChartVo1.getY());
-                }
+                if (statisticalChartVo1 != null) statisticalChartVo.setY(statisticalChartVo1.getY());
                 mapC.put(statisticalChartVo.getX(), statisticalChartVo.getY());
             }
             lists.add(mapR);
             lists.add(mapC);
             return lists;
-        } else if (materialOutPutAccountVo.getYear() != null && materialOutPutAccountVo.getYear() != "") {
-            if (materialOutPutAccountVo.getQuarter() != null && materialOutPutAccountVo.getQuarter() != "") {
+        } else if (materialOutPutAccountVo.getYear() != null && !materialOutPutAccountVo.getYear().equals("")) {
+            if (materialOutPutAccountVo.getQuarter() != null && !materialOutPutAccountVo.getQuarter().equals("")) {
                 List<StatisticalChartVo> yearList1 = new ArrayList<>();
                 List<StatisticalChartVo> yearList2 = new ArrayList<>();
                 if ("1".equals(materialOutPutAccountVo.getQuarter())) {
@@ -382,7 +346,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
                 lists.add(mapR);
                 lists.add(mapC);
                 return lists;
-            } else if (materialOutPutAccountVo.getMonth() != null && materialOutPutAccountVo.getMonth() != "") {
+            } else if (materialOutPutAccountVo.getMonth() != null && !materialOutPutAccountVo.getMonth().equals("")) {
                 List<StatisticalChartVo> list1 = lastMonth(Integer.parseInt(materialOutPutAccountVo.getYear()), Integer.parseInt(materialOutPutAccountVo.getMonth()));
                 for (StatisticalChartVo statisticalChartVo : list1) {
                     StatisticalChartVo statisticalChartVo1 = new StatisticalChartVo();
@@ -528,13 +492,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         return lists;
     }
 
-
     private List<StatisticalChartVo> formattingWeek(String week) {
         List<StatisticalChartVo> list = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if ("1".equals(week)) {
             Calendar c = Calendar.getInstance();
-            // 今天bai是一周中的第几天
+            // 是一周中的第几天
             int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
             if (c.getFirstDayOfWeek() == Calendar.SUNDAY) {
                 c.add(Calendar.DAY_OF_MONTH, 1);
@@ -545,27 +508,13 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
                 c.add(Calendar.DAY_OF_MONTH, 1);
                 StatisticalChartVo statisticalChartVo = new StatisticalChartVo();
                 statisticalChartVo.setDate(sdf.format(c.getTime()));
-                if (i == 1) {
-                    statisticalChartVo.setX("周一");
-                }
-                if (i == 2) {
-                    statisticalChartVo.setX("周二");
-                }
-                if (i == 3) {
-                    statisticalChartVo.setX("周三");
-                }
-                if (i == 4) {
-                    statisticalChartVo.setX("周四");
-                }
-                if (i == 5) {
-                    statisticalChartVo.setX("周五");
-                }
-                if (i == 6) {
-                    statisticalChartVo.setX("周六");
-                }
-                if (i == 7) {
-                    statisticalChartVo.setX("周七");
-                }
+                if (i == 1) statisticalChartVo.setX("周一");
+                if (i == 2) statisticalChartVo.setX("周二");
+                if (i == 3) statisticalChartVo.setX("周三");
+                if (i == 4) statisticalChartVo.setX("周四");
+                if (i == 5) statisticalChartVo.setX("周五");
+                if (i == 6) statisticalChartVo.setX("周六");
+                if (i == 7) statisticalChartVo.setX("周七");
                 list.add(statisticalChartVo);
             }
         } else {
@@ -573,27 +522,13 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
                 StatisticalChartVo statisticalChartVo = new StatisticalChartVo();
                 String time = lastWeek(i);
                 statisticalChartVo.setDate(time);
-                if (i == 7) {
-                    statisticalChartVo.setX("周一");
-                }
-                if (i == 6) {
-                    statisticalChartVo.setX("周二");
-                }
-                if (i == 5) {
-                    statisticalChartVo.setX("周三");
-                }
-                if (i == 4) {
-                    statisticalChartVo.setX("周四");
-                }
-                if (i == 3) {
-                    statisticalChartVo.setX("周五");
-                }
-                if (i == 2) {
-                    statisticalChartVo.setX("周六");
-                }
-                if (i == 1) {
-                    statisticalChartVo.setX("周七");
-                }
+                if (i == 7) statisticalChartVo.setX("周一");
+                if (i == 6) statisticalChartVo.setX("周二");
+                if (i == 5) statisticalChartVo.setX("周三");
+                if (i == 4) statisticalChartVo.setX("周四");
+                if (i == 3) statisticalChartVo.setX("周五");
+                if (i == 2) statisticalChartVo.setX("周六");
+                if (i == 1) statisticalChartVo.setX("周七");
                 list.add(statisticalChartVo);
             }
         }

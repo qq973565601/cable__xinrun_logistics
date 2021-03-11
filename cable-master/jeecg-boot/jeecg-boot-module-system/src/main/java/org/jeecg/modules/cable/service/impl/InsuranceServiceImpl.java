@@ -13,31 +13,28 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.util.List;
 
 /**
- * @Description: 车保险表
- * @Author: jeecg-boot
- * @Date:   2020-05-22
- * @Version: V1.0
+ * 车保险表
  */
 @Service
 public class InsuranceServiceImpl extends ServiceImpl<InsuranceMapper, Insurance> implements IInsuranceService {
 
     @Override
     public IPage<InsuranceListVo> getInsurancePage(InsuranceListVo insurance, Page<InsuranceListVo> page) {
-        List<InsuranceListVo> list = baseMapper.getInsurancePage(insurance.getLicense(),page);
+        List<InsuranceListVo> list = baseMapper.getInsurancePage(insurance.getLicense(), page);
         for (InsuranceListVo insuranceListVo : list) {
-          if(insuranceListVo.getInsuranceDateBegin()!=null){
-            insuranceListVo.setInsuranceDate(insuranceListVo.getInsuranceDateBegin()+" 至 ?");
-            if(insuranceListVo.getInsuranceDateEnd()!=null){
-              insuranceListVo.setInsuranceDate(insuranceListVo.getInsuranceDateBegin()+" 至 "+insuranceListVo.getInsuranceDateEnd());
+            if (insuranceListVo.getInsuranceDateBegin() != null) {
+                insuranceListVo.setInsuranceDate(insuranceListVo.getInsuranceDateBegin() + " 至 ?");
+                if (insuranceListVo.getInsuranceDateEnd() != null) {
+                    insuranceListVo.setInsuranceDate(insuranceListVo.getInsuranceDateBegin() + " 至 " + insuranceListVo.getInsuranceDateEnd());
+                }
             }
-          }
-          if(insuranceListVo.getStrongDateBegin()!=null){
-            insuranceListVo.setStrongDate(insuranceListVo.getStrongDateBegin()+" 至 ?");
-            if(insuranceListVo.getStrongDateEnd()!=null){
-              insuranceListVo.setStrongDate(insuranceListVo.getStrongDateBegin()+" 至 "+insuranceListVo.getStrongDateEnd());
-            }
+            if (insuranceListVo.getStrongDateBegin() != null) {
+                insuranceListVo.setStrongDate(insuranceListVo.getStrongDateBegin() + " 至 ?");
+                if (insuranceListVo.getStrongDateEnd() != null) {
+                    insuranceListVo.setStrongDate(insuranceListVo.getStrongDateBegin() + " 至 " + insuranceListVo.getStrongDateEnd());
+                }
 
-          }
+            }
         }
         return page.setRecords(list);
     }

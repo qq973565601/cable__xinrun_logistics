@@ -13,37 +13,23 @@ import java.util.List;
 
 /**
  * 统计报表模块
- * bai
- * 2020/5/27
  */
 public interface IStatisticalReportService extends IService<SendOrdersSubtabulation> {
 
-  /**
-   * 人员任务统计
-   * bai
-   * 2020/5/27
-   *
-   * @return
-   */
-  IPage<PersonnelTaskStatisticsVo> getPersonnelTaskStatistics(String taskTime, String realName, Page<PersonnelTaskStatisticsVo> page);
+    /**
+     * 人员任务统计
+     */
+    IPage<PersonnelTaskStatisticsVo> getPersonnelTaskStatistics(String taskTime, String realName, Page<PersonnelTaskStatisticsVo> page);
 
-  /**
-   * 出车统计
-   * bai
-   * 2020/5/27
-   *
-   * @return
-   */
-  IPage<DepartureStatisticsVo> getDepartureStatistics(String taskTime, Page<DepartureStatisticsVo> page);
+    /**
+     * 出车统计
+     */
+    IPage<DepartureStatisticsVo> getDepartureStatistics(String taskTime, Page<DepartureStatisticsVo> page);
 
-  /**
-   * 出车统计详情信息
-   * bai
-   * 2020/5/27
-   *
-   * @return
-   */
-  IPage<DepartureStatisticsDetailsVo> getDepartureStatisticsDetails(String taskTime, String license, String month, Page<DepartureStatisticsDetailsVo> page);
+    /**
+     * 出车统计详情信息
+     */
+    IPage<DepartureStatisticsDetailsVo> getDepartureStatisticsDetails(String taskTime, String license, String month, Page<DepartureStatisticsDetailsVo> page);
 
-  List<SysUser> getUsers();
+    List<SysUser> getUsers();
 }

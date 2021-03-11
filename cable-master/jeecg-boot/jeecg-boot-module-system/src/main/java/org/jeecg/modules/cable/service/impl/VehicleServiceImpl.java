@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
- * @Description: 车辆表
- * @Author: jeecg-boot
- * @Date:   2020-05-22
- * @Version: V1.0
+ * 车辆表
  */
 @Service
 public class VehicleServiceImpl extends ServiceImpl<VehicleMapper, Vehicle> implements IVehicleService {

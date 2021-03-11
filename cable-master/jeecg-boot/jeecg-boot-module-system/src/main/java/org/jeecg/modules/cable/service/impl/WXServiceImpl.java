@@ -12,8 +12,6 @@ import javax.annotation.Resource;
 
 /**
  * WX小程序
- * bai
- * 2020/6/11
  */
 @Service
 public class WXServiceImpl implements IWXService {

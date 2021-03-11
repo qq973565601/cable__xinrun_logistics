@@ -12,15 +12,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.util.List;
 
 /**
- * @Description: 库位表
- * @Author: jeecg-boot
- * @Date:   2020-05-22
- * @Version: V1.0
+ * 库位表
  */
 @Service
 public class StorageLocationServiceImpl extends ServiceImpl<StorageLocationMapper, StorageLocation> implements IStorageLocationService {
     @Override
-    public List<StorageLocationVo> getAll(Wrapper wrapper) {
+    public List<StorageLocationVo> getAll(Wrapper<?> wrapper) {
         return baseMapper.getAll(wrapper);
     }
 }

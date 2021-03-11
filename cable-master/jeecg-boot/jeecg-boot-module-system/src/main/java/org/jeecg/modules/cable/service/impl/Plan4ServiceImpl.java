@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.SysUserConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.dto.Plan4Im;
 import org.jeecg.modules.cable.mapper.Plan4Mapper;
@@ -29,10 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @Description: 计划表4
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 计划表4
  */
 @Service
 public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements IPlan4Service {
@@ -97,6 +95,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     deliverStorage.setCreateTime(new Date());
                     deliverStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername());
                     deliverStorageList.add(deliverStorage);
+
                     // 向库存表中存数据
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
@@ -108,44 +107,38 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     wrapper.eq("recycling_specifications", plan4MaterialName);
                     wrapper.eq("backup1", ids.get(i));
                     wrapper.eq("backup2", 4);
-                    if (plan4.getAlreadyDeliverStorage() == null) {
+                    if (plan4.getAlreadyDeliverStorage() == null)
                         plan4.setAlreadyDeliverStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                    } else {
+                    else
                         plan4.setAlreadyDeliverStorage(plan4.getAlreadyDeliverStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
-                    }
-                    boolean res = plan4Service.updateById(plan4);
-                    System.err.println("计划4更新数据是否成功:" + res);
+                    plan4Service.updateById(plan4);
+
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
                         // 存在库存,在原本的库存数上增加入库数量即可
                         inventory.setInventoryQuantity(inventory.getInventoryQuantity().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString()))));
-                        if (inventory.getBackup4() != null) {  // 库存容积操作
+                        if (inventory.getBackup4() != null)   // 库存容积操作
                             inventory.setBackup4(inventory.getBackup4().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                        } else {
+                        else
                             inventory.setBackup4(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
-                        }
-                        if (inventory.getBackup5() != null) {  // 库存电缆重量操作
+
+                        if (inventory.getBackup5() != null)   // 库存电缆重量操作
                             inventory.setBackup5(inventory.getBackup5().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
-                        } else {
+                        else
                             inventory.setBackup5(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                        }
-                        boolean flag = inventoryService.updateById(inventory);
-                        System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
+                        inventoryService.updateById(inventory);
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
                         Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan4.getProjectNo(), plan4.getEngName(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername(), Integer.parseInt(ids.get(i).toString()), 4, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())), null);
                         entity.setRecyclingSpecifications(plan4MaterialName);
-                        boolean flag = inventoryService.save(entity);
-                        System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");
+                        inventoryService.save(entity);
                     }
                     StorageLocation storageLocation = storageLocationService.getById(Integer.parseInt(map.get("storageLocationId").toString()));
-                    if (storageLocation.getTheCurrentVolume() == null) {
+                    if (storageLocation.getTheCurrentVolume() == null)
                         storageLocation.setTheCurrentVolume(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
-                    } else {
+                    else
                         storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                    }
-                    boolean flag = storageLocationService.updateById(storageLocation);
-                    System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
+                    storageLocationService.updateById(storageLocation);
                 }
                 deliverStorageService.saveBatch(deliverStorageList);
                 return Result.ok("入库完单成功");
@@ -158,8 +151,6 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     ReceivingStorage receivingStorage = new ReceivingStorage();
                     receivingStorage.setPlanId(Integer.parseInt(ids.get(i).toString()));
                     receivingStorage.setPlanType(4);
-                    // 计划4拼接后的物料名称
-                    // String plan4MaterialName = map.get("recyclingSpecifications").toString().concat(" ").concat(map.get("texture").toString());
                     Material material = materialService.getOne(new QueryWrapper<Material>().eq("name", map.get("cableCross")));
                     receivingStorage.setMaterialId(material == null ? 0 : material.getId());
                     Warehouse warehouse = warehouseService.getOne(new QueryWrapper<Warehouse>().eq("name", map.get("warehouseName").toString()));
@@ -186,9 +177,10 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     receivingStorage.setCreateTime(new Date());
                     receivingStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername());
                     receivingStorageList.add(receivingStorage);
+
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询此库存是否存在
                     QueryWrapper<Inventory> wrapper = new QueryWrapper<Inventory>();
-                    wrapper.eq("warehouse_id", warehouse == null ? null : warehouse.getId()); // 仓库id
+                    wrapper.eq("warehouse_id", warehouse.getId()); // 仓库id
                     wrapper.eq("storage_location_id", storageLocation == null ? null : storageLocation.getId()); // 库位id
                     Plan4 plan4 = this.getOne(new QueryWrapper<Plan4>().eq("id", ids.get(i).toString()));
                     wrapper.eq("project_no", plan4.getProjectNo());
@@ -197,13 +189,11 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                     wrapper.eq("backup1", ids.get(i));
                     wrapper.eq("backup2", 4);
                     if (StringUtils.isNotBlank(map.get("accomplishWeight").toString())) {
-                        if (plan4.getAlreadyReceivingStorage() == null) {
+                        if (plan4.getAlreadyReceivingStorage() == null)
                             plan4.setAlreadyReceivingStorage(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString())));
-                        } else {
+                        else
                             plan4.setAlreadyReceivingStorage(plan4.getAlreadyReceivingStorage().add(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishWeight").toString()))));
-                        }
-                        boolean res = plan4Service.updateById(plan4);
-                        System.err.println("计划4更新数据是否成功:" + res);
+                        plan4Service.updateById(plan4);
                     }
                     Inventory inventory = inventoryService.getOne(wrapper);
                     if (inventory != null) {
@@ -230,13 +220,9 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                                         return Result.error("库存数量不足,无法进行出库操作");
                                     }
                                 }
-                                boolean flag = inventoryService.updateById(inventory);
-                                System.err.println("出库是否成功:" + flag + ",出库后库存数为[" + inventory.getInventoryQuantity() + "]");
-                                if (inventory.getBackup5().compareTo(BigDecimal.valueOf(0)) == 0) {
-                                    //todo 库存数为0时删除此库存记录
+                                inventoryService.updateById(inventory);
+                                if (inventory.getBackup5().compareTo(BigDecimal.valueOf(0)) == 0)
                                     inventoryService.removeById(inventory.getId());
-                                    System.err.println("删除库存记录成功");
-                                }
                             } else {
                                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                                 return Result.error("库存容积不足,无法进行出库操作");
@@ -253,8 +239,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                         int result = storageLocation.getTheCurrentVolume().compareTo(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())));
                         if (result == 0 || result > 0) {
                             storageLocation.setTheCurrentVolume(storageLocation.getTheCurrentVolume().subtract(BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString()))));
-                            boolean flag = storageLocationService.updateById(storageLocation);
-                            System.err.println("更新库位容积是否成功:" + flag + ",当前库位[" + storageLocation.getStorageLocationName() + "]容积为[" + storageLocation.getTheCurrentVolume() + "]");
+                            storageLocationService.updateById(storageLocation);
                         } else {
                             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly(); // 手动回滚事务
                             return Result.error("当前库存容积不足, 无法进行出库完单操作");
@@ -267,7 +252,7 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
                 receivingStorageService.saveBatch(receivingStorageList);
                 return Result.ok("出库完单成功");
             default:
-                return Result.ok("完单操作失败");
+                throw new JeecgBootException("完单操作失败~");
         }
     }
 
@@ -283,30 +268,24 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
 
     @Override
     public List<Plan4> idsqueryRuList(List<String> ids) {
-        //TODO 构造条件，根据id的集合做条件查询
-        List<Plan4> list = baseMapper.selectBatchIds(ids);
-        return list;
+        return baseMapper.selectBatchIds(ids);
     }
 
     @Override
     public List<SendOrdersVo> idsqueryChuList(List<String> ids) {
-        //TODO 构造条件，根据id的集合做条件查询
-        List<SendOrdersVo> list = baseMapper.idsqueryChuList(ids);
-        return list;
+        return baseMapper.idsqueryChuList(ids);
     }
 
     @Override
     public IPage<Plan4> pageList(Plan4 plan4, Page<Plan4> page) {
-        List<Plan4> list = baseMapper.pageList(plan4, page);
-        return page.setRecords(list);
+        return page.setRecords(baseMapper.pageList(plan4, page));
     }
 
     @Override
     public List<Plan4Im> exportPlan4(Plan4 plan4, String explain, String beginTime, String endTime) {
         List<Plan4Im> list = baseMapper.exportPlan4(plan4, beginTime, endTime);
         for (Plan4Im plan4Im : list) {
-            // 设置反馈说明
-            plan4Im.setFeedback(explain);
+            plan4Im.setFeedback(explain); // 设置反馈说明
         }
         return list;
     }
@@ -316,25 +295,14 @@ public class Plan4ServiceImpl extends ServiceImpl<Plan4Mapper, Plan4> implements
         return baseMapper.exportFeedbackSummary(plan4Vo);
     }
 
-    /**
-     * 计划表4配变电统计
-     *
-     * @return
-     */
     @Override
     public IPage<Plan4Vo> selectCable(String voltageGrade, String beginTime, String endTime, String planType, Page<Plan4Vo> page) {
         return page.setRecords(baseMapper.selectCable(voltageGrade, beginTime, endTime, planType, page));
     }
 
-    /**
-     * 电缆统计导出
-     *
-     * @return
-     */
     @Override
     public List<Plan4ExcelVo> exportPlan3(Plan4ExcelVo plan4ExcelVo) {
-        List<Plan4ExcelVo> list = baseMapper.exportPlan3(plan4ExcelVo);
-        return list;
+        return baseMapper.exportPlan3(plan4ExcelVo);
     }
 
 }
