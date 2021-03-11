@@ -11,7 +11,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan4;
-import org.jeecg.modules.cable.importpackage.Plan4Im;
+import org.jeecg.modules.cable.dto.Plan4Im;
 import org.jeecg.modules.cable.service.IPlan4Service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;

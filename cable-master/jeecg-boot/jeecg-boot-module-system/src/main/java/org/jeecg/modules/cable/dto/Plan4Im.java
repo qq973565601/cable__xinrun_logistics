@@ -1,21 +1,13 @@
-package org.jeecg.modules.cable.importpackage;
+package org.jeecg.modules.cable.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * bai
- * 2020/5/28
- */
 @Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 public class Plan4Im implements Serializable {
     // 计划表4id
     @Excel(name = "序号", width = 15)
@@ -82,14 +74,10 @@ public class Plan4Im implements Serializable {
     private String feedback;
 
     // 完单数量
-    //@Excel(name = "完单数量", width = 15)
     private BigDecimal accomplishNum;
 
     // 完单重量
-    //@Excel(name = "完单重量", width = 15)
     private BigDecimal accomplishWeight;
-
-    /*反馈表头----------------------*/
 
     // 实际回收数量/米
     @Excel(name = "实际回收数量/米", width = 15)

@@ -11,7 +11,7 @@ import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan3;
-import org.jeecg.modules.cable.importpackage.Plan3Im;
+import org.jeecg.modules.cable.dto.Plan3Im;
 import org.jeecg.modules.cable.service.IMaterialService;
 import org.jeecg.modules.cable.service.IPlan3Service;
 

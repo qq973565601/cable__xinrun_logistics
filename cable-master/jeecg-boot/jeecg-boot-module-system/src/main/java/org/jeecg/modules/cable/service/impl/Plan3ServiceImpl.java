@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
-import org.jeecg.modules.cable.importpackage.Plan3Im;
+import org.jeecg.modules.cable.dto.Plan3Im;
 import org.jeecg.modules.cable.mapper.Plan3Mapper;
 import org.jeecg.modules.cable.service.*;
 import org.jeecg.modules.cable.vo.IndexLCTJVo;

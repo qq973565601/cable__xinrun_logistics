@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.cable.entity.Plan3;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.jeecg.modules.cable.importpackage.Plan3Im;
+import org.jeecg.modules.cable.dto.Plan3Im;
 import org.jeecg.modules.cable.vo.IndexLCTJVo;
 import org.jeecg.modules.cable.vo.Plan3ExcelVo;
 import org.jeecg.modules.cable.vo.Plan3Vo;

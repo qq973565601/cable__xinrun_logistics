@@ -1,8 +1,6 @@
-package org.jeecg.modules.cable.importpackage;
+package org.jeecg.modules.cable.dto;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.io.Serializable;
@@ -10,14 +8,8 @@ import java.math.BigDecimal;
 
 /**
  * 物料信息导入 excel 工具表
- *
- * @Author: bai <bai211425401@126.com>
- * @Description: CSDN <https://blog.csdn.net/qq_43647359>
- * @Date: 2020/6/6
  */
 @Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 public class MaterialIm implements Serializable {
     /**
      * 主键id

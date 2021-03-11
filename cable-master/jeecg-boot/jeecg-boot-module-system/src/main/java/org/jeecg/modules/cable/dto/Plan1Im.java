@@ -1,9 +1,7 @@
-package org.jeecg.modules.cable.importpackage;
+package org.jeecg.modules.cable.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,18 +9,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * bai
- * 2020/5/27
- */
 @Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 public class Plan1Im implements Serializable {
     private static final long serialVersionUID = -6285711128150523778L;
 
     // 主键id
-    // @Excel(name = "序号", width = 15)
     private Integer id;
 
     /*入库交接单号*/

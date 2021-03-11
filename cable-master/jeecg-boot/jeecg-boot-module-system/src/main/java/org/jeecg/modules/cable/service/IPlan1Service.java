@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.cable.entity.Plan1;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.cable.importpackage.Plan1Im;
+import org.jeecg.modules.cable.dto.Plan1Im;
 import org.jeecg.modules.cable.vo.*;
 
 import java.io.Serializable;

@@ -1,9 +1,7 @@
-package org.jeecg.modules.cable.importpackage;
+package org.jeecg.modules.cable.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,13 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/**
- * bai
- * 2020/5/28
- */
 @Data
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
 public class Plan3Im implements Serializable {
     private static final long serialVersionUID = 3104282117205546755L;
 
@@ -105,10 +97,6 @@ public class Plan3Im implements Serializable {
     @Excel(name = "物资调配中心反馈意见(物资供应公司填写)", width = 15)
     private String feedback;
 
-    // 要求开始送货日期
-    /*@Excel(name = "要求开始送货日期", width = 25, format = "yyyy/MM/dd")
-    private Date startTime;*/
-
     // 备注
     @Excel(name = "备注", width = 15)
     private String note;
@@ -125,12 +113,6 @@ public class Plan3Im implements Serializable {
     @Excel(name = "总包单位", width = 15)
     private String mainContractor;
 
-    // 发出日期
-    /*@Excel(name = "发出日期", width = 25, format = "yyyy/MM/dd")
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date receivingTime2;*/
-
     // 入库日期
     @Excel(name = "入库日期", width = 25, format = "yyyy/MM/dd")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
@@ -141,10 +123,6 @@ public class Plan3Im implements Serializable {
     @Excel(name = "入库数量", width = 15)
     private BigDecimal deliverNum;
 
-    // 库位
-    /*@Excel(name = "库位名称", width = 15)
-    private String storageLocationName;*/
-
     // 出库日期
     @Excel(name = "出库日期", width = 25, format = "yyyy/MM/dd")
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
@@ -154,14 +132,6 @@ public class Plan3Im implements Serializable {
     // 出库数量
     @Excel(name = "出库数量", width = 15)
     private BigDecimal receivingNum;
-
-    /*// 施工队
-    @Excel(name = "施工队", width = 15)
-    private String team;
-
-    // 备注
-    @Excel(name = "备注", width = 15)
-    private String note2;*/
 
     @Excel(name = "情况说明", width = 15)
     private String annotation;

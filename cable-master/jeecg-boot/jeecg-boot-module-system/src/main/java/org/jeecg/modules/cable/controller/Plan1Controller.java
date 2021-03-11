@@ -11,7 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.cable.entity.*;
-import org.jeecg.modules.cable.importpackage.Plan1Im;
+import org.jeecg.modules.cable.dto.Plan1Im;
 import org.jeecg.modules.cable.service.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
