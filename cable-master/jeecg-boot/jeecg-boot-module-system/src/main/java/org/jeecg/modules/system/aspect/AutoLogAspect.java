@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.shiro.SecurityUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -14,9 +13,9 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.IPUtils;
 import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.system.entity.SysLog;
 import org.jeecg.modules.system.service.ISysLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,10 +84,10 @@ public class AutoLogAspect {
         sysLog.setIp(IPUtils.getIpAddr(request));
 
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (sysUser != null) {
-            sysLog.setUserid(sysUser.getUsername());
-            sysLog.setUsername(sysUser.getRealname());
+
+        if (SysUserConstant.SYS_USER != null) {
+            sysLog.setUserid(SysUserConstant.SYS_USER.getUsername());
+            sysLog.setUsername(SysUserConstant.SYS_USER.getRealname());
         }
 
         //耗时

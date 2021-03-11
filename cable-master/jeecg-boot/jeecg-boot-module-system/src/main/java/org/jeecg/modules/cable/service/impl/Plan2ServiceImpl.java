@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan2Im;
 import org.jeecg.modules.cable.mapper.*;
@@ -87,8 +88,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     deliverStorage.setDeliverTime(DateUtil.parse(taskTime));
                     deliverStorage.setAnnotation(map.get("annotation").toString());
                     deliverStorage.setCreateTime(new Date());
-                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-                    deliverStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername());
+                    deliverStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername());
                     deliverStorageList.add(deliverStorage);
                     // 向库存表中存数据
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息
@@ -120,7 +120,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                         System.err.println("入库完单是否成功:" + flag + ",入库后库存数为[" + inventory.getInventoryQuantity() + "]");
                     } else {
                         // 没有库存信息,需要新增一条库存信息,库存数就等于入库数量即可
-                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), sysUser == null ? "无" : sysUser.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null, map.get("retiredAssetNo").toString());
+                        Inventory entity = new Inventory(Integer.parseInt(map.get("warehouseId").toString()), Integer.parseInt(map.get("storageLocationId").toString()), plan2.getProjectNo(), plan2.getSite(), material == null ? null : material.getId(), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishNum").toString())), new Date(), SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername(), Integer.parseInt(ids.get(i).toString()), 2, Integer.parseInt(map.get("unit").toString()), BigDecimal.valueOf(Double.parseDouble(map.get("accomplishVolume").toString())), null, map.get("retiredAssetNo").toString());
                         boolean flag = inventoryService.save(entity);
                         System.err.println("新增库存是否成功:" + flag + ",新增后库存数为[" + entity.getInventoryQuantity() + "]");
                     }
@@ -160,8 +160,7 @@ public class Plan2ServiceImpl extends ServiceImpl<Plan2Mapper, Plan2> implements
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime));
                     receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date());
-                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-                    receivingStorage.setCreateBy(sysUser == null ? "无" : sysUser.getUsername());
+                    receivingStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername());
                     receivingStorageList.add(receivingStorage);
                     // 向库存表中存数据
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询要添加的库存信息

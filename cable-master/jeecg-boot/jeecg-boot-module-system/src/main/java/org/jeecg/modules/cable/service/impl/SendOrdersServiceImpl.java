@@ -78,8 +78,6 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
     @Transactional
     @Override
     public void MergePlanEdit(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
-        //TODO 当前登陆对象`
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //车辆派单表 关联第一条派单记录 id
         Integer id = null;
 
@@ -150,8 +148,6 @@ public class SendOrdersServiceImpl extends ServiceImpl<SendOrdersMapper, SendOrd
     @Transactional
     @Override
     public void saveMain(SendOrdersVo sendOrdersVo, List<SendOrdersVo> sendOrdersMainPageVoList, List<SendOrdersTaskVo> vehicleList) {
-        //TODO 当前登陆对象`
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //车辆派单表 关联第一条派单记录 id
         Integer id = null;
 

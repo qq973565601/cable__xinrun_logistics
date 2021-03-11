@@ -10,6 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.importpackage.Plan1Im;
 import org.jeecg.modules.cable.service.*;
@@ -239,9 +240,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @ApiOperation(value = "计划表1-添加", notes = "计划表1-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Plan1 plan1) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan1.setUpdateTime(new Date());
-        plan1.setUpdateBy(sysUser.getUsername());
+        plan1.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan1Service.save(plan1);
         return Result.ok("添加成功！");
     }
@@ -256,9 +256,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
     @ApiOperation(value = "计划表1-编辑", notes = "计划表1-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody Plan1 plan1) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan1.setUpdateTime(new Date());
-        plan1.setUpdateBy(sysUser.getUsername());
+        plan1.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan1Service.updateById(plan1);
         return Result.ok("编辑成功!");
     }
@@ -359,10 +358,9 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if(null != sysUser) {
-            material.setCreateBy(sysUser.getUsername());
-            material.setUpdateBy(sysUser.getUsername());
+        if(null != SysUserConstant.SYS_USER) {
+            material.setCreateBy(SysUserConstant.SYS_USER.getUsername());
+            material.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         }else return Result.error("请重新登录！");
         material.setCreateTime(new Date());
         material.setUpdateTime(new Date());
@@ -400,8 +398,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
                     plan1.setPlanType(planType);
                     plan1.setSendOrdersState(0);
                     plan1.setCompleteState(0);
-                    plan1.setUpdateBy(sysUser.getUsername());
-                    plan1.setCreateBy(sysUser.getUsername());
+                    plan1.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
+                    plan1.setCreateBy(SysUserConstant.SYS_USER.getUsername());
                     plan1.setUpdateTime(new Date());
                     plan1.setCreateTime(new Date());
                     plan1Service.save(plan1);
@@ -442,11 +440,11 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
 
     @PutMapping(value = "/planTheSameDayEdit")
     public Result<?> planTheSameDayEdit(@RequestBody SendOrdersVo sendOrdersVo) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysUserConstant.SYS_USER.getUsername();
         if (sendOrdersVo.getPlanType().equals("1")) {
             Plan1 plan1 = plan1Service.getById(sendOrdersVo.getPlanId());
-            if (null != sysUser)
-                plan1.setUpdateBy(sysUser.getUsername());
+            if (null != SysUserConstant.SYS_USER)
+                plan1.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             plan1.setUpdateTime(new Date());
             plan1.setTheContact(sendOrdersVo.getLinkman());
             plan1.setThePhone(sendOrdersVo.getPhone());
@@ -456,8 +454,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
             plan1Service.updateById(plan1);
         } else if (sendOrdersVo.getPlanType().equals("2")) {
             Plan2 plan2 = plan2Service.getById(sendOrdersVo.getPlanId());
-            if (null != sysUser)
-                plan2.setUpdateBy(sysUser.getUsername());
+            if (null != SysUserConstant.SYS_USER)
+                plan2.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             plan2.setUpdateTime(new Date());
             plan2.setEquipmentOwners(sendOrdersVo.getLinkman());
 
@@ -466,8 +464,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
             plan2Service.updateById(plan2);
         } else if (sendOrdersVo.getPlanType().equals("3")) {
             Plan3 plan3 = plan3Service.getById(sendOrdersVo.getPlanId());
-            if (null != sysUser)
-                plan3.setUpdateBy(sysUser.getUsername());
+            if (null != SysUserConstant.SYS_USER)
+                plan3.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             plan3.setUpdateTime(new Date());
             plan3.setFieldConsignee(sendOrdersVo.getLinkman());
             plan3.setCPhone(sendOrdersVo.getLinkman());
@@ -477,8 +475,8 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
             plan3Service.updateById(plan3);
         } else if (sendOrdersVo.getPlanType().equals("4")) {
             Plan4 plan4 = plan4Service.getById(sendOrdersVo.getPlanId());
-            if (null != sysUser)
-                plan4.setUpdateBy(sysUser.getUsername());
+            if (null != SysUserConstant.SYS_USER)
+                plan4.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             plan4.setUpdateTime(new Date());
             plan4.setTeamContact(sendOrdersVo.getLinkman());
 
@@ -530,30 +528,28 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
      */
     @GetMapping(value = "/updateSettleAccounts")
     public Result<?> updateSettleAccounts(@RequestParam(name = "projectNo", required = false) String projectNo) {
-
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null == sysUser)
+        if (null == SysUserConstant.SYS_USER)
             return Result.error("用户登录超时，请重新登录!");
 
         Plan1 plan1 = new Plan1();
         plan1.setBackup1("1");
         plan1.setUpdateTime(new Date());
-        plan1.setUpdateBy(sysUser.getUsername());
+        plan1.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan1Service.update(plan1,new QueryWrapper<Plan1>().eq("project_no",projectNo));
         Plan2 plan2 = new Plan2();
         plan2.setBackup1("1");
         plan2.setUpdateTime(new Date());
-        plan2.setUpdateBy(sysUser.getUsername());
+        plan2.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan2Service.update(plan2,new QueryWrapper<Plan2>().eq("project_no",projectNo));
         Plan3 plan3 = new Plan3();
         plan3.setBackup1("1");
         plan3.setUpdateTime(new Date());
-        plan3.setUpdateBy(sysUser.getUsername());
+        plan3.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan3Service.update(plan3,new QueryWrapper<Plan3>().eq("project_no",projectNo));
         Plan4 plan4 = new Plan4();
         plan4.setBackup1("1");
         plan4.setUpdateTime(new Date());
-        plan4.setUpdateBy(sysUser.getUsername());
+        plan4.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan4Service.update(plan4,new QueryWrapper<Plan4>().eq("project_no",projectNo));
 
         return Result.ok("结算成功!");
@@ -583,7 +579,7 @@ public class Plan1Controller extends JeecgController<Plan1, IPlan1Service> {
      */
     @RequestMapping(value = "/exportXls2")
     public ModelAndView exportXls2(HttpServletRequest request, Plan1ExcelVo plan1ExcelVo) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysUserConstant.SYS_USER.getUsername();
         String title = "变电统计";
         List<Plan1ExcelVo> list = plan1Service.exportPlan2(plan1ExcelVo);
         System.out.println(plan1ExcelVo.getDecommissioningDate());

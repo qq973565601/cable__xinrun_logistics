@@ -12,6 +12,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan3;
@@ -195,9 +196,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     @ApiOperation(value = "计划表4-添加", notes = "计划表4-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Plan4 plan4) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan4.setUpdateTime(new Date());
-        plan4.setUpdateBy(sysUser.getUsername());
+        plan4.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan4Service.save(plan4);
         return Result.ok("添加成功！");
     }
@@ -212,9 +212,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     @ApiOperation(value = "计划表4-编辑", notes = "计划表4-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody Plan4 plan4) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan4.setUpdateTime(new Date());
-        plan4.setUpdateBy(sysUser.getUsername());
+        plan4.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan4Service.updateById(plan4);
         return Result.ok("编辑成功!");
     }
@@ -280,7 +279,6 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
                                   @RequestParam(name = "explain", required = false) String explain,
                                   @RequestParam(name = "beginTime", required = false) String beginTime,
                                   @RequestParam(name = "endTime", required = false) String endTime) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         // 获取导出数据集
         List<Plan4Im> list = plan4Service.exportPlan4(plan4, explain, beginTime,endTime);
@@ -302,7 +300,6 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      */
     @RequestMapping(value = "/exportXls2")
     public ModelAndView exportXls2(HttpServletRequest request, Plan4Vo plan4Vo) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String title = "新品/临措";
         List<Plan4Vo> list = plan4Service.exportFeedbackSummary(plan4Vo);
         for (Plan4Vo vo : list) {
@@ -311,7 +308,6 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
             vo.setItemSlip(plan4Vo.getItemSlip());                                        //交接单号
             vo.setDescription(plan4Vo.getDescription());                                  //情况说明
             vo.setRemark(plan4Vo.getRemark());                                            //备注
-            /*list.add(vo);*/
             break;
         }
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
@@ -336,8 +332,6 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-        Material material = new Material();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         Integer in = 0;
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             MultipartFile file = entity.getValue();// 获取上传文件对象
@@ -346,7 +340,6 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
             params.setNeedSave(true);
             try {
                 List<Plan4Im> list = ExcelImportUtil.importExcel(file.getInputStream(), Plan4Im.class, params);
-                //List<Plan4> plan4List = CollectionCopyUtil.copyList(list, Plan4.class);
                 Plan4 plan4 = new Plan4();
                 for (Plan4Im plan4Im : list) {
 
@@ -359,8 +352,8 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
                     plan4.setPlanType("电缆");
                     plan4.setSendOrdersState(0);
                     plan4.setCompleteState(0);
-                    plan4.setUpdateBy(sysUser.getUsername());
-                    plan4.setCreateBy(sysUser.getUsername());
+                    plan4.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
+                    plan4.setCreateBy(SysUserConstant.SYS_USER.getUsername());
                     plan4.setUpdateTime(new Date());
                     plan4.setCreateTime(new Date());
                     plan4Service.save(plan4);
@@ -428,7 +421,7 @@ public class Plan4Controller extends JeecgController<Plan4, IPlan4Service> {
      */
     @RequestMapping(value = "/exportXls3")
     public ModelAndView exportXls3(HttpServletRequest request, Plan4ExcelVo plan4ExcelVo) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysUserConstant.SYS_USER.getUsername();
         String title = "电缆统计";
         List<Plan4ExcelVo> list = plan4Service.exportPlan3(plan4ExcelVo);
         Plan4ExcelVo plan4ExcelVo1 = new Plan4ExcelVo();

@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan2;
@@ -213,9 +214,8 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @ApiOperation(value = "计划表2-添加", notes = "计划表2-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Plan2 plan2) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan2.setUpdateTime(new Date());
-        plan2.setUpdateBy(sysUser.getUsername());
+        plan2.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan2Service.save(plan2);
         return Result.ok("添加成功！");
     }
@@ -230,9 +230,8 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
     @ApiOperation(value = "计划表2-编辑", notes = "计划表2-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody Plan2 plan2) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan2.setUpdateTime(new Date());
-        plan2.setUpdateBy(sysUser.getUsername());
+        plan2.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan2Service.updateById(plan2);
         return Result.ok("编辑成功!");
     }
@@ -292,7 +291,7 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(Plan2 plan2, @RequestParam(name = "explain", required = false) String explain) {
-        /*LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        /*SysUserConstant.SYS_USER.getUsername();
         String title = "备品计划";*/
         // 获取导出数据
         List<Plan2Im> list = plan2Service.exportPlan2(plan2, explain);
@@ -319,10 +318,9 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null != sysUser) {
-            material.setCreateBy(sysUser.getUsername());
-            material.setUpdateBy(sysUser.getUsername());
+        if (null != SysUserConstant.SYS_USER) {
+            material.setCreateBy(SysUserConstant.SYS_USER.getUsername());
+            material.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         } else return Result.error("请重新登录！");
         material.setCreateTime(new Date());
         material.setUpdateTime(new Date());
@@ -355,8 +353,8 @@ public class Plan2Controller extends JeecgController<Plan2, IPlan2Service> {
                     plan2.setPlanType("备品");
                     plan2.setSendOrdersState(0);
                     plan2.setCompleteState(0);
-                    plan2.setUpdateBy(sysUser.getUsername());
-                    plan2.setCreateBy(sysUser.getUsername());
+                    plan2.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
+                    plan2.setCreateBy(SysUserConstant.SYS_USER.getUsername());
                     plan2.setUpdateTime(new Date());
                     plan2.setCreateTime(new Date());
                     plan2Service.save(plan2);

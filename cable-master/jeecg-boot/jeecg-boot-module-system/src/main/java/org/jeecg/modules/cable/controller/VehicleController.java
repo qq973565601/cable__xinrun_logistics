@@ -11,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.SendOrdersSubtabulation;
 import org.jeecg.modules.cable.entity.Vehicle;
 import org.jeecg.modules.cable.service.ISendOrdersSubtabulationService;
@@ -91,9 +92,8 @@ public class VehicleController extends JeecgController<Vehicle, IVehicleService>
     @ApiOperation(value = "车辆表-添加", notes = "车辆表-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Vehicle vehicle) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         vehicle.setUpdateTime(new Date());
-        vehicle.setUpdateBy(sysUser.getUsername());
+        vehicle.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         vehicleService.save(vehicle);
         return Result.ok("添加成功！");
     }
@@ -108,9 +108,8 @@ public class VehicleController extends JeecgController<Vehicle, IVehicleService>
     @ApiOperation(value = "车辆表-编辑", notes = "车辆表-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody Vehicle vehicle) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         vehicle.setUpdateTime(new Date());
-        vehicle.setUpdateBy(sysUser.getUsername());
+        vehicle.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         vehicleService.updateById(vehicle);
         return Result.ok("编辑成功!");
     }

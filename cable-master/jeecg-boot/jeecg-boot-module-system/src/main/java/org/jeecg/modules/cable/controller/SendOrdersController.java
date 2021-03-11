@@ -11,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.*;
 import org.jeecg.modules.cable.service.*;
 
@@ -232,7 +233,7 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
             queryWrapper.eq("serial", sendOrdersVo.getSerial());
             List<Material> materialList = materialService.list(queryWrapper);
             if (materialList.size() < 1) return Result.error("该计划物料不存在！");
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            SysUserConstant.SYS_USER.getUsername();
             //TODO 派单表添加数据
             //添加成功后返回派单表 id
             Integer id = sendOrdersService.saveSendOrdersVo(sendOrdersVo, new Date(), sysUser.getUsername());
@@ -326,10 +327,9 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
         queryWrapper.eq("serial", sendOrdersVo.getSerial());
         List<Material> materialList = materialService.list(queryWrapper);
         if (materialList.size() > 0) {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             //TODO 派单表添加数据
             //添加成功后返回派单表 id
-            Integer id = sendOrdersService.saveSendOrdersVo(sendOrdersVo, new Date(), sysUser.getUsername());
+            Integer id = sendOrdersService.saveSendOrdersVo(sendOrdersVo, new Date(), SysUserConstant.SYS_USER.getUsername());
             /*if (sendOrdersVo.getOperatorSchema() == 0) {
                 //派单类型（字典：0.出库，1.入库）
                 ReceivingStorage receivingStorage = new ReceivingStorage();
@@ -738,9 +738,8 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
             // 存在库存,在原本的库存数上减少数量，目标仓库增加数量
             inventory.setWarehouseId(sendOrdersVo1.getWarehouseId());
             inventory.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             inventory.setUpdateTime(new Date());
-            inventory.setUpdateBy(sysUser.getUsername());
+            inventory.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             inventory.setBackup3(sendOrdersVo1.getUnit());
             inventory.setMaterialId(material.getId());
             if(sendOrdersVo.getPtype().equals("4")) {
@@ -879,9 +878,9 @@ public class SendOrdersController extends JeecgController<SendOrders, ISendOrder
             // 存在库存,在原本的库存数上增加入库数量即可
             inventory.setWarehouseId(sendOrdersVo1.getWarehouseId());
             inventory.setStorageLocationId(sendOrdersVo1.getStorageLocationId());
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            SysUserConstant.SYS_USER.getUsername();
             inventory.setUpdateTime(new Date());
-            inventory.setUpdateBy(sysUser.getUsername());
+            inventory.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
             inventory.setBackup3(sendOrdersVo1.getUnit());
             inventory.setMaterialId(material.getId());
             if (sendOrdersVo.getPtype().equals("4")) {

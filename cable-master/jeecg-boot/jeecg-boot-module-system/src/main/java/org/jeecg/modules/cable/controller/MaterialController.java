@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan2;
@@ -185,9 +186,8 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
         if (!flag) {
             return Result.error("物料编号重复！");
         }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         material.setUpdateTime(new Date());
-        material.setUpdateBy(sysUser.getUsername());
+        material.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         materialService.save(material);
         return Result.ok("添加成功！");
     }
@@ -205,12 +205,11 @@ public class MaterialController extends JeecgController<Material, IMaterialServi
         if (!flag) {
             return Result.error("物料编号重复！");
         }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null == sysUser)
+        if (null == SysUserConstant.SYS_USER)
             return Result.error("请先登录！");
         Material one = materialService.getById(material.getId());
         material.setUpdateTime(new Date());
-        material.setUpdateBy(sysUser.getUsername());
+        material.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         if (one.getSerial() != null) {
             if (one.getSerial().equals("cable2") && one.getName().equals("电缆2")) {
                 // 对于电缆2的修改操作做单独处理

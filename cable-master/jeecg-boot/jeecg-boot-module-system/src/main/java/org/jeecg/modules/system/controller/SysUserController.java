@@ -27,6 +27,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -407,7 +408,6 @@ public class SysUserController {
      * 导出excel
      *
      * @param request
-     * @param response
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser, HttpServletRequest request) {
@@ -863,11 +863,10 @@ public class SysUserController {
     public Result<Map<String, Object>> getCurrentUserDeparts() {
         Result<Map<String, Object>> result = new Result<Map<String, Object>>();
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            List<SysDepart> list = this.sysDepartService.queryUserDeparts(sysUser.getId());
+            List<SysDepart> list = this.sysDepartService.queryUserDeparts(SysUserConstant.SYS_USER.getId());
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("list", list);
-            map.put("orgCode", sysUser.getOrgCode());
+            map.put("orgCode", SysUserConstant.SYS_USER.getOrgCode());
             result.setSuccess(true);
             result.setResult(map);
         } catch (Exception e) {

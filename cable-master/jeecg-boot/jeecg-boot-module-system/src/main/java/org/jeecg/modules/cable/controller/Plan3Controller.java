@@ -10,6 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.entity.Plan1;
 import org.jeecg.modules.cable.entity.Plan2;
@@ -196,9 +197,8 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
     @ApiOperation(value = "计划表3-添加", notes = "计划表3-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody Plan3 plan3) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan3.setUpdateTime(new Date());
-        plan3.setUpdateBy(sysUser.getUsername());
+        plan3.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan3Service.save(plan3);
         return Result.ok("添加成功！");
     }
@@ -213,9 +213,8 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
     @ApiOperation(value = "计划表3-编辑", notes = "计划表3-编辑")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody Plan3 plan3) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         plan3.setUpdateTime(new Date());
-        plan3.setUpdateBy(sysUser.getUsername());
+        plan3.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         plan3Service.updateById(plan3);
         return Result.ok("编辑成功!");
     }
@@ -275,7 +274,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(Plan3 plan3, @RequestParam(name = "explain", required = false) String explain) {
-        // LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        // SysUserConstant.SYS_USER.getUsername();
         // String title = "新品/临措";
         // 获取导出数据集
         List<Plan3Im> list = plan3Service.exportPlan3(plan3, explain);
@@ -301,10 +300,9 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         Material material = new Material();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (null != sysUser) {
-            material.setCreateBy(sysUser.getUsername());
-            material.setUpdateBy(sysUser.getUsername());
+        if (null != SysUserConstant.SYS_USER) {
+            material.setCreateBy(SysUserConstant.SYS_USER.getUsername());
+            material.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         } else return Result.error("请重新登录！");
         material.setCreateTime(new Date());
         material.setUpdateTime(new Date());
@@ -340,8 +338,8 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
                     plan3.setPlanType(planType);
                     plan3.setSendOrdersState(0);
                     plan3.setCompleteState(0);
-                    plan3.setUpdateBy(sysUser.getUsername());
-                    plan3.setCreateBy(sysUser.getUsername());
+                    plan3.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
+                    plan3.setCreateBy(SysUserConstant.SYS_USER.getUsername());
                     plan3.setUpdateTime(new Date());
                     plan3.setCreateTime(new Date());
                     //todo 每次都向计划3集合中添加单个计划对象信息
@@ -409,7 +407,7 @@ public class Plan3Controller extends JeecgController<Plan3, IPlan3Service> {
      */
     @RequestMapping(value = "/exportXls2")
     public ModelAndView exportXls2(HttpServletRequest request, Plan3ExcelVo plan3ExcelVo) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysUserConstant.SYS_USER.getUsername();
         String title = "新品统计";
         List<Plan3ExcelVo> list = plan3Service.exportPlan2(plan3ExcelVo);
         Plan3ExcelVo plan3ExcelVo1 = new Plan3ExcelVo();

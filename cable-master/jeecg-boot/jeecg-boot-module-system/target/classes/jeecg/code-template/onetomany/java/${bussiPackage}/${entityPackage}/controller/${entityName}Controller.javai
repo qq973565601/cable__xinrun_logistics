@@ -62,7 +62,7 @@ public class ${entityName}Controller {
 	@Autowired
 	private I${sub.entityName}Service ${sub.entityName?uncap_first}Service;
 	</#list>
-	
+
 	/**
 	 * 分页列表查询
 	 *
@@ -84,7 +84,7 @@ public class ${entityName}Controller {
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
 	/**
 	 * 添加
 	 *
@@ -100,7 +100,7 @@ public class ${entityName}Controller {
 		${entityName?uncap_first}Service.saveMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
 		return Result.ok("添加成功!");
 	}
-	
+
 	/**
 	 * 编辑
 	 *
@@ -116,7 +116,7 @@ public class ${entityName}Controller {
 		${entityName?uncap_first}Service.updateMain(${entityName?uncap_first}, <#list subTables as sub>${entityName?uncap_first}Page.get${sub.entityName}List()<#if sub_has_next>,</#if></#list>);
 		return Result.ok("编辑成功!");
 	}
-	
+
 	/**
 	 * 通过id删除
 	 *
@@ -130,7 +130,7 @@ public class ${entityName}Controller {
 	    ${entityName?uncap_first}Service.delMain(id);
 		return Result.ok("删除成功!");
 	}
-	
+
 	/**
 	 * 批量删除
 	 *
@@ -144,7 +144,7 @@ public class ${entityName}Controller {
 		this.${entityName?uncap_first}Service.delBatchMain(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
-	
+
 	/**
 	 * 通过id查询
      *
@@ -158,7 +158,7 @@ public class ${entityName}Controller {
 		${entityName} ${entityName?uncap_first} = ${entityName?uncap_first}Service.getById(id);
 		return Result.ok(${entityName?uncap_first});
 	}
-	
+
 	<#list subTables as sub>
 	/**
 	 * 通过id查询
@@ -185,7 +185,7 @@ public class ${entityName}Controller {
   public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
       // Step.1 组装查询条件
       QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, request.getParameterMap());
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      SysUserConstant.SYS_USER.getUsername();
 
       //Step.2 获取导出数据
       List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();

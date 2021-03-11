@@ -1,6 +1,7 @@
 package org.jeecg.modules.cable.entity;
 
 import java.io.Serializable;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,10 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: 入库/完单表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 入库/完单表
  */
 @Data
 @TableName("deliver_storage")

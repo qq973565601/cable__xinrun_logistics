@@ -4,11 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -27,12 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * @Description: Controller基类
- * @Author: dangzhenghui@163.com
- * @Date: 2019-4-21 8:13
- * @Version: 1.0
- */
 @Slf4j
 public class JeecgController<T, S extends IService<T>> {
     @Autowired
@@ -40,13 +33,10 @@ public class JeecgController<T, S extends IService<T>> {
 
     /**
      * 导出excel
-     *
-     * @param request
      */
     protected ModelAndView exportXls(HttpServletRequest request, T object, Class<T> clazz, String title) {
         // Step.1 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         // Step.2 获取导出数据
         List<T> pageList = service.list(queryWrapper);
@@ -65,16 +55,13 @@ public class JeecgController<T, S extends IService<T>> {
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.FILE_NAME, title); //此处设置的filename无效 ,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.CLASS, clazz);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title));
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(title + "报表", "导出人:" + SysUserConstant.SYS_USER.getRealname(), title));
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }
 
-
     /**
      * 获取对象ID
-     *
-     * @return
      */
     private String getId(T item) {
         try {
@@ -87,10 +74,6 @@ public class JeecgController<T, S extends IService<T>> {
 
     /**
      * 通过excel导入数据
-     *
-     * @param request
-     * @param response
-     * @return
      */
     protected Result<?> importExcel(HttpServletRequest request, HttpServletResponse response, Class<T> clazz) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

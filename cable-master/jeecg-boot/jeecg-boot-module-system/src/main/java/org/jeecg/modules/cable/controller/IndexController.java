@@ -26,7 +26,6 @@ import java.util.List;
 @Api(tags = "物流首页接口")
 @RestController
 @RequestMapping(value = "/index")
-@Slf4j
 public class IndexController {
     @Autowired
     private IPlan1Service plan1Service;

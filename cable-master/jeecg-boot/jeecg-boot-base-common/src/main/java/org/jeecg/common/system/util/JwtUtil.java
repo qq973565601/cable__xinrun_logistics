@@ -11,13 +11,12 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.DataBaseConstant;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.constant.SysUserConstant;
 
 /**
  * @Author Scott
@@ -129,15 +128,10 @@ public class JwtUtil {
      * @param user
      * @return
      */
-    //TODO 急待改造 sckjkdsjsfjdk
     public static String getUserSystemData(String key, SysUserCacheInfo user) {
         if (user == null) {
             user = JeecgDataAutorUtils.loadUserInfo();
         }
-        //#{sys_user_code}%
-
-        // 获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         String moshi = "";
         if (key.contains("}")) {
@@ -153,7 +147,7 @@ public class JwtUtil {
         //替换为系统登录用户帐号
         if (key.equals(DataBaseConstant.SYS_USER_CODE) || key.toLowerCase().equals(DataBaseConstant.SYS_USER_CODE_TABLE)) {
             if (user == null) {
-                returnValue = sysUser.getUsername();
+                returnValue = SysUserConstant.SYS_USER.getUsername();
             } else {
                 returnValue = user.getSysUserCode();
             }
@@ -161,7 +155,7 @@ public class JwtUtil {
         //替换为系统登录用户真实名字
         else if (key.equals(DataBaseConstant.SYS_USER_NAME) || key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
             if (user == null) {
-                returnValue = sysUser.getRealname();
+                returnValue = SysUserConstant.SYS_USER.getRealname();
             } else {
                 returnValue = user.getSysUserName();
             }
@@ -170,7 +164,7 @@ public class JwtUtil {
         //替换为系统用户登录所使用的机构编码
         else if (key.equals(DataBaseConstant.SYS_ORG_CODE) || key.toLowerCase().equals(DataBaseConstant.SYS_ORG_CODE_TABLE)) {
             if (user == null) {
-                returnValue = sysUser.getOrgCode();
+                returnValue = SysUserConstant.SYS_USER.getOrgCode();
             } else {
                 returnValue = user.getSysOrgCode();
             }

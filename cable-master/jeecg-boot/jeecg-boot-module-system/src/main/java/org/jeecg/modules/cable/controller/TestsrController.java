@@ -11,6 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.config.DictConfig;
 import org.jeecg.modules.cable.service.IMaterialService;
 import org.jeecg.modules.cable.service.IWarehouseService;
@@ -74,11 +75,10 @@ public class TestsrController {
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysDictItem sysDictItem) {
         String id = sysDictService.getDepts();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         sysDictItem.setUpdateTime(new Date());
-        sysDictItem.setUpdateBy(sysUser.getUsername());
+        sysDictItem.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         sysDictItem.setCreateTime(new Date());
-        sysDictItem.setCreateBy(sysUser.getUsername());
+        sysDictItem.setCreateBy(SysUserConstant.SYS_USER.getUsername());
         sysDictItem.setDictId(id);
         QueryWrapper<SysDictItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("dict_id", id);
@@ -100,9 +100,8 @@ public class TestsrController {
     @ApiOperation(value = "用户管理-部门设置-edit")
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody SysDictItem sysDictItem) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         sysDictItem.setUpdateTime(new Date());
-        sysDictItem.setUpdateBy(sysUser.getUsername());
+        sysDictItem.setUpdateBy(SysUserConstant.SYS_USER.getUsername());
         sysDictItemService.updateById(sysDictItem);
         return Result.ok("编辑成功!");
     }

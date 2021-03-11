@@ -16,6 +16,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.shiro.vo.DefContants;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -196,8 +197,7 @@ public class LoginController {
         Result<JSONObject> result = new Result<JSONObject>();
         String username = user.getUsername();
         if (oConvertUtils.isEmpty(username)) {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            username = sysUser.getUsername();
+            username = SysUserConstant.SYS_USER.getUsername();
         }
         String orgCode = user.getOrgCode();
         this.sysUserService.updateUserDepart(username, orgCode);

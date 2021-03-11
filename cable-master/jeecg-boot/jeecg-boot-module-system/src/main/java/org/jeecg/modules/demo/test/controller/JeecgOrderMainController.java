@@ -14,6 +14,7 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.entity.JeecgOrderCustomer;
 import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
@@ -182,8 +183,6 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
         QueryWrapper<JeecgOrderMain> queryWrapper = QueryGenerator.initQueryWrapper(jeecgOrderMain, request.getParameterMap());
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        //获取当前用户
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         List<JeecgOrderMainPage> pageList = new ArrayList<JeecgOrderMainPage>();
 
@@ -205,7 +204,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
         // 注解对象Class
         mv.addObject(NormalExcelConstants.CLASS, JeecgOrderMainPage.class);
         // 自定义表格参数
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("自定义导出Excel内容标题", "导出人:" + sysUser.getRealname(), "自定义Sheet名字"));
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("自定义导出Excel内容标题", "导出人:" + SysUserConstant.SYS_USER.getRealname(), "自定义Sheet名字"));
         // 导出数据列表
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;

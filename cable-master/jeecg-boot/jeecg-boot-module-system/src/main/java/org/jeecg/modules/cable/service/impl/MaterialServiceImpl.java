@@ -3,10 +3,7 @@ package org.jeecg.modules.cable.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.ibatis.annotations.Param;
-import org.apache.poi.ss.formula.functions.T;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.constant.SysUserConstant;
 import org.jeecg.modules.cable.entity.Material;
 import org.jeecg.modules.cable.mapper.MaterialMapper;
 import org.jeecg.modules.cable.service.IMaterialService;
@@ -147,8 +144,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             return 0;   // 如果 entity != null 证明存在此物料编号
         }
         // 添加操作
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal(); // 拿到当前登录用户的信息
-        material.setCreateBy(sysUser.getRealname());    // 创建人
+        material.setCreateBy(SysUserConstant.SYS_USER.getUsername());    // 创建人
         material.setCreateTime(new Date()); // 创建时间
         return baseMapper.saveMaterial(material);
     }

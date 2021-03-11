@@ -3,13 +3,21 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-common</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-module-system</artifactId>
+            <version>2.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
-	<parent>
+    <parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
 		<version>2.2.0</version>
 	</parent>
-	
+
 	<repositories>
 		<repository>
 			<id>aliyun</id>
@@ -28,5 +36,5 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	
+
 </project>
