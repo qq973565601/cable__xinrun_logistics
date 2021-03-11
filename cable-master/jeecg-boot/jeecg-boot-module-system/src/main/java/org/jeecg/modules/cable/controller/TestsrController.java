@@ -5,12 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.constant.SysUserConstant;
 import org.jeecg.modules.cable.config.DictConfig;
 import org.jeecg.modules.cable.service.IMaterialService;
@@ -31,16 +27,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @Description: 仓库表
- * @Author: jeecg-boot
- * @Date: 2020-05-22
- * @Version: V1.0
+ * 仓库表
  */
-
-//ruan
+@Api(tags = "仓库表")
 @RestController
 @RequestMapping("/cable/testdata")
-@Slf4j
 public class TestsrController {
     @Autowired
     private ISysDictItemService sysDictItemService;
@@ -48,9 +39,10 @@ public class TestsrController {
     private IMaterialService materialService;
     @Autowired
     private ISysUserService sysUserService;
-
     @Autowired
     private ISysDictService sysDictService;
+    @Autowired
+    private IWarehouseService warehouseService;
 
     @ApiOperation(value = "用户管理-查询所有部门")
     @GetMapping(value = "/bumenList")
@@ -84,15 +76,10 @@ public class TestsrController {
         queryWrapper.eq("dict_id", id);
         List<SysDictItem> list = sysDictItemService.list(queryWrapper);
         for (SysDictItem dictItem : list) {
-            if (dictItem.getItemText().equals(sysDictItem.getItemText())) {
-                return Result.error("部门名称重复添加");
-            }
+            if (dictItem.getItemText().equals(sysDictItem.getItemText())) return Result.error("部门名称重复添加");
         }
-        if (list.size() > 0) {
-            sysDictItem.setItemValue((sysDictItemService.getBumenId(id) + 1) + "");
-        } else {
-            sysDictItem.setItemValue("1");
-        }
+        if (list.size() > 0) sysDictItem.setItemValue((sysDictItemService.getBumenId(id) + 1) + "");
+        else sysDictItem.setItemValue("1");
         sysDictItemService.save(sysDictItem);
         return Result.ok("添加成功！");
     }
@@ -109,7 +96,7 @@ public class TestsrController {
     @CacheEvict(value = CacheConstant.SYS_DICT_CACHE, allEntries = true)
     @ApiOperation(value = "用户管理-部门设置-delete")
     @DeleteMapping(value = "/delete")
-    public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+    public Result<?> delete(@RequestParam(name = "id") String id) {
         SysDictItem sysDictItem = sysDictItemService.getById(id);
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("depart_ids", sysDictItem.getDictId());
@@ -120,28 +107,10 @@ public class TestsrController {
         }
         sysDictItemService.removeById(id);
         return Result.ok("删除成功!");
-//        //预留判断 旗下数据
-//        SysDictItem byId = sysDictItemService.getById(id);
-//        if (byId == null) {
-//            return Result.error("不存在!");
-//        }
-//        String val = byId.getItemValue();
-//        QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
-//        userQueryWrapper.eq("depart_ids", val);
-//        int count = sysUserService.count(userQueryWrapper);
-//        if (count == 0) {
-//            sysDictItemService.removeById(id);
-//            return Result.ok("删除成功!");
-//        } else {
-//            return Result.error("还有关联数据，删除失败!");
-//        }
     }
 
     /**
      * 出入库台账
-     * 2020/9/1 bai
-     *
-     * @return 出入库台账统计信息
      */
     @GetMapping(value = "/getOutPutWarehouseList")
     public Result<?> getOutPutWarehouseList(OutPutWarehouseVo outPutWarehouseVo,
@@ -152,34 +121,21 @@ public class TestsrController {
         return Result.ok(pageList);
     }
 
-    @Autowired
-    private IWarehouseService warehouseService;
-
-    //
-//  @GetMapping(value = "/keweiQuery")
-//  public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id,
-//                              @RequestParam(value = "type", required = false) String type,
-//                              @RequestParam(value = "warehouseId", required = false) String warehouseId) {
-//    List<KuweiVo> list = warehouseService.keweiQuery(id, type, warehouseId);
-//    return Result.ok(list);
-//  }
+    /**
+     * 库位查询
+     */
     @GetMapping(value = "/keweiQuery")
     public Result<?> keweiQuery(@RequestParam(value = "id", required = false) String id) {
-
-
         List<KuweiVo> list = warehouseService.kewei(id);
         return Result.ok(list);
     }
 
     /**
      * 根据项目编号查询对应的库存库位存储数量
-     * 2020/8/31 bai
-     *
-     * @param projectNo 项目编号
-     * @return 库存库位信息
      */
     @GetMapping(value = "/queryInventory")
-    public Result<?> queryInventory(@RequestParam(value = "projectNo", required = true) Serializable projectNo,@RequestParam(value = "materialId", required = true) Serializable materialId) {
-        return Result.ok(warehouseService.queryInventory(projectNo,materialId));
+    public Result<?> queryInventory(@RequestParam(value = "projectNo") Serializable projectNo,
+                                    @RequestParam(value = "materialId") Serializable materialId) {
+        return Result.ok(warehouseService.queryInventory(projectNo, materialId));
     }
 }

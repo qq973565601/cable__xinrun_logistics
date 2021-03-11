@@ -68,7 +68,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        String[] exculudes = new String[]{"/*.html", "/html/**", "/js/**", "/css/**", "/images/**"};
-        registry.addInterceptor(onlineInterceptor()).excludePathPatterns(exculudes).addPathPatterns("/online/cgform/api/**");
+        String[] excludes = new String[]{"/*.html", "/html/**", "/js/**", "/css/**", "/images/**"};
+        registry.addInterceptor(onlineInterceptor()).excludePathPatterns(excludes).addPathPatterns("/online/cgform/api/**");
     }
 }

@@ -178,7 +178,6 @@ public class Plan1ServiceImpl extends ServiceImpl<Plan1Mapper, Plan1> implements
                     receivingStorage.setReceivingTime(DateUtil.parse(taskTime)); // 出库日期
                     receivingStorage.setAnnotation(map.get("annotation").toString()); // 说明
                     receivingStorage.setCreateTime(new Date()); // 创建时间
-                    SysUserConstant.SYS_USER.getUsername();
                     receivingStorage.setCreateBy(SysUserConstant.SYS_USER == null ? "无" : SysUserConstant.SYS_USER.getUsername()); // 创建人
                     receivingStorageList.add(receivingStorage);
                     // 根据仓库、库位、项目编号、物料编号、资产编号查询此库存是否存在

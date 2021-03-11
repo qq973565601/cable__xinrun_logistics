@@ -112,9 +112,6 @@ public class InventoryController extends JeecgController<Inventory, IInventorySe
 
     /**
      * 根据库位id查询该库位库存信息
-     *
-     * @Author Xm
-     * @Date 2020/5/22 15:43
      */
     @GetMapping(value = "/insurancePageList")
     public Result<?> insurancePageList(InventoryListsVo inventoryVo,
