@@ -43,7 +43,7 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.jeecg.common.constant.SysUserConstant;
+import org.jeecg.constant.SysUserConstant;
 
  /**
  * @Description: ${tableVo.ftlDescription}

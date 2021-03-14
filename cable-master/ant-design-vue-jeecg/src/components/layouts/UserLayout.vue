@@ -9,7 +9,7 @@
 <!--          </a>-->
 <!--        </div>-->
         <div class="header" style="margin-top: 80px">
-          <span class="title" style="color: white">昕润物流管理系统</span>
+          <span class="title" style="color: black">Jeecg物流管理系统</span>
         </div>
         <div class="desc">
 
@@ -68,7 +68,7 @@
     .container {
       width: 100%;
       min-height: 100%;
-      background: #f0f2f5 url(~@/assets/background.jpg) no-repeat 50%;
+      background: #f0f2f5 url(~@/assets/background.svg) no-repeat 50%;
       background-size: 100%;
       padding: 110px 0 144px;
       position: relative;

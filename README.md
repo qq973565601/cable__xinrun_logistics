@@ -24,8 +24,6 @@
 ### 软件架构
 - jeecg-boot-master 后台项目
 - cable.sql 后台管理系统数据库脚本
-- logistics：微信小程序
-- wxImg: 微信小程序图片
 
 ### 所用技术
 - 此系统基于 Jeecg-boot 为脚手架开发的PRD管理系统

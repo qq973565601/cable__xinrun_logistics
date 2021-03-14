@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: '昕润物流',
+        default: 'jeecg物流',
         required: false
       },
       showTitle: {

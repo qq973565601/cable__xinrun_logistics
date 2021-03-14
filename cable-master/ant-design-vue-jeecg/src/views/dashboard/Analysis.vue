@@ -241,7 +241,7 @@
         </div>
       </a-col>
     </a-row>
-    <!-- 欢迎进入昕润物流管理系统首页 -->
+    <!-- 欢迎进入Jeecg物流管理系统首页 -->
   </div>
   <!-- </div> -->
   <!--  <div>-->
@@ -1143,7 +1143,6 @@ export default {
 </script>
 <style>
 .indexclass {
-  background: #f0f2f5 url(~@/assets/xrwlbjpt.jpg) no-repeat 50%;
   background-size: 100%;
 }
 

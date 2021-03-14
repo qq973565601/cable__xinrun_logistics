@@ -17,8 +17,8 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入昕润物流管理系统</span>
-      <span v-else>昕润物流</span>
+      <span v-if="device === 'desktop'">欢迎进入Jeecg物流管理系统</span>
+      <span v-else>物流</span>
 
       <user-menu :theme="theme"/>
     </div>
