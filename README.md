@@ -67,6 +67,7 @@
 ### 9. 配置项目根目录下的 vue.config.js 文件，指定后台路径,建立前后端对接
 ![](https://images.gitee.com/uploads/images/2021/0314/191229_4445da80_5459645.png "屏幕截图.png")
 ### 10. 最后配置完成后，需要前端后端同时启动才能访问 `localhost:3000` 
+前端通过 `npm run serve` 命令启动
 
 ### 项目截图
 ### 1. 登录界面
