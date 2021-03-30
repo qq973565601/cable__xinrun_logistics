@@ -87,14 +87,16 @@
                   placeholder="请选择离职日期">
           </j-date>
         </a-form-item>
-        <a-form-item label="身份证号" :labelCol="labelCol" :wrapperCol="wrapperCol"
-                     style="display: inline-block;width: 600px;">
+        <a-form-item label="身份证号" :labelCol="labelCol" :wrapperCol="wrapperCol" class="aipsdho9">
           <a-input placeholder="请输入身份证号" v-decorator.trim="[ 'idCard', validatorRules.idCard]"/>
         </a-form-item>
 
-        <a-form-item label="家庭地址" :labelCol="labelCol" :wrapperCol="wrapperCol"
-                     style="display: inline-block;width: 600px;margin-bottom: 70px;">
+        <a-form-item label="家庭地址" :labelCol="labelCol" :wrapperCol="wrapperCol" class="aipsdho9">
           <a-input placeholder="请输入家庭地址" v-decorator="[ 'address', validatorRules.address]"/>
+        </a-form-item>
+
+        <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol" class="aipsdho9">
+          <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]"/>
         </a-form-item>
       </a-form>
     </a-spin>
@@ -181,9 +183,10 @@
           realname: { rules: [{ required: true, message: '请输入用户名称!' }] },
           phone: { rules: [{ validator: this.validatePhone }] },
           email: {
-            rules: [{
-              validator: this.validateEmail
-            }]
+            rules: [
+              { required: true, message: '请输入正确格式的邮箱' },
+              { validator: this.validateEmail }
+            ]
           },
           roles: {},
           //  sex:{initialValue:((!this.model.sex)?"": (this.model.sex+""))}
@@ -298,7 +301,6 @@
         this.edit({ activitiSync: '1' })
       },
       edit(record) {
-        console.log('warehouseList', record)
         this.warehouseList()
         this.resetScreenSize() // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this

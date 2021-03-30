@@ -20,13 +20,26 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
+
+  # QQ邮箱基本配置
   mail:
-    host: smtp.163.com
-    username: jeecgos@163.com
-    password: ??
+    # 配置 smtp 服务器地址
+    host: smtp.qq.com
+    # 配置 smtp 服务器端口
+    port: 587
+    # 配置邮箱用户名 [自己的邮箱]
+    username: bai211425401@qq.com
+    # 配置申请到的授权码 [填写发送短信申请到的授权码]
+    password: pyrxznwrhzbtbjcj
+    # 配置邮件编码
+    default-encoding: UTF-8
     properties:
       mail:
+        # 表示开启 debug 模式
+        dubug: true
         smtp:
+          # 配置 SSL 加密工厂
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
           auth: true
           starttls:
             enable: true

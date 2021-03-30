@@ -28,6 +28,7 @@ import org.jeecg.common.util.PmsUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.constant.SysUserConstant;
+import org.jeecg.config.EmailComponent;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -67,28 +68,22 @@ import java.util.stream.Collectors;
 public class SysUserController {
     @Autowired
     private ISysBaseAPI sysBaseAPI;
-
     @Autowired
     private ISysUserService sysUserService;
-
     @Autowired
     private ISysDepartService sysDepartService;
-
     @Autowired
     private ISysUserRoleService sysUserRoleService;
-
     @Autowired
     private ISysUserDepartService sysUserDepartService;
-
     @Autowired
     private ISysDepartRoleUserService departRoleUserService;
-
     @Autowired
     private ISysDepartRoleService departRoleService;
-
     @Autowired
     private RedisUtil redisUtil;
-
+    @Autowired
+    private EmailComponent emailComponent;
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
 
@@ -144,8 +139,10 @@ public class SysUserController {
         return result;
     }
 
+    /**
+     * 添加用户
+     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    //@RequiresPermissions("user:add")
     public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();
         String selectedRoles = jsonObject.getString("selectedroles");
@@ -161,12 +158,29 @@ public class SysUserController {
             user.setDelFlag(CommonConstant.DEL_FLAG_0);
             sysUserService.addUserWithRole(user, selectedRoles);
             sysUserService.addUserWithDepart(user, selectedDeparts);
+            // 添加成功后给员工邮箱发送欢迎邮件
+            if (this.sendMail(user)) {
+                log.debug("邮件发送成功~");
+            } else {
+                log.error("邮件发送失败~");
+            }
             result.success("添加成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             result.error500("操作失败");
         }
         return result;
+    }
+
+    /**
+     * 发送邮件
+     */
+    private boolean sendMail(SysUser sysUser) {
+        EmailComponent.MailMessage msg = new EmailComponent.MailMessage();
+        msg.setEmailTo(new String[]{sysUser.getEmail()});
+        msg.setSubject("新员工入职信");
+        msg.setContent("欢迎新员工 {" + sysUser.getRealname() + "} 入职公司, 欢迎加入我们的大家庭!");
+        return emailComponent.sendSimpleMail(msg);
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.PUT)
