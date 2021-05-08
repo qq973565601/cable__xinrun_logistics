@@ -10,21 +10,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.Parameter;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.SecurityScheme;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @Author scott
@@ -79,19 +75,6 @@ public class Swagger2Config implements WebMvcConfigurer {
     }
 
     /**
-     * JWT token
-     *
-     * @return List<Parameter>
-     */
-    private List<Parameter> setHeaderToken() {
-        ParameterBuilder tokenPar = new ParameterBuilder();
-        List<Parameter> pars = new ArrayList<>();
-        tokenPar.name(DefContants.X_ACCESS_TOKEN).description("token").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
-        pars.add(tokenPar.build());
-        return pars;
-    }
-
-    /**
      * api文档的详细信息函数,注意这里的注解引用的是哪个
      *
      * @return ApiInfo
@@ -105,7 +88,9 @@ public class Swagger2Config implements WebMvcConfigurer {
                 // 描述
                 .description("后台API接口")
                 // 作者
-                .contact("JEECG团队")
+                .contact(new Contact("JEECG团队",
+                        "http://www.apache.org/licenses/LICENSE-2.0.html",
+                        "bai211425401@126.com"))
                 .license("The Apache License, Version 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .build();

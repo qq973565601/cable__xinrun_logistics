@@ -67,7 +67,7 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // 拦截器
-        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+        Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         if (oConvertUtils.isNotEmpty(excludeUrls)) {
             String[] permissionUrl = excludeUrls.split(",");
             for (String url : permissionUrl) {
@@ -126,7 +126,7 @@ public class ShiroConfig {
         // websocket排除
         filterChainDefinitionMap.put("/websocket/**", "anon");
         // 添加自己的过滤器并且取名为jwt
-        Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
+        Map<String, Filter> filterMap = new HashMap<>(1);
         filterMap.put("jwt", new JwtFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
         // 过滤链定义，从上向下顺序执行，一般将/**放在最为下边

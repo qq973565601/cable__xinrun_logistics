@@ -87,13 +87,13 @@ public class MybatisInterceptor implements Interceptor {
                             }
                         }
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
         if (SqlCommandType.UPDATE == sqlCommandType) {
             LoginUser sysUser = this.getLoginUser();
-            Field[] fields = null;
+            Field[] fields;
             if (parameter instanceof ParamMap) {
                 ParamMap<?> p = (ParamMap<?>) parameter;
                 //update-begin-author:scott date:20190729 for:批量更新报错issues/IZA3Q--
@@ -110,10 +110,8 @@ public class MybatisInterceptor implements Interceptor {
                 }
                 //update-end-author:scott date:20190729 for:更新指定字段时报错 issues/#516-
 
-                fields = oConvertUtils.getAllFields(parameter);
-            } else {
-                fields = oConvertUtils.getAllFields(parameter);
             }
+            fields = oConvertUtils.getAllFields(parameter);
 
             for (Field field : fields) {
                 log.debug("------field.name------" + field.getName());
@@ -152,7 +150,7 @@ public class MybatisInterceptor implements Interceptor {
 
     //update-begin--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
     private LoginUser getLoginUser() {
-        LoginUser sysUser = null;
+        LoginUser sysUser;
         try {
             sysUser = SecurityUtils.getSubject().getPrincipal() != null ? (LoginUser) SecurityUtils.getSubject().getPrincipal() : null;
         } catch (Exception e) {

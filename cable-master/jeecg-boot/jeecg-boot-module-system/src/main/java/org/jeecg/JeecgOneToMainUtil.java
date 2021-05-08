@@ -18,7 +18,6 @@ public class JeecgOneToMainUtil {
 
 	/**
 	 * 一对多(父子表)数据模型，生成方法
-	 * @param args
 	 */
 	public static void main(String[] args) {
 		//第一步：设置主表配置
@@ -29,7 +28,7 @@ public class JeecgOneToMainUtil {
 		mainTable.setFtlDescription("GUI订单管理");	 //描述
 		
 		//第二步：设置子表集合配置
-		List<SubTableVo> subTables = new ArrayList<SubTableVo>();
+		List<SubTableVo> subTables = new ArrayList<>();
 		//[1].子表一
 		SubTableVo po = new SubTableVo();
 		po.setTableName("jeecg_order_customer");//表名
