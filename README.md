@@ -12,64 +12,70 @@
 - Npm: 5.6.0+
 - Yarn: 1.21.1+
 ### IDE插件 (lombok 插件必装)
+
 <hr/>
 
 ### 2021/3/3 更新
 `713091413` 物流项目讨论交流群,有问题的小伙伴可以加此群哦！！！
 
-### 介绍
+<hr/>
+
+# 介绍
 基于Jeecg-boot开发的物流仓储系统，涵盖模块：用户管理、车辆管理、计划管理、仓库管理、库存管理、财务管理、统计报表、系统管理等模块组成
 
-### 软件架构
+# 软件架构
 - jeecg-boot-master 后台项目
 - cable.sql 后台管理系统数据库脚本
 
-### 所用技术
+# 所用技术
 - 此系统基于 Jeecg-boot 为脚手架开发的PRD管理系统
 - 后端技术：SpringBoot 2.1.3 + Shiro 1.4.0 + Redis + Mysql 5.7 + MyBatis-Plus 3.1.2 + Jwt 3.7.0 + Swagger-ui
 - 前端技术：Vue + Ant-design-vue + Webpack
 - 其他技术：Druid(数据库连接池)、Logback(日志工具)、poi(Excel工具)、Quartz(定时任务)、lombok(简化代码)
 - 项目构建：Maven3.5+、JDK1.8+
 
-### 项目所需软件下载路径及jeecg文档说明
-- [JeecgBoot官方文档](http://jeecg-boot.mydoc.io/)
+# 项目所需软件下载路径及jeecg文档说明
+- JeecgBoot官方文档 [http://jeecg-boot.mydoc.io/](http://jeecg-boot.mydoc.io/)
 
-### 新手必看启动教学
-##### 1. 数据库配置
-#### 1.1 首先在本地创建 cable 数据库，选择好字符集编码
+> # 新手必看启动教学
+# 1. 数据库配置
+## 首先在本地创建 cable 数据库，选择好字符集编码
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1123/134217_192e4886_5459645.jpeg "1606109571(1).jpg")
-#### 1.2 然后在创建好的 cable 数据库下执行 cable.sql 脚本即可
+## 然后在创建好的 cable 数据库下执行 cable.sql 脚本即可
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/1123/134333_0de565fa_5459645.jpeg "1606109947(1).jpg")
-### 2. 前端项目可以使用 WebStorm 开发工具打开,后端项目可以使用 IDEA 开发工具打开,也可以使用 IDEA 一个工具来进行开发。
-#### 2.1. 进入 IDEA 工具后设置 Maven 依赖下载设置
+
+<hr/>
+
+# 2. 后端配置
+## 进入 IDEA 工具后设置 Maven 依赖下载设置
 更改自己的 Maven 安装路径，用来下载项目所需的 jar 包
 ![](https://images.gitee.com/uploads/images/2021/0314/191715_99d8e0a2_5459645.png "屏幕截图.png")
-### 3. 选择后台项目的启动环境 -> dev[开发环境] 或者 prod[生产环境]
+## 选择后台项目的启动环境 -> dev[开发环境] 或者 prod[生产环境]
 ![](https://images.gitee.com/uploads/images/2021/0314/191434_349c2297_5459645.png "屏幕截图.png")
-#### 3.1 然后更改对应开发环境的配置文件，如 application-dev.yml 文件
-#### 3.2 配置项目启动端口号
+## 然后更改对应开发环境的配置文件，如 application-dev.yml 文件
+### 配置项目启动端口号
 ![](https://images.gitee.com/uploads/images/2021/0314/191506_e32cd887_5459645.png "屏幕截图.png")
-#### 3.3 配置数据库连接信息
+### 配置数据库连接信息
 ![](https://images.gitee.com/uploads/images/2021/0314/191350_24bad6c3_5459645.png "屏幕截图.png")
-#### 3.4 配置 redis 连接信息
+### 配置 redis 连接信息
 ![](https://images.gitee.com/uploads/images/2021/0314/191546_fee76fd1_5459645.png "屏幕截图.png")
-#### 3.5 配置 jeecg 专用配置文件上传路径
+### 配置 jeecg 专用配置文件上传路径
 ![](https://images.gitee.com/uploads/images/2021/0314/191624_e804f2fe_5459645.png "屏幕截图.png")
-### 4. 找到 JeecgApplication 启动类启动项目即可
-
+## 找到 JeecgApplication 启动类启动项目即可
+## 通过访问 `http://localhost:8080/jeecg-boot/` 可以查看后台 API 接口文档
+![](https://images.gitee.com/uploads/images/2020/0908/164142_770af197_5459645.png "屏幕截图.png")
 <hr>
 
-### 5. 通过访问 `http://localhost:8080/jeecg-boot/` 可以查看后台 API 接口文档
-![](https://images.gitee.com/uploads/images/2020/0908/164142_770af197_5459645.png "屏幕截图.png")
-### 6. 前端项目使用 IDEA 打开后,通过执行 `cnpm install`,`npm install`,`yarn install` 等命令都可以下载前端依赖（cnpm 命令是安装了淘宝镜像后可以使用，yarn 命令是安装了 yarn 包后才可以使用, npm 是 node.js 原生自带的命令，直接就可以使用下载依赖，只不过速度比较慢）
-### 7. 下载成功后目录下会多出一个 node_modules 的包,这个就是管理前端依赖的包
-![](https://images.gitee.com/uploads/images/2021/0314/190948_3ef3f007_5459645.png "屏幕截图.png")
-### 8. 配置 index.html 页面的全局配置 -> 指定后台路径
+# 3. 前端配置
+## 前端项目使用 VsCode 工具打开，在控制台执行 `npm install` 命令下载所需依赖
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0425/113958_905f5575_5459645.png "屏幕截图.png")
+## 配置 index.html 页面的全局配置 -> 指定后台路径
 ![](https://images.gitee.com/uploads/images/2021/0314/191115_49a9c0d0_5459645.png "屏幕截图.png")
-### 9. 配置项目根目录下的 vue.config.js 文件，指定后台路径,建立前后端对接
+## 配置项目根目录下的 vue.config.js 文件，指定后台路径,建立前后端对接
 ![](https://images.gitee.com/uploads/images/2021/0314/191229_4445da80_5459645.png "屏幕截图.png")
-### 10. 最后配置完成后，需要前端后端同时启动才能访问 `localhost:3000` 
+## 最后配置完成后，需要前端后端同时启动才能访问项目
 前端通过 `npm run serve` 命令启动
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0425/114230_d4a476cb_5459645.png "屏幕截图.png")
 
 ### 项目截图
 ### 1. 登录界面
