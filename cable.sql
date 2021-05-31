@@ -2392,3 +2392,19 @@ CREATE TABLE `wx_user`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '微信用户表' ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for zhuanyi
+-- ----------------------------
+DROP TABLE IF EXISTS `zhuanyi`;
+CREATE TABLE `zhuanyi`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `storage_location_id1` int(11) NOT NULL COMMENT '原库位id',
+  `storage_location_id2` int(11) NOT NULL COMMENT '新库位id',
+  `zhuanyi_shuliang` int(100) NOT NULL COMMENT '转移数量',
+  `wuliao_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '物料名称',
+  `wcode` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '物料编码',
+  `raw_material_unit` int(11) NOT NULL COMMENT '物料单位ID',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '库位转移记录表' ROW_FORMAT = Compact;
