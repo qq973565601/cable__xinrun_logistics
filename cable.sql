@@ -1613,8 +1613,7 @@ CREATE TABLE `sys_log`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `index_table_userid`(`userid`) USING BTREE,
   INDEX `index_logt_ype`(`log_type`) USING BTREE,
-  INDEX `index_operate_type`(`operate_type`) USING BTREE,
-  INDEX `index_log_type`(`log_type`) USING BTREE
+  INDEX `index_operate_type`(`operate_type`) USING BTREE
 ) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统日志表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -2123,7 +2122,6 @@ CREATE TABLE `sys_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `index_user_name`(`username`) USING BTREE,
   UNIQUE INDEX `uniq_sys_user_work_no`(`work_no`) USING BTREE,
-  UNIQUE INDEX `uniq_sys_user_username`(`username`) USING BTREE,
   UNIQUE INDEX `uniq_sys_user_phone`(`phone`) USING BTREE,
   UNIQUE INDEX `uniq_sys_user_email`(`email`) USING BTREE,
   INDEX `index_user_status`(`status`) USING BTREE
